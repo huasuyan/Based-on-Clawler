@@ -1,5 +1,8 @@
 /*
 * 这个文件是redis的配置类
+* 创建并配置一个 Redis 操作工具类 RedisTemplate，解决 Redis 默认序列化乱码、可读性差的问题。
+* Redis 本身只认识二进制字节，不认识 Java 对象、JSON、字符串。如果不配置序列化，存到 Redis 里会变成：
+* \xac\xed\x00\x05t\x00\x05user
 * */
 package com.crawler.config;
 
