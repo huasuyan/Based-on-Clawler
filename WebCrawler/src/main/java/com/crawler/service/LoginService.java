@@ -3,7 +3,9 @@ package com.crawler.service;
 import com.crawler.entity.LoginDto;
 import com.crawler.entity.User;
 
+import java.util.Map;
+
 public interface LoginService {
 
-    LoginDto login(User user);
+    Map<String,Object> login(LoginDto user);
 }

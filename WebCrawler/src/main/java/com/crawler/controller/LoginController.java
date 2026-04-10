@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -54,15 +55,11 @@ public class LoginController {
         return Result.success(map);
     }
 
-    @PostMapping("login")
-    public Result login(@RequestBody User user) {
+    @PostMapping("/login")
+    public Result login(@RequestBody LoginDto user) {
 
-        LoginDto info = loginService.login(user);
-
-        if (info != null) {
-            return Result.success();
-        }
-        return Result.error("用户名或密码错误");
+        Map<String,Object> m = loginService.login(user);
+        return Result.success(m);
     }
 
 }

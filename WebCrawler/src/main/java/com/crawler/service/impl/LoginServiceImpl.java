@@ -18,20 +18,20 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private LoginMapper loginMapper;
     @Override
-    public LoginDto login(User user) {
+    public Map<String,Object> login(LoginDto user) {
 
         User u = loginMapper.selectByUsernameAndPassword(user);
-
         if(u!=null){
             Map<String,Object> claims = new HashMap<>();
             claims.put("userId",u.getUserId());
             claims.put("username",u.getUsername());
 
             String jwt = JwtUtil.generateToken(String.valueOf(u.getUserId()),claims);
-
-            return new LoginDto(u.getUserId(),u.getUsername(),jwt);
+            Map<String,Object> m =new HashMap<>();
+            m.put("token",jwt);
+            return m;
         }
-        return null;
+        throw new RuntimeException("用户或密码错误");
     }
 
 }
