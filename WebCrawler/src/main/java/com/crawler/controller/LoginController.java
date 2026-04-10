@@ -5,15 +5,23 @@ import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FastByteArrayOutputStream;
 import cn.hutool.core.util.IdUtil;
+import com.crawler.entity.LoginDto;
 import com.crawler.entity.Result;
+import com.crawler.entity.User;
+import com.crawler.service.LoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -21,6 +29,9 @@ public class LoginController {
     //注入RedisTemplate
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private LoginService loginService;
 
     /**
      * 获取验证码
@@ -42,4 +53,16 @@ public class LoginController {
         map.put("img", Base64.encode(os.toByteArray()));
         return Result.success(map);
     }
+
+    @PostMapping("login")
+    public Result login(@RequestBody User user) {
+
+        LoginDto info = loginService.login(user);
+
+        if (info != null) {
+            return Result.success();
+        }
+        return Result.error("用户名或密码错误");
+    }
+
 }

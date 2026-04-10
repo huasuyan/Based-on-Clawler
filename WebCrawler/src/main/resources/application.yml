@@ -19,3 +19,7 @@ spring:
         max-wait: 1ms #连接池最大阻塞等待时间
         max-idle: 4 #连接池中的最大空闲连接
         min-idle: 0 #连接池中的最小空闲连接
+# JWT配置
+jwt:
+  secret: Web_crawler_secret
+  expiration: 86400000 #1天
