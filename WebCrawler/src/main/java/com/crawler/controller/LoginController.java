@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/auth")
 public class LoginController {
-
-    // ✅ 正确注入 RedisTemplate（从你的配置类中加载）
+    //注入RedisTemplate
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
@@ -32,19 +31,15 @@ public class LoginController {
         LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 100);
         String verify = IdUtil.simpleUUID();
         String code = lineCaptcha.getCode();
-
         // 输出图片流
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         lineCaptcha.write(os);
-
-        // ✅ 存入 Redis，有效期 1 分钟
+        //存入Redis，有效期1分钟
         redisTemplate.opsForValue().set("captcha:" + verify, code, 60L, TimeUnit.SECONDS);
-
         // 返回前端
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>(5);
         map.put("uuid", verify);
         map.put("img", Base64.encode(os.toByteArray()));
-
         return Result.success(map);
     }
 }
