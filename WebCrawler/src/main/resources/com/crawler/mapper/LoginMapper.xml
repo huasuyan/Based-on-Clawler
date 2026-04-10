@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全限定类名一致 -->
+<mapper namespace="com.crawler.mapper.LoginMapper">
+
+    <select id="selectByUsernameAndPassword" resultType="com.crawler.entity.User">
+        select user_id,username from user where username = #{username} and password = #{password}
+    </select>
+
+</mapper>

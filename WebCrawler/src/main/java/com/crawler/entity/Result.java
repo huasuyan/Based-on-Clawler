@@ -1,9 +1,12 @@
 package com.crawler.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class Result {
     private Integer code; // 返回代码
     private String msg; // 提示信息
@@ -29,6 +32,5 @@ public class Result {
         result.msg = msg;
         return result;
     }
-
 
 }
