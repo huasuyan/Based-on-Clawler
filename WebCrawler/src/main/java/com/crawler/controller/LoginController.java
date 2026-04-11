@@ -5,6 +5,7 @@ import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FastByteArrayOutputStream;
 import cn.hutool.core.util.IdUtil;
+import com.crawler.entity.CodeLoginDto;
 import com.crawler.entity.LoginDto;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
@@ -48,7 +49,11 @@ public class LoginController {
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         lineCaptcha.write(os);
         //存入Redis，有效期1分钟
-        redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
+        try{
+            redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
+        }catch (Exception e){
+            throw new RuntimeException("网络异常,请重新获取验证码");
+        }
         // 返回前端
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>(5);
         map.put("uuid", verify);
@@ -68,4 +73,15 @@ public class LoginController {
         return Result.success(m);
     }
 
+    @PostMapping("/Codelogin")
+    public Result login(@RequestBody CodeLoginDto user) {
+        String uuid = user.getUuid();
+        String code = user.getCode();
+        if(!Objects.equals(redisTemplate.opsForValue().get(uuid), code)){
+            return Result.error("验证码错误，请重新输入");
+        }
+        redisTemplate.delete(uuid);
+        Map<String,Object> m = loginService.Codelogin(user);
+        return Result.success(m);
+    }
 }
