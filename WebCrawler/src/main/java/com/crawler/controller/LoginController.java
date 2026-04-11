@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +58,12 @@ public class LoginController {
 
     @PostMapping("/login")
     public Result login(@RequestBody LoginDto user) {
-
+        String uuid = user.getUuid();
+        String code = user.getCode();
+        if(!Objects.equals(redisTemplate.opsForValue().get(uuid), code)){
+            return Result.error("验证码错误，请重新验证");
+        }
+        redisTemplate.delete(uuid);
         Map<String,Object> m = loginService.login(user);
         return Result.success(m);
     }
