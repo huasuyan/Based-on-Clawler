@@ -10,7 +10,7 @@ spring:
   redis:
     host: 101.42.47.30
     port: 6379
-    #password: 123456
+    password: WebCrawlerRedis
     database: 0 #操作的是0号数据库(redis存在0-15号数据库（默认），在命令中使用select来切换)
     jedis:
       #Redis连接池配置
