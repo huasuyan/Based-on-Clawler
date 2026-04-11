@@ -23,3 +23,14 @@ spring:
 jwt:
   secret: WebCrawlerSecretMadeByChenQiPengAnMinHuJiaRong
   expiration: 86400000 #1天
+
+# 短信服务配置
+sms:
+  aliyun:
+    host: https://gyytz.market.alicloudapi.com
+    path: /sms/smsSend
+    method: POST
+    appcode: f73828f54e754318ab549e18357e713c # 请替换为实际的AppCode
+    smsSignId: 2e65b1bb3d054466b82f0c9d125465e2 # 请替换为实际的短信签名ID
+    templateId: 908e94ccf08b4476ba6c876d13f084ad # 请替换为实际的短信模板ID
+    expireTime: 5 # 短信验证码过期时间（分）

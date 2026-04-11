@@ -8,6 +8,7 @@ import java.util.Map;
 
 public interface LoginService {
 
+    Map<String, Object> generateCode(String phone) ;
     Map<String,Object> login(LoginDto user);
     Map<String,Object> Codelogin(CodeLoginDto user);
 }

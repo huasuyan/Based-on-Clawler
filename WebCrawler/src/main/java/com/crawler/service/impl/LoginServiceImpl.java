@@ -7,9 +7,11 @@ import com.crawler.entity.User;
 import com.crawler.mapper.LoginMapper;
 import com.crawler.service.LoginService;
 import com.crawler.util.JwtUtil;
+import com.crawler.util.SmsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,23 @@ public class LoginServiceImpl implements LoginService {
 
     @Autowired
     private LoginMapper loginMapper;
+
+    @Autowired
+    private SmsUtil smsUtil;
+
+    @Override
+    public Map<String, Object> generateCode(String phone) {
+
+        String code = smsUtil.generateCode(phone);
+        String uuid = smsUtil.generateSmsUuid();
+        smsUtil.sendSms(phone, code);
+        smsUtil.saveSmsCode(phone, code);
+        Map<String, Object> map = new HashMap<>();
+        map.put("code",code);
+        map.put("uuid",uuid);
+        return map;
+    }
+
     @Override
     public Map<String,Object> login(LoginDto user) {
         User u = loginMapper.selectByUsernameAndPassword(user);
@@ -48,4 +67,5 @@ public class LoginServiceImpl implements LoginService {
             return m;
         }
     }
+
 }
