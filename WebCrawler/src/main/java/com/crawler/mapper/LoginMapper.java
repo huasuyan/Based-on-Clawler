@@ -8,5 +8,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface LoginMapper {
     User selectByUsernameAndPassword(LoginDto user);
-    User selectByPhone(CodeLoginDto user);
+
+    User selectByUsername(String user);
+    User selectByPhone(String user);
+
+    void insertUser(User user);
 }

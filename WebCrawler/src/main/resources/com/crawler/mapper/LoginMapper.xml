@@ -7,26 +7,19 @@
 <mapper namespace="com.crawler.mapper.LoginMapper">
 
     <select id="selectByUsernameAndPassword" resultType="com.crawler.entity.User">
-        select
-            user_id,
-            username,
-            password,
-            phone,
-            create_time,
-            update_time
-            from user
-        where username = #{username} and password = #{password}
+        select * from user where username = #{username} and password = #{password}
     </select>
 
     <select id="selectByPhone" resultType="com.crawler.entity.User">
-        select
-            user_id,
-            username,
-            password,
-            phone,
-            create_time,
-            update_time
-            from user
-        where phone = #{phone}
+        select * from user where phone = #{phone}
     </select>
+
+    <select id="selectByUsername" resultType="com.crawler.entity.User">
+        select * from user where username = #{username} and password = #{password}
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
+        insert user (username, password, phone, create_time, update_time)
+        values (#{username}, #{password}, #{phone}, #{createTime}, #{updateTime})
+    </insert>
 </mapper>

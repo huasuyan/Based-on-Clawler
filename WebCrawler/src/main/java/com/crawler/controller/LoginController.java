@@ -5,10 +5,7 @@ import cn.hutool.captcha.LineCaptcha;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.io.FastByteArrayOutputStream;
 import cn.hutool.core.util.IdUtil;
-import com.crawler.entity.CodeLoginDto;
-import com.crawler.entity.LoginDto;
-import com.crawler.entity.Result;
-import com.crawler.entity.User;
+import com.crawler.entity.*;
 import com.crawler.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,12 +89,23 @@ public class LoginController {
 
     @PostMapping("/sendCode")
     public Result sendCode(@RequestParam String phone) {
-
         Map<String, Object> map = loginService.generateCode(phone);
-
         return Result.success(map);
-
     }
 
+    @PostMapping("/register")
+    public Result register(@RequestBody RegisterDto user) {
+        // 1.验证短信验证码
+        String uuid = user.getUuid();
+        String code = user.getCode();
+        redisTemplate.opsForValue().set(uuid, code, 60L, TimeUnit.SECONDS);
+        if (!Objects.equals(redisTemplate.opsForValue().get(uuid), code)) {
+            return Result.error("验证码错误，请重新验证");
+        }
+        redisTemplate.delete(uuid);
+        // 2.执行注册
+        loginService.register(user);
+        return Result.success();
+    }
 
 }
