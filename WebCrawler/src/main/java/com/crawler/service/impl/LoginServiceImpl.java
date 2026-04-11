@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -35,10 +34,10 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Map<String, Object> generateCode(String phone) {
 
-        String code = smsUtil.generateCode(phone);
+        String code = smsUtil.generateCode();
         String uuid = smsUtil.generateSmsUuid();
         smsUtil.sendSms(phone, code);
-        smsUtil.saveSmsCode(phone, code);
+        smsUtil.saveSmsCode(phone, code, uuid);
         Map<String, Object> map = new HashMap<>();
         map.put("uuid",uuid);
         return map;

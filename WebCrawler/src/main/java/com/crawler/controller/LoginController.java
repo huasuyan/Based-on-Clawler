@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,7 +51,7 @@ public class LoginController {
         lineCaptcha.write(os);
         //存入Redis，有效期1分钟
         try{
-            redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(verify, code, capcha_expiration, TimeUnit.SECONDS);
         }catch (Exception e){
             throw new RuntimeException("网络异常,请重新获取验证码");
         }
@@ -78,14 +77,29 @@ public class LoginController {
 
     //验证码登录
     @PostMapping("/codeLogin")
-    public Result login(@RequestBody CodeLoginDto user) {
-        String uuid = user.getUuid();
-        String code = user.getCode();
-        if(!Objects.equals(redisTemplate.opsForValue().get(uuid), code)){
+    public Result login(@RequestBody CodeLoginDto codeLoginDto) {
+        String uuid = codeLoginDto.getUuid();
+        String code = codeLoginDto.getCode();
+        String phone = codeLoginDto.getPhone();
+
+        System.out.println(uuid);
+
+        // 1. 先判断 key 是否为空（必须加！）
+        if (uuid == null) {
+            return Result.error("前端未传入短信验证码uuid"); // 或抛出异常
+        }
+
+
+        // 2. 安全获取
+        Object obj = redisTemplate.opsForValue().get(uuid);
+        Map<String, Object> map = (Map<String, Object>) obj;
+
+
+        if(!Objects.equals((String) map.get("code"), code) && !Objects.equals((String) map.get("phone"), phone)){
             return Result.error("验证码错误，请重新输入");
         }
         redisTemplate.delete(uuid);
-        Map<String,Object> m = loginService.Codelogin(user);
+        Map<String,Object> m = loginService.Codelogin(codeLoginDto);
         return Result.success(m);
     }
 
