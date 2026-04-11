@@ -63,6 +63,7 @@ public class LoginController {
         return Result.success(map);
     }
 
+    //用户名密码登录
     @PostMapping("/login")
     public Result login(@RequestBody LoginDto user) {
         String uuid = user.getUuid();
@@ -75,6 +76,7 @@ public class LoginController {
         return Result.success(m);
     }
 
+    //验证码登录
     @PostMapping("/codeLogin")
     public Result login(@RequestBody CodeLoginDto user) {
         String uuid = user.getUuid();
@@ -89,7 +91,9 @@ public class LoginController {
 
     @PostMapping("/sendCode")
     public Result sendCode(@RequestParam String phone) {
+
         Map<String, Object> map = loginService.generateCode(phone);
+
         return Result.success(map);
     }
 
@@ -107,5 +111,6 @@ public class LoginController {
         loginService.register(user);
         return Result.success();
     }
+
 
 }

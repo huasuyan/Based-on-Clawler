@@ -31,6 +31,7 @@ public class LoginServiceImpl implements LoginService {
     @Autowired
     private SmsUtil smsUtil;
 
+    //生成电话注册验证码
     @Override
     public Map<String, Object> generateCode(String phone) {
 
@@ -39,11 +40,11 @@ public class LoginServiceImpl implements LoginService {
         smsUtil.sendSms(phone, code);
         smsUtil.saveSmsCode(phone, code);
         Map<String, Object> map = new HashMap<>();
-        map.put("code",code);
         map.put("uuid",uuid);
         return map;
     }
 
+    //用户名密码登录
     @Override
     public Map<String,Object> login(LoginDto user) {
         User u = loginMapper.selectByUsernameAndPassword(user);
@@ -53,6 +54,7 @@ public class LoginServiceImpl implements LoginService {
         }
         throw new RuntimeException("用户名或密码错误");
     }
+
 
     @Override
     public Map<String,Object> Codelogin(CodeLoginDto user) {
@@ -82,6 +84,8 @@ public class LoginServiceImpl implements LoginService {
         user.setUpdateTime(LocalDateTime.now());
         loginMapper.insertUser(user);
     }
+
+
 
     private Map<String, Object> getToken(User u) {
         {
