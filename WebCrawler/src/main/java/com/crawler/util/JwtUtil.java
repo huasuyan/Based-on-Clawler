@@ -17,13 +17,20 @@ import java.util.Map;
 public class JwtUtil {
 
     // 密钥，建议在配置文件中设置
-    @Value("${jwt.secret:default-secret-key}")
     private static String secret;
 
-    // 令牌过期时间（毫秒），默认24小时
-    @Value("${jwt.expiration:86400000}")
-    private static long expiration;
+    @Value("${jwt.secret}")
+    public void setSecret(String value) {
+        secret = value;
+    }
 
+    // 令牌过期时间（毫秒），默认24小时
+    private static Long expiration;
+
+    @Value("${jwt.expiration}")
+    public void setExpiration(Long value) {
+        expiration = value;
+    }
     /**
      * 生成JWT令牌
      * @param subject 令牌主题（通常是用户ID）

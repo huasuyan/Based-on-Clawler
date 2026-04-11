@@ -21,5 +21,5 @@ spring:
         min-idle: 0 #连接池中的最小空闲连接
 # JWT配置
 jwt:
-  secret: Web_crawler_secret
+  secret: WebCrawlerSecretMadeByChenQiPengAnMinHuJiaRong
   expiration: 86400000 #1天
