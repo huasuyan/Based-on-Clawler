@@ -11,6 +11,7 @@ import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +35,12 @@ public class LoginController {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+
     @Autowired
     private LoginService loginService;
 
+    @Value("${jwt.capcha-expiration}")
+    private Integer capcha_expiration;
     /**
      * 获取图形验证码
      */
@@ -50,9 +54,9 @@ public class LoginController {
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         lineCaptcha.write(os);
         //存入Redis，有效期1分钟
-        try {
+        try{
             redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
-        } catch (Exception e) {
+        }catch (Exception e){
             throw new RuntimeException("网络异常,请重新获取验证码");
         }
         // 返回前端
@@ -66,23 +70,23 @@ public class LoginController {
     public Result login(@RequestBody LoginDto user) {
         String uuid = user.getUuid();
         String code = user.getCode();
-        if (!Objects.equals(redisTemplate.opsForValue().get(uuid), code)) {
+        if(!Objects.equals(redisTemplate.opsForValue().get(uuid), code)){
             return Result.error("验证码错误，请重新验证");
         }
         redisTemplate.delete(uuid);
-        Map<String, Object> m = loginService.login(user);
+        Map<String,Object> m = loginService.login(user);
         return Result.success(m);
     }
 
-    @PostMapping("/Codelogin")
+    @PostMapping("/codeLogin")
     public Result login(@RequestBody CodeLoginDto user) {
         String uuid = user.getUuid();
         String code = user.getCode();
-        if (!Objects.equals(redisTemplate.opsForValue().get(uuid), code)) {
+        if(!Objects.equals(redisTemplate.opsForValue().get(uuid), code)){
             return Result.error("验证码错误，请重新输入");
         }
         redisTemplate.delete(uuid);
-        Map<String, Object> m = loginService.Codelogin(user);
+        Map<String,Object> m = loginService.Codelogin(user);
         return Result.success(m);
     }
 

@@ -7,10 +7,26 @@
 <mapper namespace="com.crawler.mapper.LoginMapper">
 
     <select id="selectByUsernameAndPassword" resultType="com.crawler.entity.User">
-        select user_id,username from user where username = #{username} and password = #{password}
+        select
+            user_id,
+            username,
+            password,
+            phone,
+            create_time,
+            update_time
+            from user
+        where username = #{username} and password = #{password}
     </select>
 
     <select id="selectByPhone" resultType="com.crawler.entity.User">
-        select user_id,username from user where phone = #{phone}
+        select
+            user_id,
+            username,
+            password,
+            phone,
+            create_time,
+            update_time
+            from user
+        where phone = #{phone}
     </select>
 </mapper>

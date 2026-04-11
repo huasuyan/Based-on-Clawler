@@ -27,7 +27,7 @@ public class JwtUtil {
     // 令牌过期时间（毫秒），默认24小时
     private static Long expiration;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.token-expiration}")
     public void setExpiration(Long value) {
         expiration = value;
     }
