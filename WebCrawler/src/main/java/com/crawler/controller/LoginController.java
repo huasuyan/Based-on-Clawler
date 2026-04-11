@@ -36,7 +36,7 @@ public class LoginController {
     private LoginService loginService;
 
     /**
-     * 获取验证码
+     * 获取图形验证码
      */
     @GetMapping("/getCode")
     public Result getCode() {
@@ -48,7 +48,7 @@ public class LoginController {
         FastByteArrayOutputStream os = new FastByteArrayOutputStream();
         lineCaptcha.write(os);
         //存入Redis，有效期1分钟
-        redisTemplate.opsForValue().set("captcha:" + verify, code, 60L, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
         // 返回前端
         ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>(5);
         map.put("uuid", verify);
