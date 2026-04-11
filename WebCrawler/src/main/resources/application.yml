@@ -5,7 +5,7 @@ spring:
     url: jdbc:mysql://101.42.47.30:3306/web_crawler?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: Web_crawler
     password: Web_crawler_database
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   #Redis相关配置
   redis:
     host: 101.42.47.30
@@ -22,4 +22,9 @@ spring:
 # JWT配置
 jwt:
   secret: WebCrawlerSecretMadeByChenQiPengAnMinHuJiaRong
-  expiration: 86400000 #1天
+  token-expiration: 86400     #token有效时间1天
+  capcha-expiration: 60      #图片验证码有效时间60s
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+

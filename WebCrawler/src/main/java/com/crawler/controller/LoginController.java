@@ -11,6 +11,7 @@ import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,9 +34,12 @@ public class LoginController {
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+
     @Autowired
     private LoginService loginService;
 
+    @Value("${jwt.capcha-expiration}")
+    private Integer capcha_expiration;
     /**
      * 获取图形验证码
      */
@@ -50,7 +54,7 @@ public class LoginController {
         lineCaptcha.write(os);
         //存入Redis，有效期1分钟
         try{
-            redisTemplate.opsForValue().set(verify, code, 60L, TimeUnit.SECONDS);
+            redisTemplate.opsForValue().set(verify, code, capcha_expiration, TimeUnit.SECONDS);
         }catch (Exception e){
             throw new RuntimeException("网络异常,请重新获取验证码");
         }
@@ -73,7 +77,7 @@ public class LoginController {
         return Result.success(m);
     }
 
-    @PostMapping("/Codelogin")
+    @PostMapping("/codeLogin")
     public Result login(@RequestBody CodeLoginDto user) {
         String uuid = user.getUuid();
         String code = user.getCode();
