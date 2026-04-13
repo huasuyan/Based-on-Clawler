@@ -127,4 +127,19 @@ public class LoginController {
     }
 
 
+    @PostMapping("/delToken")
+    public Result delToken(@RequestBody Map<String,Object> map) {
+        try {
+            // 1.取token
+            String token = (String) map.get("token");
+            // 2.删token
+            redisTemplate.delete(token);
+            return Result.success();
+        }catch (Exception e){
+            return Result.error("退出登录失败，请稍后再试！");
+        }
+
+    }
+
+
 }
