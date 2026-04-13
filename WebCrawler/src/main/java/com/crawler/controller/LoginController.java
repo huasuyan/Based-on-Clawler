@@ -95,7 +95,7 @@ public class LoginController {
         Map<String, Object> map = (Map<String, Object>) obj;
 
 
-        if(!Objects.equals((String) map.get("code"), code) && !Objects.equals((String) map.get("phone"), phone)){
+        if(!Objects.equals((String) map.get("code"), code) || !Objects.equals((String) map.get("phone"), phone)){
             return Result.error("验证码错误，请重新输入");
         }
         redisTemplate.delete(uuid);
