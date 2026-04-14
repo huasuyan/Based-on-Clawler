@@ -15,7 +15,7 @@
     </select>
 
     <select id="selectByUsername" resultType="com.crawler.entity.User">
-        select * from user where username = #{username} and password = #{password}
+        select * from user where username = #{username}
     </select>
 
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">

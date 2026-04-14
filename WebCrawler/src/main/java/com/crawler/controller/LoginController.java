@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -116,7 +116,6 @@ public class LoginController {
         // 1.验证短信验证码
         String uuid = user.getUuid();
         String code = user.getCode();
-        redisTemplate.opsForValue().set(uuid, code, 60L, TimeUnit.SECONDS);
         if (!Objects.equals(redisTemplate.opsForValue().get(uuid), code)) {
             return Result.error("验证码错误，请重新验证");
         }

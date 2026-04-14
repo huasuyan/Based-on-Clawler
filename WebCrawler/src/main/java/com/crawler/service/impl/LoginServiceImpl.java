@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import jakarta.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +47,6 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Map<String,Object> login(LoginDto user) {
         User u = loginMapper.selectByUsernameAndPassword(user);
-        System.out.println(u);
         if(u!=null){
             return getToken(u);
         }
@@ -79,8 +78,8 @@ public class LoginServiceImpl implements LoginService {
         user.setUsername(dto.getUsername());
         user.setPassword(dto.getPassword()); // 生产环境建议加密，见注意事项
         user.setPhone(dto.getPhone());
-        user.setCreateTime(LocalDateTime.now());
-        user.setUpdateTime(LocalDateTime.now());
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
         loginMapper.insertUser(user);
     }
 
