@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9090
 spring:
   datasource:
     url: jdbc:mysql://101.42.47.30:3306/web_crawler?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
@@ -39,3 +39,25 @@ sms:
     smsSignId: 2e65b1bb3d054466b82f0c9d125465e2 # 请替换为实际的短信签名ID
     templateId: 908e94ccf08b4476ba6c876d13f084ad # 请替换为实际的短信模板ID
     expireTime: 5 # 短信验证码过期时间（分）
+
+
+xxl:
+  job:
+    admin:
+      # xxl-job 控制台地址（改成你自己的）
+      addresses: http://101.42.47.30:8081/xxl-job-admin
+      # 令牌（默认 default_token，如果你没改就不用动）
+      accessToken: default_token
+    executor:
+      # 【必须改】执行器名称，在 xxl-job 管理后台创建执行器时填的名字
+      appname: web-crawler-xxl-job-test
+      # 一般留空
+      address:
+      # 执行器 IP，留空自动获取本机 IP
+      ip:
+      # 执行器端口，不冲突即可
+      port: 0
+      # 日志路径
+      logpath: /data/applogs/xxl-job/jobhandler
+      # 日志保留天数
+      logretentiondays: 30
