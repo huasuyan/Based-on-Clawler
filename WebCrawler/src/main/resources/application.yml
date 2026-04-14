@@ -1,7 +1,7 @@
-server:
-  port: 9090
-
 spring:
+  profiles:
+    # 激活环境：dev 开发版 | prod 发布版
+    active: dev
   datasource:
     url: jdbc:mysql://101.42.47.30:3306/web_crawler?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     username: Web_crawler
@@ -44,15 +44,3 @@ sms:
     templateId: 908e94ccf08b4476ba6c876d13f084ad
     expireTime: 5
 
-xxl:
-  job:
-    admin:
-      addresses: http://101.42.47.30:8081/xxl-job-admin
-      accessToken: default_token
-    executor:
-      appname: web-crawler-xxl-job-test
-      address:
-      ip:
-      port: 0
-      logpath: /data/applogs/xxl-job/jobhandler
-      logretentiondays: 30

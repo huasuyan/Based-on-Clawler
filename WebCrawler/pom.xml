@@ -148,18 +148,6 @@
             <version>${xxl-job.version}</version>
         </dependency>
 
-        <!-- 解决 LocalDateTime JSON 序列化问题 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>2.13.0</version>
-        </dependency>
-
-        <!-- SpringBoot 3.x 必须的 Jackson 核心 -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
     </dependencies>
 
     <build>

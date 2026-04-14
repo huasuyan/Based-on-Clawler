@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+xxl:
+  job:
+    admin:
+      addresses: http://101.42.47.30:8081/xxl-job-admin
+      accessToken: default_token
+    executor:
+      appname: web-crawler-xxl-job-andre
+      address:
+      ip: 101.42.47.30
+      port: 9999
+      logpath: /app/logs
+      logretentiondays: 30
