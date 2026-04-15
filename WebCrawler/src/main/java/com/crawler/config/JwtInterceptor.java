@@ -62,7 +62,6 @@ public class JwtInterceptor implements HandlerInterceptor {
             writeError(response, "登录已过期，请重新登录");
             return false;
         }
-        redisTemplate.expire(token,token_expiration, TimeUnit.SECONDS);
         // 5. 将用户信息存入 request，方便后续 Controller 使用
         request.setAttribute("currentUser", userObj);
         return true;

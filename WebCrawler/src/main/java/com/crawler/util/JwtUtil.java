@@ -39,7 +39,7 @@ public class JwtUtil {
      */
     public static String generateToken(String subject, Map<String, Object> claims) {
         Date now = new Date();
-        Date expireDate = new Date(now.getTime() + expiration);
+        Date expireDate = new Date(now.getTime() + expiration*1000);
 
         return Jwts.builder()
                 .setClaims(claims)  // 设置自定义声明
