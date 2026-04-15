@@ -4,30 +4,22 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.crawler.entity.Crawler;
+import com.crawler.entity.dto.CrawlerDto;
+import com.crawler.entity.xxljob.XxlJobInfo;
+import com.crawler.mapper.CrawlerMapper;
+import com.crawler.mapper.XxlJobInfoMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.net.HttpCookie;
-import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
@@ -62,6 +54,12 @@ public class XxlJobUtil {
         redisTemplate.opsForValue().set("xxl_job_login_token", value);
     }
 
+    /**
+     * 从redis中获取cookie
+     * 如果redis中没有cookie，则登录获取cookie
+     * 循环3次获取不到cookie，则抛出异常
+     * @return
+     */
     public String getCookie() {
         for (int i = 0; i < 3; i++) {
             String cookieStr = redisTemplate.opsForValue().get("xxl_job_login_token").toString();
@@ -83,7 +81,6 @@ public class XxlJobUtil {
         if (code == null || code != 200) {
             throw new RuntimeException("请求失败: " + json.getStr("msg"));
         }
-        log.info("xxl-job原始响应: {}", responseBody); // 打印原始响应
         Object data = json.get("data");
         if (data == null) return null;
 
