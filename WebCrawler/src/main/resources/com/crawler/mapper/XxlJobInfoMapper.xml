@@ -4,10 +4,10 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
-<mapper namespace="com.crawler.mapper.CrawlerMapper">
+<mapper namespace="com.crawler.mapper.XxlJobInfoMapper">
 
 
-    <select id="selectByCrawlerId" resultType="com.crawler.entity.Crawler">
-        select * from crawler where crawler_id = #{crawlerId}
+    <select id="selectByJobId" resultType="com.crawler.entity.xxljob.XxlJobInfo">
+        select * from xxl_job_info where id = #{jobId}
     </select>
 </mapper>
