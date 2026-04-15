@@ -1,6 +1,6 @@
 package com.crawler.mapper;
 
-import com.crawler.entity.UpdateDto;
+import com.crawler.entity.dto.UpdateDto;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

@@ -1,7 +1,6 @@
 package com.crawler.mapper;
 
-import com.crawler.entity.CodeLoginDto;
-import com.crawler.entity.LoginDto;
+import com.crawler.entity.dto.LoginDto;
 import com.crawler.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 

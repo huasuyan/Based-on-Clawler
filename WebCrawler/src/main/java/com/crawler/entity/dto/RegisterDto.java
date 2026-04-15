@@ -1,4 +1,4 @@
-package com.crawler.entity;
+package com.crawler.entity.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -16,7 +16,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor)
                 .addPathPatterns("/**")          // 拦截所有请求
                 .excludePathPatterns(            // 白名单，无需token
-                        "/auth/**"
+                        "/auth/**","/test/**"
                 );
     }
 }

@@ -3,7 +3,7 @@ package com.crawler.controller;
 
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
-import com.crawler.entity.UpdateDto;
+import com.crawler.entity.dto.UpdateDto;
 import com.crawler.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class UserController {
 
     //从请求中获取当前登录用户
     @PostMapping("/update")
-    public Result updateUser(HttpServletRequest request, UpdateDto updateDto) {
+    public Result updateUser(HttpServletRequest request,@RequestBody UpdateDto updateDto) {
 //         从请求中获取当前登录用户
         User currentUser = (User) request.getAttribute("currentUser");
         updateDto.setUserId(currentUser.getUserId());

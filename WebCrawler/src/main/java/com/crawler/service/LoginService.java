@@ -1,9 +1,8 @@
 package com.crawler.service;
 
-import com.crawler.entity.CodeLoginDto;
-import com.crawler.entity.LoginDto;
-import com.crawler.entity.RegisterDto;
-import com.crawler.entity.User;
+import com.crawler.entity.dto.CodeLoginDto;
+import com.crawler.entity.dto.LoginDto;
+import com.crawler.entity.dto.RegisterDto;
 
 import java.util.Map;
 

@@ -31,13 +31,11 @@ public class XxlJobUtil {
     private String password;
 
     public void login() {
-        log.debug(adminAddresses);
         String url=adminAddresses+"/auth/doLogin";
         HttpResponse response = HttpRequest.post(url)
                 .form("userName",username)
                 .form("password",password)
                 .execute();
-        log.debug(response.getCookies().toString());
         List<HttpCookie> cookies = response.getCookies();
         Optional<HttpCookie> cookieOpt = cookies.stream()
                 .filter(cookie -> cookie.getName().equals("xxl_job_login_token")).findFirst();

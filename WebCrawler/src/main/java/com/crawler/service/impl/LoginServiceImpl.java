@@ -1,6 +1,9 @@
 package com.crawler.service.impl;
 
 import com.crawler.entity.*;
+import com.crawler.entity.dto.CodeLoginDto;
+import com.crawler.entity.dto.LoginDto;
+import com.crawler.entity.dto.RegisterDto;
 import com.crawler.mapper.LoginMapper;
 import com.crawler.service.LoginService;
 import com.crawler.util.JwtUtil;

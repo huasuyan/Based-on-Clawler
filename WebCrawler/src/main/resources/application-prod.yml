@@ -6,6 +6,8 @@ xxl:
     admin:
       addresses: http://101.42.47.30:8081/xxl-job-admin
       accessToken: default_token
+      username: admin
+      password: 123456
     executor:
       appname: web-crawler-xxl-job-andre
       address:
@@ -13,3 +15,21 @@ xxl:
       port: 9999
       logpath: /app/logs
       logretentiondays: 30
+
+logging:
+  # 控制台输出格式
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n"
+  # 日志级别 root 根级别
+  level:
+    root: info
+    # 你的项目包名（调试时改成 debug）
+    com.crawler: info
+  # 日志文件输出（可选）
+  file:
+    name: logs/app.log
+  # 日志文件切割（自动按大小/日期拆分）
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 7
