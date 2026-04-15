@@ -28,7 +28,7 @@ public class CrawlerController {
      */
     @PostMapping("/searchByJobId")
     public Result searchByJobId(@RequestParam Integer jobId) {
-        CrawlerDto crawlerInfo = crawlerService.getJobInfo(jobId.toString());
+        CrawlerDto crawlerInfo = crawlerService.getJobInfo(jobId);
         return Result.success(crawlerInfo);
     }
 

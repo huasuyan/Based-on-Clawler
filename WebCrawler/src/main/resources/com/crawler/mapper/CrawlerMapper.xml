@@ -10,4 +10,7 @@
     <select id="selectByCrawlerId" resultType="com.crawler.entity.Crawler">
         select * from crawler where crawler_id = #{crawlerId}
     </select>
+    <select id="pageList" resultType="com.crawler.entity.Crawler">
+
+    </select>
 </mapper>

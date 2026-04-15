@@ -44,3 +44,7 @@ sms:
     templateId: 908e94ccf08b4476ba6c876d13f084ad
     expireTime: 5
 
+crawler:
+  pageList:
+    searchMethod: 0 # 0代表模糊查询 ， 1代表精确查询(爬虫名称）
+

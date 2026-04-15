@@ -12,6 +12,6 @@ public class CrawlerPageQueryDTO {
     // 动态查询条件（可选）
     private String crawlerName;
     private String scheduleType;
-    private String configMethod;
+    private Integer configMethod;
     private Integer triggerStatus;
 }

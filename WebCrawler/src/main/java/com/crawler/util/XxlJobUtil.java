@@ -124,6 +124,34 @@ public class XxlJobUtil {
         }
     }
 
+    public CrawlerDto mergeData(Integer jobId,XxlJobInfo jobInfo,Crawler crawler){
+        CrawlerDto crawlerDto = new CrawlerDto();
+        crawlerDto.setCrawlerName(crawler.getCrawlerName());
+        crawlerDto.setCrawlerId(jobId);
+        crawlerDto.setConfigMethod(crawler.getConfigMethod());
+        crawlerDto.setScheduleConf(jobInfo.getScheduleConf());
+        crawlerDto.setScheduleType(jobInfo.getScheduleType());
+        if(jobInfo.getTriggerLastTime() != 0){
+            // 上次执行时间不为0，说明任务已执行过,则设置上次执行时间
+            crawlerDto.setTriggerLastTime(new Date(jobInfo.getTriggerLastTime()));
+        }else{
+            // 上次执行时间为0，说明任务未执行过,则设置上次执行时间为null
+            crawlerDto.setTriggerLastTime(null);
+        }
+        if(jobInfo.getTriggerNextTime() != 0){
+            // 下次执行时间不为0，说明任务已执行过,则设置下次执行时间
+            crawlerDto.setTriggerNextTime(new Date(jobInfo.getTriggerNextTime()));
+        }else{
+            // 下次执行时间为0，说明任务未执行过,则设置下次执行时间为null
+            crawlerDto.setTriggerNextTime(null);
+        }
+        crawlerDto.setJobDesc(jobInfo.getJobDesc());
+        crawlerDto.setUpdateTime(jobInfo.getUpdateTime());
+        crawlerDto.setTriggerStatus(jobInfo.getTriggerStatus());
+
+        return crawlerDto;
+    }
+
 }
 
 

@@ -9,5 +9,5 @@ public interface CrawlerService {
 
     List<CrawlerDto> pageList(CrawlerPageQueryDTO queryDTO);
 
-    CrawlerDto getJobInfo(String string);
+    CrawlerDto getJobInfo(Integer string);
 }
