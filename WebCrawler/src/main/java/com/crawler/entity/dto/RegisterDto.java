@@ -11,6 +11,6 @@ public class RegisterDto {
     private String username;
     private String password;
     private String phone;
-    private String code;   // 手机验证码
+    private String code;   // 图形验证码
     private String uuid;
 }
