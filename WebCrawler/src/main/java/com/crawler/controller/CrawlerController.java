@@ -2,12 +2,14 @@ package com.crawler.controller;
 
 
 import com.crawler.entity.Result;
+import com.crawler.entity.User;
 import com.crawler.entity.dto.CrawlerDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
 import com.crawler.entity.xxljob.XxlJobInfo;
 import com.crawler.service.CrawlerService;
 import com.crawler.util.XxlJobUtil;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +35,10 @@ public class CrawlerController {
     }
 
     @PostMapping("/pageList")
-    public Result pageList(@RequestBody CrawlerPageQueryDTO queryDTO) {
+    public Result pageList(HttpServletRequest request, @RequestBody CrawlerPageQueryDTO queryDTO) {
+        // 取用户信息
+        User currentUser = (User) request.getAttribute("currentUser");
+        queryDTO.setUserId(Long.valueOf(currentUser.getUserId()));
         // 分页查询
         List<CrawlerDto> crawlerList = crawlerService.pageList(queryDTO);
         return Result.success(crawlerList);

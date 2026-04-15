@@ -4,6 +4,7 @@ import com.crawler.entity.*;
 import com.crawler.entity.dto.CodeLoginDto;
 import com.crawler.entity.dto.LoginDto;
 import com.crawler.entity.dto.RegisterDto;
+import com.crawler.entity.dto.UserInfoDto;
 import com.crawler.mapper.LoginMapper;
 import com.crawler.service.LoginService;
 import com.crawler.util.JwtUtil;
@@ -61,7 +62,9 @@ public class LoginServiceImpl implements LoginService {
     public Map<String,Object> Codelogin(CodeLoginDto user) {
         User u = loginMapper.selectByPhone(user.getPhone());
         if(u!=null){
-            return getToken(u);
+            Map<String,Object> map =  getToken(u);
+            map.put("userName",u.getUsername());
+            return map;
         }
         throw new RuntimeException("该手机号未注册");
     }
