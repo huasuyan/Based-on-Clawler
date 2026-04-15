@@ -49,6 +49,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             jwtUtil.parseToken(token);
         } catch (ExpiredJwtException e) {
             writeError(response, "登录已过期，请重新登录");
+            redisTemplate.delete(token);
             return false;
         } catch (MalformedJwtException | IllegalArgumentException e) {
             writeError(response, "无效的token");

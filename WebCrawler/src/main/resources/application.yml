@@ -3,9 +3,9 @@ spring:
     # 激活环境：dev 开发版 | prod 发布版
     active: dev
   datasource:
-    url: jdbc:mysql://101.42.47.30:3306/web_crawler?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
-    username: Web_crawler
-    password: Web_crawler_database
+    url: jdbc:mysql://101.42.47.30:3306/xxl-job?useSSL=false&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: xxl-job
+    password: XXL-JOB
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Redis 配置（符合 Spring Boot 3.2.5 推荐写法）
