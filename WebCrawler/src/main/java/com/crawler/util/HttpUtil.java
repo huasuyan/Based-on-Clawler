@@ -50,7 +50,6 @@ public class HttpUtil {
             formEntity.setContentType("application/x-www-form-urlencoded; charset=UTF-8");
             request.setEntity(formEntity);
         }
-
         return httpClient.execute(request);
     }
 

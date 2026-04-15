@@ -148,6 +148,13 @@
             <version>${xxl-job.version}</version>
         </dependency>
 
+        <!-- jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.4</version> <!-- 或跟随 Spring Boot 版本 -->
+        </dependency>
+
     </dependencies>
 
     <build>
