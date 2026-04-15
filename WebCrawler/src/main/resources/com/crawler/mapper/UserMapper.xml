@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全限定类名一致 -->
+<mapper namespace="com.crawler.mapper.UserMapper">
+
+    <update id="updateUser" parameterType="com.crawler.entity.UpdateDto">
+        update user
+        <set>
+            <if test="password != null and password != ''">password = #{password},</if>
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+</mapper>
