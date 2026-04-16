@@ -3,6 +3,8 @@ package com.crawler.mapper;
 import com.crawler.entity.Crawler;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 @Mapper
 public interface CrawlerMapper {
     Crawler selectByCrawlerId(Integer crawlerId);
