@@ -155,6 +155,13 @@
             <version>2.15.4</version> <!-- 或跟随 Spring Boot 版本 -->
         </dependency>
 
+        <!-- okhttp -->
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.12.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -11,10 +11,13 @@ import com.crawler.mapper.CrawlerMapper;
 import com.crawler.mapper.XxlJobInfoMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.Date;
 import java.util.List;
@@ -80,11 +83,29 @@ public class XxlJobUtil {
         Object data = json.get("data");
         if (data == null) return null;
 
-        // 如果 data 里还有 data 字段（分页结构），继续取内层
-        JSONObject dataObj = JSONUtil.parseObj(data.toString());
-        if (dataObj.containsKey("data")) {
-            return dataObj.get("data");
+        // 1. 如果 data 本身就是 JSONObject
+        if (data instanceof JSONObject) {
+            JSONObject dataObj = (JSONObject) data;
+            if (dataObj.containsKey("data")) {
+                return dataObj.get("data");
+            }
+            return dataObj;
         }
+
+        // 2. 如果 data 是字符串，且看起来像 JSON 对象字符串
+        if (data instanceof String) {
+            String dataStr = (String) data;
+            // 用 Hutool 判断是否为 JSON 对象字符串（以 '{' 开头）
+            if (JSONUtil.isTypeJSONObject(dataStr)) {
+                JSONObject dataObj = JSONUtil.parseObj(dataStr);
+                if (dataObj.containsKey("data")) {
+                    return dataObj.get("data");
+                }
+                return dataObj;
+            }
+        }
+
+        // 3. 其他类型（JSONArray、数字、布尔值等）直接返回
         return data;
     }
 
@@ -122,14 +143,47 @@ public class XxlJobUtil {
 
     // POST Form：支持请求头、Cookie、表单参数
     public Object doPostForm(String path, Map<String, Object> formParams) {
-        HttpRequest request = HttpRequest.post(adminAddresses + path)
-                .header("Cookie", "xxl_job_login_token=" + getCookie());
+        String cookie = getCookie();
+        OkHttpClient client = new OkHttpClient();
+        // 1. 动态构建 FormBody
+        FormBody formBody = getFormBody(formParams);
+
+        Request request = new Request.Builder()
+                .url(adminAddresses+path)
+                .header("Cookie", cookie)
+                .post(formBody)
+                .build();
+        // 3. 执行请求并返回结果
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                return extractData(response.body().string());
+            } else {
+                throw new IOException("Unexpected response: " + response);
+            }
+        } catch (IOException e) {
+            System.err.println("网络请求异常: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @NotNull
+    private static FormBody getFormBody(Map<String, Object> formParams) {
+        FormBody.Builder builder = new FormBody.Builder();
         if (formParams != null) {
-            formParams.forEach(request::form);
+            for (Map.Entry<String, Object> entry : formParams.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                // 跳过null值，也可以选择转换为空字符串
+                if (value != null) {
+                    builder.add(key, value.toString());
+                } else {
+                    builder.add(key, ""); // 或忽略该字段
+                }
+            }
         }
-        try (HttpResponse response = request.execute()) {
-            return extractData(response.body());
-        }
+        FormBody formBody = builder.build();
+        return formBody;
     }
 
     public CrawlerDto mergeData(Integer jobId,XxlJobInfo jobInfo,Crawler crawler){
