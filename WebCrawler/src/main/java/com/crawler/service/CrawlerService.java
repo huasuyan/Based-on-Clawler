@@ -14,4 +14,10 @@ public interface CrawlerService {
     CrawlerDto getJobInfo(Integer string);
 
     Result updateCrawler(CrawlerUpdateDto crawlerUpdateDto);
+
+    Result executeCrawler(Integer string);
+
+    Result activateCrawler(Integer string);
+
+    Result deleteCrawler(Integer string);
 }
