@@ -64,8 +64,9 @@ public class CrawlerServiceImpl implements CrawlerService {
         map.put("executorHandler","");
         map.put("jobDesc","");
 
-        Object data = xxlJobUtil.doGet("/jobinfo/pageList", map);
-        List<XxlJobInfo> XxlJobInfoList = JSONUtil.toList(JSONUtil.parseArray(data), XxlJobInfo.class);
+        Map<String,Object> res = xxlJobUtil.doGet("/jobinfo/pageList", map);
+        Map<String,Object> data = (Map<String, Object>) res.get("data");
+        List<XxlJobInfo> XxlJobInfoList = JSONUtil.toList(JSONUtil.parseArray(data.get("data")), XxlJobInfo.class);;
         List<CrawlerDto> crawlerDtoList = new ArrayList<>();
         for (XxlJobInfo xxlJobInfo : XxlJobInfoList) {
             Integer jobId = xxlJobInfo.getId();
@@ -129,6 +130,8 @@ public class CrawlerServiceImpl implements CrawlerService {
         // 修改变化的数据
         if (crawlerUpdateDto.getCrawlerName() !=null && !crawlerUpdateDto.getCrawlerName().equals(crawlerDto.getCrawlerName())) {
             crawlerDto.setCrawlerName(crawlerUpdateDto.getCrawlerName());
+            // 修改crawler表
+            crawlerMapper.updateCrawlerName(crawlerUpdateDto.getCrawlerId(),crawlerDto.getCrawlerName());
         }
         if (crawlerUpdateDto.getScheduleType() !=null && !crawlerUpdateDto.getScheduleType().equals(crawlerDto.getScheduleType())) {
             crawlerDto.setScheduleType(crawlerUpdateDto.getScheduleType());
@@ -138,16 +141,18 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
         if (crawlerUpdateDto.getConfigMethod() !=null && !crawlerUpdateDto.getConfigMethod().equals(crawlerDto.getConfigMethod())) {
             crawlerDto.setConfigMethod(crawlerUpdateDto.getConfigMethod());
+            // 修改crawler表
+            crawlerMapper.updateConfigMethod(crawlerUpdateDto.getCrawlerId(),crawlerDto.getConfigMethod());
         }
         if (crawlerUpdateDto.getTriggerStatus() !=null && !crawlerUpdateDto.getTriggerStatus().equals(crawlerDto.getTriggerStatus())) {
             crawlerDto.setTriggerStatus(crawlerUpdateDto.getTriggerStatus());
         }
-        // 修改crawler表
-        crawlerMapper.updateCrawlerName(crawlerUpdateDto.getCrawlerId(),crawlerDto.getCrawlerName());
+
 
         // 构建map给xxl-job调度中心发请求修改xxl-job的数据
         Map<String,Object> map = new HashMap<>();
         // 必须参数
+        map.put("id",crawlerUpdateDto.getCrawlerId());
         map.put("jobGroup",jobGroup);
         map.put("jobDesc",crawlerDto.getCrawlerName());
         map.put("author",crawlerUpdateDto.getUserId());
@@ -171,10 +176,13 @@ public class CrawlerServiceImpl implements CrawlerService {
         map.put("executorHandler","");
 
         // 后端返回{code\data\msg}
-        Object res = xxlJobUtil.doPostForm("/jobinfo/update",map);
-
-
-        return Result.success();
+        Map<String,Object> res = xxlJobUtil.doPostForm("/jobinfo/update",map);
+        // 校验是否修改成功
+        if (res.get("msg").equals("Success")) {
+            return Result.success();
+        }else{
+            throw new RuntimeException("爬虫修改失败，请重试！");
+        }
 
     }
 }

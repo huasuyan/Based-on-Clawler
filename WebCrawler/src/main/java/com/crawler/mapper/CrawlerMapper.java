@@ -10,4 +10,6 @@ import java.util.List;
 public interface CrawlerMapper {
     Crawler selectByCrawlerId(Integer crawlerId);
     void updateCrawlerName(Integer crawlerId, String crawlerName);
+
+    void updateConfigMethod(Integer crawlerId, Integer configMethod);
 }

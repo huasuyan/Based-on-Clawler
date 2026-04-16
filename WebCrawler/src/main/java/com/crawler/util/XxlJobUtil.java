@@ -2,13 +2,10 @@ package com.crawler.util;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Crawler;
 import com.crawler.entity.dto.CrawlerDto;
 import com.crawler.entity.xxljob.XxlJobInfo;
-import com.crawler.mapper.CrawlerMapper;
-import com.crawler.mapper.XxlJobInfoMapper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -94,7 +91,7 @@ public class XxlJobUtil {
     }
 
     // POST Form：支持请求头、Cookie、表单参数
-    public Object doPostForm(String path, Map<String, Object> formParams) {
+    public Map<String,Object> doPostForm(String path, Map<String, Object> formParams) {
         String cookie = getCookie();
         OkHttpClient client = new OkHttpClient();
         // 1. 动态构建 FormBody

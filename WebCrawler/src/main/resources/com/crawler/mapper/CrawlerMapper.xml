@@ -10,6 +10,11 @@
         SET crawler_name = #{crawlerName}
         WHERE crawler_id = #{crawlerId}
     </update>
+    <update id="updateConfigMethod">
+        UPDATE crawler
+        SET config_method = #{configMethod}
+        WHERE crawler_id = #{crawlerId}
+    </update>
 
 
     <select id="selectByCrawlerId" resultType="com.crawler.entity.Crawler">
