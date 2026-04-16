@@ -1,12 +1,14 @@
 package com.crawler.service.impl;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Crawler;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.CrawlerDto;
 import com.crawler.entity.dto.CrawlerUpdateDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
+import com.crawler.entity.dto.CrawlerUploadDto;
 import com.crawler.entity.xxljob.XxlJobInfo;
 import com.crawler.mapper.CrawlerMapper;
 import com.crawler.mapper.XxlJobInfoMapper;
@@ -31,6 +33,9 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     @Resource
     private XxlJobUtil xxlJobUtil;
+
+    @Value("${crawler.config.crawlerSource}")
+    private String crawlerSource;
 
     @Value("${crawler.pageList.searchMethod}")
     private Integer searchMethod;
@@ -121,6 +126,95 @@ public class CrawlerServiceImpl implements CrawlerService {
         XxlJobInfo jobInfo = xxlJobInfoMapper.selectByJobId(jobId);
         Crawler crawler = crawlerMapper.selectByCrawlerId(jobId);
         return xxlJobUtil.mergeData(jobId,jobInfo,crawler);
+    }
+
+    @Override
+    public boolean createCrawlerByScript(CrawlerUploadDto uploadDto) {
+        try {
+            // 从DTO中获取参数
+            Long userId = uploadDto.getUserId();
+            String crawlerName = uploadDto.getCrawlerName();
+            String jobDesc = uploadDto.getJobDesc();
+            String scheduleType = uploadDto.getScheduleType();
+            String scheduleConf = uploadDto.getScheduleConf();
+            String crawlerSource1 = uploadDto.getCrawlerSource(); // 脚本内容
+
+            // 1. 检查爬虫名称是否已存在
+            List<Crawler> existingCrawlers = crawlerMapper.selectByCrawlerName(crawlerName);
+            if (existingCrawlers != null && !existingCrawlers.isEmpty()) {
+                log.error("爬虫名称已存在: {}", crawlerName);
+                return false;
+            }
+
+            // 2. 调用XXL-Job API创建任务
+            Map<String, Object> jobParams = new HashMap<>();
+            jobParams.put("jobGroup", jobGroup);
+            jobParams.put("jobDesc", jobDesc);
+            jobParams.put("author", userId.toString());
+            jobParams.put("scheduleType", scheduleType);
+            jobParams.put("scheduleConf", scheduleConf);
+            jobParams.put("executorHandler", "default"); //
+            jobParams.put("executorParam", "");
+            jobParams.put("glueType", "GLUE_PYTHON");
+            jobParams.put("glueSource", crawlerSource); //
+            jobParams.put("executorRouteStrategy", executorRouteStrategy);
+            jobParams.put("misfireStrategy", misfireStrategy);
+            jobParams.put("executorBlockStrategy", executorBlockStrategy);
+
+            Object result = xxlJobUtil.doPostForm("/jobinfo/insert", jobParams);
+
+            // 3. 解析新增任务结果
+            if (result == null) {
+                log.error("调用XXL-JOB新增接口失败");
+                return false;
+            }
+
+            JSONObject jsonResult = JSONUtil.parseObj(result.toString());
+            if (jsonResult.getInt("code") != 200) {
+                log.error("创建任务失败: {}", jsonResult);
+                return false;
+            }
+
+            // 4. 获取任务ID
+            Integer jobId = jsonResult.getInt("data");
+
+            // 5. 保存业务数据
+//            Crawler crawler = new Crawler();
+//            crawler.setCrawlerId(jobId.toString());
+//            crawler.setCrawlerName(crawlerName);
+//            crawler.setConfigMethod(0);
+//            crawlerMapper.insert(crawler);
+
+            // ==============================
+            //  核心：正确调用 /jobCode/save
+            // ==============================
+            Map<String, Object> jobSource = new HashMap<>();
+            jobSource.put("id", jobId);                   // 确参数名 id
+            jobSource.put("glueSource", crawlerSource1);  //  脚本内容
+            jobSource.put("glueRemark", "Python爬虫脚本"); // 必须传
+
+            // 调用保存接口
+            Object result2 = xxlJobUtil.doPostForm("/jobcode/save", jobSource);
+
+            if (result2 == null) {
+                log.error("保存GLUE脚本失败，接口无返回");
+                return false;
+            }
+
+            // 校验保存结果
+            JSONObject glueResult = JSONUtil.parseObj(result2.toString());
+            if (glueResult.getInt("code") != 200) {
+                log.error("保存GLUE脚本失败: {}", glueResult);
+                return false;
+            }
+
+            log.info("任务创建并保存GLUE脚本成功，jobId: {}", jobId);
+            return true;
+
+        } catch (Exception e) {
+            log.error("创建爬虫失败", e);
+        }
+        return false;
     }
 
     @Override

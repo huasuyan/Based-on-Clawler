@@ -4,6 +4,8 @@ import com.crawler.entity.Result;
 import com.crawler.entity.dto.CrawlerUpdateDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
 import com.crawler.entity.dto.CrawlerDto;
+import com.crawler.entity.dto.CrawlerUploadDto;
+
 import java.util.List;
 
 
@@ -14,4 +16,6 @@ public interface CrawlerService {
     CrawlerDto getJobInfo(Integer string);
 
     Result updateCrawler(CrawlerUpdateDto crawlerUpdateDto);
+
+    boolean createCrawlerByScript(CrawlerUploadDto uploadDto);
 }

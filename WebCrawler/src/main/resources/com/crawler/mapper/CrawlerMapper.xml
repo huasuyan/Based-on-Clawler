@@ -5,6 +5,10 @@
 
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
 <mapper namespace="com.crawler.mapper.CrawlerMapper">
+    <insert id="insert">
+        insert crawler (crawler_id,crawler_name,config_method)
+        values (#{crawlerId}, #{crawlerName}, #{configMethod})
+    </insert>
     <update id="updateCrawlerName">
         UPDATE crawler
         SET crawler_name = #{crawlerName}
@@ -19,5 +23,9 @@
 
     <select id="selectByCrawlerId" resultType="com.crawler.entity.Crawler">
         select * from crawler where crawler_id = #{crawlerId}
+    </select>
+
+    <select id="selectByCrawlerName" resultType="com.crawler.entity.Crawler">
+        select * from crawler where crawler_name = #{crawlerName}
     </select>
 </mapper>

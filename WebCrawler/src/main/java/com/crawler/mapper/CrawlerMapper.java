@@ -9,6 +9,11 @@ import java.util.List;
 @Mapper
 public interface CrawlerMapper {
     Crawler selectByCrawlerId(Integer crawlerId);
+
+    void insert(Crawler crawler);
+
+    List<Crawler> selectByCrawlerName(String crawlerName);
+
     void updateCrawlerName(Integer crawlerId, String crawlerName);
 
     void updateConfigMethod(Integer crawlerId, Integer configMethod);
