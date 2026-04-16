@@ -77,10 +77,6 @@ public class XxlJobUtil {
             throw new RuntimeException("响应体非JSON格式: " + responseBody);
         }
         JSONObject json = JSONUtil.parseObj(responseBody);
-        Integer code = json.getInt("code");
-        if (code == null || code != 200) {
-            throw new RuntimeException("请求失败: " + json.getStr("msg"));
-        }
         Object data = json.get("data");
         if (data == null) return null;
 
@@ -120,6 +116,18 @@ public class XxlJobUtil {
                 .header("Content-Type", "application/json")
                 .body(jsonBody)
                 .execute()) {
+            return extractData(response.body());
+        }
+    }
+
+    // POST Form：支持请求头、Cookie、表单参数
+    public Object doPostForm(String path, Map<String, Object> formParams) {
+        HttpRequest request = HttpRequest.post(adminAddresses + path)
+                .header("Cookie", "xxl_job_login_token=" + getCookie());
+        if (formParams != null) {
+            formParams.forEach(request::form);
+        }
+        try (HttpResponse response = request.execute()) {
             return extractData(response.body());
         }
     }

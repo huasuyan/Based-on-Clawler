@@ -1,5 +1,6 @@
 package com.crawler.handler;
 
+import com.crawler.controller.LoginController;
 import com.xxl.job.core.handler.annotation.XxlJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ public class SampleJob {
      */
     @XxlJob("demoJobHandler")
     public void demoJobHandler() {
-        log.info("XXL-Job 测试任务执行成功！");
+        LoginController  loginController = new LoginController();
+        loginController.getCode();
     }
 }
