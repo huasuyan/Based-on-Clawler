@@ -3,7 +3,9 @@ package com.crawler.service.impl;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Crawler;
+import com.crawler.entity.Result;
 import com.crawler.entity.dto.CrawlerDto;
+import com.crawler.entity.dto.CrawlerUpdateDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
 import com.crawler.entity.xxljob.XxlJobInfo;
 import com.crawler.mapper.CrawlerMapper;
@@ -33,13 +35,31 @@ public class CrawlerServiceImpl implements CrawlerService {
     @Value("${crawler.pageList.searchMethod}")
     private Integer searchMethod;
 
+    @Value("${crawler.config.jobGroup}")
+    private Integer jobGroup;
+
+    @Value("${crawler.config.executorRouteStrategy}")
+    private String executorRouteStrategy;
+
+    @Value("${crawler.config.misfireStrategy}")
+    private String misfireStrategy;
+
+    @Value("${crawler.config.executorBlockStrategy}")
+    private String executorBlockStrategy;
+
+    @Value("${crawler.config.executorTimeout}")
+    private Integer executorTimeout;
+
+    @Value("${crawler.config.executorFailRetryCount}")
+    private Integer executorFailRetryCount;
+
     @Override
     public List<CrawlerDto> pageList(CrawlerPageQueryDTO queryDTO) {
         Map<String,Object> map = new HashMap<>();
         map.put("author",queryDTO.getUserId().toString());
         map.put("offset",(queryDTO.getPageNum()-1)*queryDTO.getPageSize());
         map.put("pagesize",queryDTO.getPageSize());
-        map.put("jobGroup",10);
+        map.put("jobGroup",jobGroup);
         map.put("triggerStatus",queryDTO.getTriggerStatus()!=null?queryDTO.getTriggerStatus():-1);
         map.put("executorHandler","");
         map.put("jobDesc","");
@@ -100,5 +120,61 @@ public class CrawlerServiceImpl implements CrawlerService {
         XxlJobInfo jobInfo = xxlJobInfoMapper.selectByJobId(jobId);
         Crawler crawler = crawlerMapper.selectByCrawlerId(jobId);
         return xxlJobUtil.mergeData(jobId,jobInfo,crawler);
+    }
+
+    @Override
+    public Result updateCrawler(CrawlerUpdateDto crawlerUpdateDto) {
+        // 取出该爬虫的原本的所有参数
+        CrawlerDto crawlerDto = getJobInfo(crawlerUpdateDto.getCrawlerId());
+        // 修改变化的数据
+        if (crawlerUpdateDto.getCrawlerName() !=null && !crawlerUpdateDto.getCrawlerName().equals(crawlerDto.getCrawlerName())) {
+            crawlerDto.setCrawlerName(crawlerUpdateDto.getCrawlerName());
+        }
+        if (crawlerUpdateDto.getScheduleType() !=null && !crawlerUpdateDto.getScheduleType().equals(crawlerDto.getScheduleType())) {
+            crawlerDto.setScheduleType(crawlerUpdateDto.getScheduleType());
+        }
+        if (crawlerUpdateDto.getScheduleConf() !=null && !crawlerUpdateDto.getScheduleConf().equals(crawlerDto.getScheduleConf())) {
+            crawlerDto.setScheduleConf(crawlerUpdateDto.getScheduleConf());
+        }
+        if (crawlerUpdateDto.getConfigMethod() !=null && !crawlerUpdateDto.getConfigMethod().equals(crawlerDto.getConfigMethod())) {
+            crawlerDto.setConfigMethod(crawlerUpdateDto.getConfigMethod());
+        }
+        if (crawlerUpdateDto.getTriggerStatus() !=null && !crawlerUpdateDto.getTriggerStatus().equals(crawlerDto.getTriggerStatus())) {
+            crawlerDto.setTriggerStatus(crawlerUpdateDto.getTriggerStatus());
+        }
+        // 修改crawler表
+        crawlerMapper.updateCrawlerName(crawlerUpdateDto.getCrawlerId(),crawlerDto.getCrawlerName());
+
+        // 构建map给xxl-job调度中心发请求修改xxl-job的数据
+        Map<String,Object> map = new HashMap<>();
+        // 必须参数
+        map.put("jobGroup",jobGroup);
+        map.put("jobDesc",crawlerDto.getCrawlerName());
+        map.put("author",crawlerUpdateDto.getUserId());
+        map.put("scheduleType",crawlerDto.getScheduleType());
+            // 如果调度类型为CRON则必须传入CRON表达式
+        try{
+            if(crawlerDto.getScheduleType().equals("CRON")) {
+                map.put("scheduleConf", crawlerDto.getScheduleConf());
+            }else{
+                map.put("scheduleConf", "");
+            }
+        }catch (Exception e){
+            log.error(e.getMessage(),e);
+            return Result.error("请输入正确的CRON表达式！");
+        }
+        map.put("executorRouteStrategy",executorRouteStrategy);
+        map.put("misfireStrategy",misfireStrategy);
+        map.put("executorBlockStrategy",executorBlockStrategy);
+        map.put("executorTimeout",executorTimeout);
+        map.put("executorFailRetryCount",executorFailRetryCount);
+        map.put("executorHandler","");
+
+        // 后端返回{code\data\msg}
+        Object res = xxlJobUtil.doPostForm("/jobinfo/update",map);
+
+
+        return Result.success();
+
     }
 }

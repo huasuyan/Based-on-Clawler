@@ -9,5 +9,5 @@ import java.util.List;
 @Mapper
 public interface CrawlerMapper {
     Crawler selectByCrawlerId(Integer crawlerId);
-    List<Crawler> pageList(CrawlerPageQueryDTO queryDTO);
+    void updateCrawlerName(Integer crawlerId, String crawlerName);
 }

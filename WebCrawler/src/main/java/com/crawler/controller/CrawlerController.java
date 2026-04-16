@@ -4,8 +4,8 @@ package com.crawler.controller;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.CrawlerDto;
+import com.crawler.entity.dto.CrawlerUpdateDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
-import com.crawler.entity.xxljob.XxlJobInfo;
 import com.crawler.service.CrawlerService;
 import com.crawler.util.XxlJobUtil;
 import jakarta.annotation.Resource;
@@ -42,6 +42,21 @@ public class CrawlerController {
         // 分页查询
         List<CrawlerDto> crawlerList = crawlerService.pageList(queryDTO);
         return Result.success(crawlerList);
+    }
+
+    /**
+     * 编辑爬虫基本信息
+     */
+    @PostMapping("/update")
+    public Result update(HttpServletRequest request, @RequestBody CrawlerUpdateDto crawlerUpdateDto){
+        //取userId
+        User currentUser = (User) request.getAttribute("currentUser");
+        crawlerUpdateDto.setUserId(Long.valueOf(currentUser.getUserId()));
+
+        //调用Service
+        crawlerService.updateCrawler(crawlerUpdateDto);
+
+        return Result.success();
     }
 
 

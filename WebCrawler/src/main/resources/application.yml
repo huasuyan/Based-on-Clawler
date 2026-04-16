@@ -45,6 +45,13 @@ sms:
     expireTime: 5
 
 crawler:
+  config:
+    jobGroup: 10 #默认采用id为10的执行器
+    executorRouteStrategy: FIRST #默认执行器路由策略
+    misfireStrategy: DO_NOTHING #调度过期策略
+    executorBlockStrategy: SERIAL_EXECUTION #阻塞处理策略
+    executorTimeout: 0
+    executorFailRetryCount: 0
   pageList:
     searchMethod: 0 # 0代表模糊查询 ， 1代表精确查询(爬虫名称）
 
