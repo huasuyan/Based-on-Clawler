@@ -19,10 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.HttpCookie;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Component
@@ -74,45 +71,11 @@ public class XxlJobUtil {
         throw new RuntimeException("get xxl-job cookie error!");
     }
 
-    // 统一提取 data 字段的私有方法
-    private Object extractData(String responseBody) {
-        if (!JSONUtil.isTypeJSON(responseBody)) {
-            throw new RuntimeException("响应体非JSON格式: " + responseBody);
-        }
-        JSONObject json = JSONUtil.parseObj(responseBody);
-        Object data = json.get("data");
-        if (data == null) return null;
-
-        // 1. 如果 data 本身就是 JSONObject
-        if (data instanceof JSONObject) {
-            JSONObject dataObj = (JSONObject) data;
-            if (dataObj.containsKey("data")) {
-                return dataObj.get("data");
-            }
-            return dataObj;
-        }
-
-        // 2. 如果 data 是字符串，且看起来像 JSON 对象字符串
-        if (data instanceof String) {
-            String dataStr = (String) data;
-            // 用 Hutool 判断是否为 JSON 对象字符串（以 '{' 开头）
-            if (JSONUtil.isTypeJSONObject(dataStr)) {
-                JSONObject dataObj = JSONUtil.parseObj(dataStr);
-                if (dataObj.containsKey("data")) {
-                    return dataObj.get("data");
-                }
-                return dataObj;
-            }
-        }
-
-        // 3. 其他类型（JSONArray、数字、布尔值等）直接返回
-        return data;
-    }
 
     // -----------------------------------------------
 // GET：支持请求头、Cookie、路径参数（Query String）
 // -----------------------------------------------
-    public Object doGet(String path, Map<String, Object> queryParams) {
+    public Map<String, Object> doGet(String path, Map<String, Object> queryParams) {
         String cookie = getCookie();
         HttpRequest request = HttpRequest.get(adminAddresses + path)
                 .header("Cookie", cookie)
@@ -122,22 +85,11 @@ public class XxlJobUtil {
             queryParams.forEach(request::form);
         }
         try (HttpResponse response = request.execute()) {
-            return extractData(response.body());
-        }
-    }
-
-    // -----------------------------------------------
-// POST JSON：支持请求头、Cookie、JSON body
-// -----------------------------------------------
-    public Object doPostJson(String path, Object bodyObj) {
-        String cookie = getCookie();
-        String jsonBody = bodyObj != null ? JSONUtil.toJsonStr(bodyObj) : "";
-        try (HttpResponse response = HttpRequest.post(adminAddresses + path)
-                .header("Cookie", cookie)
-                .header("Content-Type", "application/json")
-                .body(jsonBody)
-                .execute()) {
-            return extractData(response.body());
+            // 用 Jackson 解析，而不是 Hutool
+            return new com.fasterxml.jackson.databind.ObjectMapper()
+                    .readValue(response.body(), Map.class);
+        } catch (Exception e) {
+            throw new RuntimeException("响应解析失败: " + e.getMessage());
         }
     }
 
@@ -156,7 +108,7 @@ public class XxlJobUtil {
         // 3. 执行请求并返回结果
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful() && response.body() != null) {
-                return extractData(response.body().string());
+                return JSONUtil.parseObj(response.body().string());
             } else {
                 throw new IOException("Unexpected response: " + response);
             }
