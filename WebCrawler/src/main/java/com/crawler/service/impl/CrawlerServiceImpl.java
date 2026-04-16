@@ -279,4 +279,57 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
 
     }
+
+    public Result executeCrawler(Integer jobId) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("id",jobId);
+        map.put("executorParam","");
+        map.put("addressList","");
+        Map<String,Object> res = xxlJobUtil.doGet("/jobinfo/trigger",map);
+        if(res.get("msg").equals("Success")){
+            return Result.success();
+        }
+        throw new RuntimeException("爬虫执行失败，请重试！");
+    }
+
+    public Result activateCrawler(Integer jobId) {
+        Map<String,Object> map = new HashMap<>();
+        List<Integer>  ids = new ArrayList<>();
+        ids.add(jobId);
+        map.put("ids[]",ids);
+        CrawlerDto crawlerDto = getJobInfo(jobId);
+        if (crawlerDto == null) throw new RuntimeException("爬虫不存在！");
+        else{
+            if(crawlerDto.getTriggerStatus() == 1){
+                //停止
+                Map<String,Object> res = xxlJobUtil.doGet("/jobinfo/stop",map);
+                if(res.get("msg").equals("Success")){
+                    return Result.success();
+                }
+                throw new RuntimeException("爬虫停止失败，请重试！");
+            }
+            else if(crawlerDto.getTriggerStatus() == 0){
+                //激活
+                Map<String,Object> res = xxlJobUtil.doGet("/jobinfo/start",map);
+                if(res.get("msg").equals("Success")){
+                    return Result.success();
+                }
+                throw new RuntimeException("爬虫激活失败，请重试！");
+            }
+            else throw new RuntimeException("爬虫状态异常！");
+        }
+    }
+
+    public Result deleteCrawler(Integer jobId) {
+        Map<String,Object> map = new HashMap<>();
+        List<Integer>  ids = new ArrayList<>();
+        ids.add(jobId);
+        map.put("ids[]",ids);
+        Map<String,Object> res = xxlJobUtil.doGet("/jobinfo/delete",map);
+        if(res.get("msg").equals("Success")){
+            crawlerMapper.deleteByCrawlerId(jobId);
+            return Result.success();
+        }
+        throw new RuntimeException("爬虫删除失败，请重试！");
+    }
 }

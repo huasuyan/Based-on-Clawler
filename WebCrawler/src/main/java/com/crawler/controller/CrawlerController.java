@@ -64,6 +64,26 @@ public class CrawlerController {
         return Result.success();
     }
 
+    @PostMapping("/execute")
+    public Result execute(@RequestParam  Integer jobId){
+        //调用Service
+        crawlerService.executeCrawler(jobId);
+        return Result.success();
+    }
+
+    @PostMapping("/activate")
+    public Result activate(@RequestParam  Integer jobId){
+        //调用Service
+        crawlerService.activateCrawler(jobId);
+        return Result.success();
+    }
+
+    @PostMapping("/delete")
+    public Result delete(@RequestParam  Integer jobId){
+        //调用Service
+        crawlerService.deleteCrawler(jobId);
+        return Result.success();
+    }
 
     @PostMapping("/script")
     public Result uploadScript(HttpServletRequest request, @RequestBody CrawlerUploadDto uploadDto) {

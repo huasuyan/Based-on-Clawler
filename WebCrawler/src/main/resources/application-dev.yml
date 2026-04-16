@@ -9,7 +9,7 @@ xxl:
       username: admin
       password: 123456
     executor:
-      appname: web-crawler-xxl-job-andre
+      appname: web-crawler-xxl-job-test
       address:
       ip:
       port: 0

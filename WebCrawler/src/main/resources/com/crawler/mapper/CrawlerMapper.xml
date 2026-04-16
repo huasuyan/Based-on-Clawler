@@ -25,6 +25,10 @@
         select * from crawler where crawler_id = #{crawlerId}
     </select>
 
+    <delete id="deleteByCrawlerId">
+        delete from crawler where crawler_id = #{crawlerId}
+    </delete>
+
     <select id="selectByCrawlerName" resultType="com.crawler.entity.Crawler">
         select * from crawler where crawler_name = #{crawlerName}
     </select>
