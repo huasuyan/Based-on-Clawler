@@ -1,14 +1,13 @@
 package com.crawler.controller;
 
 
-import com.crawler.entity.Crawler;
+
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.CrawlerDto;
 import com.crawler.entity.dto.CrawlerUpdateDto;
 import com.crawler.entity.dto.CrawlerPageQueryDTO;
 import com.crawler.entity.dto.CrawlerUploadDto;
-import com.crawler.entity.xxljob.XxlJobInfo;
 import com.crawler.service.CrawlerService;
 import com.crawler.util.XxlJobUtil;
 import jakarta.annotation.Resource;
