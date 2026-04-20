@@ -67,6 +67,12 @@ crawler:
     executorBlockStrategy: SERIAL_EXECUTION #阻塞处理策略
     executorTimeout: 0
     executorFailRetryCount: 0
+    cron:
+      # 完整路径规则：{result-root-path}/{userId}/{crawlerId}/{YYYY-MM-DD-HH-MM-SS}.json
+      result-root-path: crawlerCronResult
+
   pageList:
      searchMethod: 0 # 0代表模糊查询 ， 1代表精确查询(爬虫名称）
+
+
 
