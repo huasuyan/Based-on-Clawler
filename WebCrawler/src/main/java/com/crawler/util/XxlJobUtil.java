@@ -159,6 +159,7 @@ public class XxlJobUtil {
         crawlerDto.setJobDesc(jobInfo.getJobDesc());
         crawlerDto.setUpdateTime(jobInfo.getUpdateTime());
         crawlerDto.setTriggerStatus(jobInfo.getTriggerStatus());
+        crawlerDto.setCrawlerSource(jobInfo.getGlueSource());
 
         return crawlerDto;
     }

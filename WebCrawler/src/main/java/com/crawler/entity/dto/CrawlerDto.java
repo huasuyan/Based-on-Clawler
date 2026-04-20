@@ -16,4 +16,5 @@ public class CrawlerDto {
     private String jobDesc; //任务描述
     private Date updateTime; // 更新时间
     private Integer triggerStatus; //执行状态
+    private String crawlerSource; //爬虫代码
 }

@@ -14,4 +14,5 @@ public class CrawlerUpdateDto {
     private String scheduleConf;
     private Integer configMethod;
     private Integer triggerStatus;
+    private String crawlerSource;
 }

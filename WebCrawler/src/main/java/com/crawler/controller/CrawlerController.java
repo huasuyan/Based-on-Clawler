@@ -59,9 +59,7 @@ public class CrawlerController {
         crawlerUpdateDto.setUserId(Long.valueOf(currentUser.getUserId()));
 
         //调用Service
-        crawlerService.updateCrawler(crawlerUpdateDto);
-
-        return Result.success();
+        return crawlerService.updateCrawler(crawlerUpdateDto);
     }
 
     @PostMapping("/execute")

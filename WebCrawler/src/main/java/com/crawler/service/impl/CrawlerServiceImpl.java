@@ -179,11 +179,11 @@ public class CrawlerServiceImpl implements CrawlerService {
             Integer jobId = jsonResult.getInt("data");
 
             // 5. 保存业务数据
-//            Crawler crawler = new Crawler();
-//            crawler.setCrawlerId(jobId.toString());
-//            crawler.setCrawlerName(crawlerName);
-//            crawler.setConfigMethod(0);
-//            crawlerMapper.insert(crawler);
+            Crawler crawler = new Crawler();
+            crawler.setCrawlerId(jobId.toString());
+            crawler.setCrawlerName(crawlerName);
+            crawler.setConfigMethod(0);
+            crawlerMapper.insert(crawler);
 
             // ==============================
             //  核心：正确调用 /jobCode/save
@@ -240,6 +240,18 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
         if (crawlerUpdateDto.getTriggerStatus() !=null && !crawlerUpdateDto.getTriggerStatus().equals(crawlerDto.getTriggerStatus())) {
             crawlerDto.setTriggerStatus(crawlerUpdateDto.getTriggerStatus());
+        }
+        if (crawlerUpdateDto.getCrawlerSource() !=null && !crawlerUpdateDto.getCrawlerSource().equals(crawlerDto.getCrawlerSource())) {
+            crawlerDto.setCrawlerSource(crawlerUpdateDto.getCrawlerSource());
+            Map<String, Object> saveMap = new HashMap<>();
+            saveMap.put("id", crawlerDto.getCrawlerId());
+            saveMap.put("glueSource", crawlerDto.getCrawlerSource());
+            saveMap.put("glueRemark", "user" + crawlerUpdateDto.getUserId().toString() + ":updateSource " + crawlerDto.getCrawlerId());
+            try{
+                Object res = xxlJobUtil.doPostForm("/jobcode/save",saveMap);
+            }catch (Exception e){
+                throw new RuntimeException("修改python脚本出错！");
+            }
         }
 
 
