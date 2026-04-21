@@ -1,20 +1,22 @@
 package com.crawler.websockets;
 
 
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import com.crawler.config.WebSocketConfig;
+import com.crawler.entity.User;
+import jakarta.annotation.Resource;
+import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-@ServerEndpoint("/ws/vue")
+@ServerEndpoint(value = "/ws/vue",configurator = WebSocketConfig.TokenHandshake.class)
 public class VueSocketServer {
 
     // 在线前端
@@ -25,24 +27,30 @@ public class VueSocketServer {
 
     @OnOpen
     public void onOpen(Session session) {
-        VUE_SESSIONS.put(session.getId(), session);
-        log.info("【前端上线】id={}，在线数={}", session.getId(), VUE_SESSIONS.size());
+        try {
+            String userId = session.getUserProperties().get("userId").toString();
+
+            if (Objects.equals(userId, "null") || userId.isEmpty()) {
+                log.error("无userId，关闭连接");
+                session.close();
+                return;
+            }
+
+            // 存入用户
+            VUE_SESSIONS.put(userId, session);
+            log.info("【前端上线】userId={}", userId);
+
+        } catch (Exception e) {
+            log.error("OnOpen异常", e);
+            try { session.close(); } catch (Exception ignored) {}
+        }
     }
 
-    // 前端发消息 → 转发给 Python
-    @OnMessage
-    public void onMessage(String message, Session session) {
-        log.info("【前端消息】{}", message);
 
-        // 获取绑定的 Python
-        String pythonId = VUE_TO_PYTHON.get(session.getId());
-        if (pythonId == null) {
-            sendMessage(session, "未绑定Python客户端");
-            return;
-        }
-
-        // 转发给 Python
-        PythonSocketServer.sendToPython(pythonId, message);
+    // 异常处理
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        log.error("【WebSocket异常】已捕获", throwable);
     }
 
     @OnClose
@@ -53,9 +61,9 @@ public class VueSocketServer {
     }
 
     // 发送消息给前端
-    public static void sendToVue(String vueId, String message) {
+    public static void sendToVue(String userId, String message) {
         try {
-            Session session = VUE_SESSIONS.get(vueId);
+            Session session = VUE_SESSIONS.get(userId);
             if (session != null && session.isOpen()) {
                 session.getBasicRemote().sendText(message);
             }
@@ -64,10 +72,4 @@ public class VueSocketServer {
         }
     }
 
-    public static void sendMessage(Session session, String message) {
-        try {
-            session.getBasicRemote().sendText(message);
-        } catch (Exception e) {
-        }
-    }
 }
