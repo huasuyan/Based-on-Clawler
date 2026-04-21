@@ -1,10 +1,12 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.CrawlerCron;
+import com.crawler.entity.NewsDataCron;
 import com.crawler.entity.dto.CrawlerCronPageQueryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -35,4 +37,12 @@ public interface CrawlerCronMapper {
 
     // 删除专题
     void deleteByCrawlerId(Integer crawlerId);
+
+    // 批量插入（忽略重复url）
+    void batchInsertIgnore(List<NewsDataCron> newsList);
+
+    // 查询某专题最新一条新闻的发布时间（用于去重）
+    Date selectLatestPublishTime(@Param("crawlerId") Integer crawlerId);
+
+    List<CrawlerCron> selectByTriggerState(@Param("triggerState") Integer triggerState);
 }

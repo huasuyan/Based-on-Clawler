@@ -2,112 +2,185 @@ package com.crawler.util;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.CrawlerCron;
+import com.crawler.entity.NewsDataCron;
 import com.crawler.mapper.CrawlerCronMapper;
+import com.crawler.websockets.VueSocketServer;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
 public class PythonCronAsync {
+
     @Resource
     private CrawlerCronMapper crawlerCronMapper;
 
-    /** Python 后端地址，对应 application.yml: crawler.cron.python-base-url */
     @Value("${crawler.cron.python-base-url:http://127.0.0.1:8088/api/python/crawler}")
     private String pythonBaseUrl;
 
-    /** HTTP 超时时间（毫秒），根据爬虫任务耗时适当调大 */
     @Value("${crawler.cron.http-timeout-ms:60000}")
     private int httpTimeoutMs;
 
-    @Value("${crawler.cron.result-root-path:/crawlerCronResult}")
-    private String resultRootPath;
     /**
-     * 进程2：异步 HTTP 调用 Python 爬虫接口，阻塞等待返回值，
-     * 拿到结果后写入本地 JSON 文件，并更新数据库状态。
+     * 异步执行一次预警专题爬取：
+     * 1. 调用Python接口
+     * 2. 解析结果存入 news_data_cron
+     * 3. WebSocket推送前端
      *
-     * 使用 @Async 在独立线程池中执行，不阻塞主线程。
-     * 需要在启动类或配置类上加 @EnableAsync 才能生效。
-     *
-     * Python 接口约定：
-     *   POST {pythonBaseUrl}/crawlerCron/run
-     *   RequestBody: 专题参数 JSON
-     *   ResponseBody: {"code":1,"data":[{...},{...}]}
+     * 注意：定时触发逻辑由 CrawlerCronScheduler 负责，此方法只执行一次。
      */
     @Async
     public void callPythonAsync(CrawlerCron crawlerCron) {
         Integer crawlerId = crawlerCron.getCrawlerId();
+        Long userId = crawlerCron.getUserId();
         log.info("[进程2] 启动，crawlerId={}", crawlerId);
 
-        // ── Step1：更新 DB state = 1（爬取数据中）
-        crawlerCronMapper.updateState(crawlerId, 1);
-
         try {
-            Map<String, Object> body = new HashMap<>();
-            // 针对 integration 数据源，构造请求体，调用runIntegration接口
-            if(crawlerCron.getTargetSource().equals("integration")){
-                // ── Step2：构造请求体
-                body.put("keyWord",      JSONUtil.parseObj(crawlerCron.getKeyWord()));
-                body.put("params",       crawlerCron.getParams() != null
-                        ? JSONUtil.parseObj(crawlerCron.getParams()) : null);
-                body.put("timeRange",    crawlerCron.getTimeRange() != null
-                        ? JSONUtil.parseObj(crawlerCron.getTimeRange()) : null);
+            // Step2：构造请求体（根据 targetSource 选择接口）
+            String apiPath;
+            Map<String, Object> body = buildRequestBody(crawlerId);
 
-                // ── Step3：HTTP POST，阻塞等待 Python 返回
-                log.info("[进程2] 调用Python接口，crawlerId={}", crawlerId);
-                HttpResponse response = HttpRequest
-                        .post(pythonBaseUrl + "/runIntegration")
-                        .body(JSONUtil.toJsonStr(body))
-                        .contentType("application/json")
-                        .timeout(httpTimeoutMs)
-                        .execute();
-
-                if (!response.isOk()) {
-                    log.error("[进程2] Python接口返回异常，status={}，crawlerId={}",
-                            response.getStatus(), crawlerId);
-                    crawlerCronMapper.updateState(crawlerId, -1);
-                    return;
-                }
-
-                // ── Step4：解析返回值
-                Map<String, Object> responseBody = JSONUtil.parseObj(response.body());
-                Integer code = (Integer) responseBody.get("code");
-                if (code == null || code != 1) {
-                    log.error("[进程2] Python业务返回失败，body={}，crawlerId={}",
-                            response.body(), crawlerId);
-                    crawlerCronMapper.updateState(crawlerId, -1);
-                    return;
-                }
-
-                // ── Step5：更新 DB state = 2（数据清洗中，由Python完成）
-                // Python 返回的已是清洗后数据，此处直接标记为保存中
-                crawlerCronMapper.updateState(crawlerId, 3);
-
-                // 将清洗后的数据写入数据库
-
-                // ── Step6：更新 DB state = 0（等待下一次执行）
-                crawlerCronMapper.updateState(crawlerId, 0);
-                log.info("[进程2] 完成，crawlerId={}", crawlerId);
+            if ("integration".equals(crawlerCron.getTargetSource())) {
+                apiPath = "/runIntegration";
+            } else if ("xinhuanet".equals(crawlerCron.getTargetSource())) {
+                apiPath = "/runXinHuaNet";
+            } else {
+                log.error("[进程2] 不支持的数据源: {}", crawlerCron.getTargetSource());
+                updateState(crawlerCron, userId,-1);
+                return;
             }
+
+            // Step3：HTTP POST 调用 Python，阻塞等待返回
+            log.info("[进程2] 调用Python接口 {}，crawlerId={}", apiPath, crawlerId);
+            HttpResponse response = HttpRequest
+                    .post(pythonBaseUrl + apiPath)
+                    .body(JSONUtil.toJsonStr(body))
+                    .contentType("application/json")
+                    .timeout(httpTimeoutMs)
+                    .execute();
+
+            if (!response.isOk()) {
+                log.error("[进程2] Python接口返回异常，status={}，crawlerId={}",
+                        response.getStatus(), crawlerId);
+                updateState(crawlerCron,userId, -1);
+                return;
+            }
+
+            // Step4：解析返回值
+            JSONObject responseBody = JSONUtil.parseObj(response.body());
+            Integer code = responseBody.getInt("code");
+            if (code == null || code != 1) {
+                log.error("[进程2] Python业务返回失败，body={}，crawlerId={}",
+                        response.body(), crawlerId);
+                updateState(crawlerCron,userId, -1);
+                return;
+            }
+
+            // Step6：解析 dataList
+            JSONObject data = responseBody.getJSONObject("data");
+            JSONArray dataList = data.getJSONArray("dataList");
+
+            if (dataList == null || dataList.isEmpty()) {
+                log.info("[进程2] dataList为空，crawlerId={}", crawlerId);
+                updateState(crawlerCron,userId, 0);
+                return;
+            }
+
+            // Step7：更新 state=3（数据保存中）
+            updateState(crawlerCron,userId, 3);
+
+            // Step8：转换并批量存入数据库
+            List<NewsDataCron> newsList = parseDataList(dataList, crawlerId);
+            if (!newsList.isEmpty()) {
+                crawlerCronMapper.batchInsertIgnore(newsList);
+                log.info("[进程2] 存入 {} 条新闻，crawlerId={}", newsList.size(), crawlerId);
+            }
+
+            // Step9：更新 state=0（等待下次执行）
+            updateState(crawlerCron,userId, 0);
+
+            log.info("[进程2] 完成，crawlerId={}", crawlerId);
+
         } catch (Exception e) {
             log.error("[进程2] 异常，crawlerId={}", crawlerId, e);
-            // 写入失败状态，等待下一次执行
-            crawlerCronMapper.updateState(crawlerId, -1);
+            updateState(crawlerCron,userId, -1);
         }
     }
+
+    /**
+     * 根据 targetSource 构造 Python 接口请求体
+     */
+    private Map<String, Object> buildRequestBody(Integer crawlerId) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("crawler_id",crawlerId);
+        return body;
+    }
+
+    private void updateState(CrawlerCron crawlerCron,Long userId,Integer state) {
+        Map<String,Object> msg = new HashMap<>();
+        msg.put("type","crawler_cron_state_change");
+        msg.put("user_id",userId);
+        msg.put("crawler_id",crawlerCron.getCrawlerId());
+        msg.put("crawler_name",crawlerCron.getCrawlerName());
+        msg.put("crawler_old_state",crawlerCron.getState());
+        crawlerCronMapper.updateState(crawlerCron.getCrawlerId(), state);
+        msg.put("crawler_new_state",state);
+        VueSocketServer.sendToVue(userId.toString(),JSONUtil.toJsonStr(msg));
+    }
+
+
+    /**
+     * 将 Python 返回的 dataList 转换为实体列表
+     */
+    private List<NewsDataCron> parseDataList(JSONArray dataList, Integer crawlerId) {
+        List<NewsDataCron> result = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (int i = 0; i < dataList.size(); i++) {
+            JSONObject item = dataList.getJSONObject(i);
+            try {
+                NewsDataCron news = new NewsDataCron();
+                news.setCrawlerId(crawlerId);
+                news.setTitle(item.getStr("title", ""));
+                news.setContent(item.getStr("content", ""));
+                news.setSource(item.getStr("source", ""));
+                news.setUrl(item.getStr("url", ""));
+                news.setPicUrl(item.getStr("picUrl", ""));
+
+                // 解析发布时间，格式可能是 "2026-04-16" 或 "2026-04-16 10:30:00"
+                String publishTimeStr = item.getStr("publishTime", "");
+                if (publishTimeStr != null && !publishTimeStr.isEmpty()) {
+                    try {
+                        if (publishTimeStr.length() == 10) {
+                            publishTimeStr += " 00:00:00";
+                        }
+                        news.setPublishTime(sdf.parse(publishTimeStr));
+                    } catch (Exception ex) {
+                        news.setPublishTime(new Date()); // 解析失败用当前时间
+                    }
+                } else {
+                    news.setPublishTime(new Date());
+                }
+
+                // url不能为空（联合主键）
+                if (news.getUrl() != null && !news.getUrl().isEmpty()) {
+                    result.add(news);
+                }
+            } catch (Exception e) {
+                log.warn("[进程2] 解析第{}条新闻失败: {}", i, e.getMessage());
+            }
+        }
+        return result;
+    }
+
 }
