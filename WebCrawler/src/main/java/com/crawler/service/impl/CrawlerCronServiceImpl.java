@@ -6,7 +6,7 @@ import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
 import com.crawler.mapper.CrawlerCronMapper;
 import com.crawler.service.CrawlerCronService;
-import com.crawler.websockets.PythonSocketServer;
+import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +28,11 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
     @Resource
     private CrawlerCronMapper crawlerCronMapper;
 
-    @Value("${crawler.cron.result-root-path:/crawlerCronResult}")
+    @Value("${crawler.cron.result-root-path}")
     private String resultRootPath;
+
+    @Resource
+    private PythonCronAsync pythonCronAsync;
 
     // 列表查询
     @Override
@@ -95,7 +98,10 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
         return result;
     }
 
-    // 启用 / 关闭（异步，通知 Python）
+    // ----------------------------------------------------------------
+    //  启用 / 关闭（异步 HTTP 调用 Python）
+    // ----------------------------------------------------------------
+
     @Override
     public Map<String, Object> toggleTriggerState(Integer crawlerId) {
         CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
@@ -103,85 +109,22 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
             throw new RuntimeException("预警专题不存在");
         }
 
-        int newState;
-        String action;
-        String successMsg;
+        Map<String, Object> result = new HashMap<>();
 
         if (existing.getTriggerState() == 0) {
-            // 当前关闭 → 启用
-            newState = 1;
-            action = "start";
-            successMsg = "启用预警专题成功";
+            // ── 当前关闭 → 启用 ──────────────────────────────────────
+            // 1. 更新 DB，主线程立即返回前端
+            crawlerCronMapper.updateTriggerState(crawlerId, 1);
+            // 2. 开启进程2：异步 HTTP 调用 Python，等待结果后写文件
+            pythonCronAsync.callPythonAsync(existing);
+            result.put("triggerState", 1);
         } else {
-            // 当前启用 → 关闭
-            newState = 0;
-            action = "stop";
-            successMsg = "关闭预警专题成功";
+            // ── 当前启用 → 关闭 ──────────────────────────────────────
+            // 只更新 DB，Python 侧定时任务自然停止（不再被调用）
+            crawlerCronMapper.updateTriggerState(crawlerId, 0);
+            result.put("triggerState", 0);
         }
-
-        // 先更新数据库
-        crawlerCronMapper.updateTriggerState(crawlerId, newState);
-
-        // 通过 WebSocket 异步通知 Python
-        sendToPython(crawlerId, action, existing);
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("triggerState", newState);
         return result;
-    }
-
-    /**
-     * 构造消息并发送给 Python
-     * 消息格式：
-     * {
-     *   "type": "crawlerCron_start" | "crawlerCron_stop",
-     *   "crawlerId": 3,
-     *   "userId": 1,
-     *   "crawlerName": "xxx",
-     *   "targetSource": "xinhuanet",
-     *   "keyWord": {...},
-     *   "params": {...},
-     *   "frequency": 0,
-     *   "alertTrigger": null,
-     *   "timeRange": {...},
-     *   "dedupEnable": 1,
-     *   "resultPath": "/crawlerCronResult/1/3"
-     * }
-     */
-    private void sendToPython(Integer crawlerId, String action, CrawlerCron crawlerCron) {
-        try {
-            // 取第一个在线的 Python session
-            String pythonId = PythonSocketServer.PYTHON_SESSIONS.keySet().stream()
-                    .findFirst()
-                    .orElse(null);
-
-            if (pythonId == null) {
-                log.warn("没有在线的Python客户端，crawlerId={} action={} 指令未发送", crawlerId, action);
-                return;
-            }
-
-            Map<String, Object> msg = new HashMap<>();
-            msg.put("type", "crawlerCron_" + action);
-            msg.put("crawlerId", crawlerCron.getCrawlerId());
-            msg.put("userId", crawlerCron.getUserId());
-            msg.put("crawlerName", crawlerCron.getCrawlerName());
-            msg.put("targetSource", crawlerCron.getTargetSource());
-            // JSON字符串转对象，方便Python直接使用
-            msg.put("keyWord", JSONUtil.parseObj(crawlerCron.getKeyWord()));
-            msg.put("params", crawlerCron.getParams() != null ? JSONUtil.parseObj(crawlerCron.getParams()) : null);
-            msg.put("frequency", crawlerCron.getFrequency());
-            msg.put("alertTrigger", crawlerCron.getAlertTrigger());
-            msg.put("timeRange", crawlerCron.getTimeRange() != null ? JSONUtil.parseObj(crawlerCron.getTimeRange()) : null);
-            msg.put("dedupEnable", crawlerCron.getDedupEnable());
-            // 告知Python结果应保存的目录
-            msg.put("resultPath", resultRootPath + "/" + crawlerCron.getUserId() + "/" + crawlerCron.getCrawlerId());
-
-            PythonSocketServer.sendToPython(pythonId, JSONUtil.toJsonStr(msg));
-            log.info("已向Python发送指令：crawlerId={} action={}", crawlerId, action);
-        } catch (Exception e) {
-            // WebSocket通知失败不影响数据库状态，仅记录日志
-            log.error("向Python发送指令失败，crawlerId={} action={}", crawlerId, action, e);
-        }
     }
 
     // 删除专题（须处于关闭状态）

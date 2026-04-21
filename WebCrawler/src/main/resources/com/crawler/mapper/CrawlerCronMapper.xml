@@ -78,12 +78,6 @@
         where crawler_id = #{crawlerId}
     </update>
 
-    <!-- 运行次数+1 -->
-    <update id="incrementRunTimes">
-        update crawler_cron
-        set run_times = run_times + 1
-        where crawler_id = #{crawlerId}
-    </update>
 
     <!-- 删除专题 -->
     <delete id="deleteByCrawlerId">

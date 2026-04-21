@@ -1,7 +1,9 @@
 package com.crawler.service;
 
+import com.crawler.entity.CrawlerCron;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
+import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
 

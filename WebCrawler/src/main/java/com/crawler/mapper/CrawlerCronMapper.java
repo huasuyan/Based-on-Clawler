@@ -33,9 +33,6 @@ public interface CrawlerCronMapper {
     void updateState(@Param("crawlerId") Integer crawlerId,
                      @Param("state") Integer state);
 
-    // 运行次数+1
-    void incrementRunTimes(@Param("crawlerId") Integer crawlerId);
-
     // 删除专题
     void deleteByCrawlerId(Integer crawlerId);
 }
