@@ -292,6 +292,7 @@ public class CrawlerServiceImpl implements CrawlerService {
 
     }
 
+    @Override
     public Result executeCrawler(Integer jobId) {
         Map<String,Object> map = new HashMap<>();
         map.put("id",jobId);
@@ -304,6 +305,7 @@ public class CrawlerServiceImpl implements CrawlerService {
         throw new RuntimeException("爬虫执行失败，请重试！");
     }
 
+    @Override
     public Result activateCrawler(Integer jobId) {
         Map<String,Object> map = new HashMap<>();
         List<Integer>  ids = new ArrayList<>();
@@ -344,4 +346,5 @@ public class CrawlerServiceImpl implements CrawlerService {
         }
         throw new RuntimeException("爬虫删除失败，请重试！");
     }
+
 }

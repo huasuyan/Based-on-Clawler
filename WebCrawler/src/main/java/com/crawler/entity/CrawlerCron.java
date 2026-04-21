@@ -1,0 +1,29 @@
+package com.crawler.entity;
+
+import lombok.Data;
+
+import java.util.Date;
+
+/**
+ * 舆情预警专题实体
+ * 对应数据库表 crawler_cron
+ */
+@Data
+public class CrawlerCron {
+
+    private Integer crawlerId;      // 爬虫ID（主键）
+    private Long userId;            // 用户ID（外键）
+    private String crawlerName;     // 专题名称
+    private Integer triggerState;   // 启用状态，0：已停止，1：已启用
+    private String targetSource;    // 数据源，如 xinhuanet
+    private String keyWord;         // 预警词组，JSON格式，{"keywordGroups":[["关键词A1","关键词A2"],["关键词B1"]]}
+    private String params;          // 可变参数，JSON格式，默认为null，{"searchFields":1,"sortField":0}
+    private Integer frequency;      // 预警频率，0：实时，1：定时，2：定量
+    private Integer alertTrigger;   // 预警消息定量触发
+    private String timeRange;       // 预警时间范围，JSON格式
+    private Integer alertMethod;    // 预警方式，0：短信，1：邮件，2：微信
+    private Integer dedupEnable;    // 预警重复信息去重，0：不去重，1：去重
+    private Integer state;          // 运行状态，-1：监测失败，等待下一次执行，0：等待下一次执行，1：爬取数据中，2：数据清洗中，3：数据保存中
+    private Integer runTimes;       // 运行次数，每执行一次+1
+    private Date createTime;        // 创建时间
+}

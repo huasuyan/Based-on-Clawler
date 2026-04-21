@@ -92,11 +92,9 @@ public class LoginController {
             return Result.error("前端未传入短信验证码uuid"); // 或抛出异常
         }
 
-
         // 2. 安全获取
         Object obj = redisTemplate.opsForValue().get(uuid);
         Map<String, Object> map = (Map<String, Object>) obj;
-
 
         if(!Objects.equals((String) map.get("code"), code) || !Objects.equals((String) map.get("phone"), phone)){
             return Result.error("验证码错误，请重新输入");

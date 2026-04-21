@@ -6,5 +6,88 @@
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
 <mapper namespace="com.crawler.mapper.CrawlerCronMapper">
 
+    <!-- 新增预警专题 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="crawlerId">
+        insert into crawler_cron
+            (user_id, crawler_name, trigger_state, target_source,
+             key_word, params, frequency, alert_trigger,
+             time_range, alert_method, dedup_enable, state, run_times, create_time)
+        values
+            (#{userId}, #{crawlerName}, 0, #{targetSource},
+             #{keyWord}, #{params}, #{frequency}, #{alertTrigger},
+             #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, 0, now())
+    </insert>
+
+    <!-- 根据crawlerId查询 -->
+    <select id="selectByCrawlerId" resultType="com.crawler.entity.CrawlerCron">
+        select * from crawler_cron where crawler_id = #{crawlerId}
+    </select>
+
+    <!-- 分页 + 多条件筛选 -->
+    <select id="pageList" resultType="com.crawler.entity.CrawlerCron">
+        select * from crawler_cron
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="crawlerName != null and crawlerName != ''">
+                and crawler_name like concat('%', #{crawlerName}, '%')
+            </if>
+            <if test="keyWord != null and keyWord != ''">
+                and key_word like concat('%', #{keyWord}, '%')
+            </if>
+            <if test="triggerState != null">
+                and trigger_state = #{triggerState}
+            </if>
+            <if test="targetSource != null and targetSource != ''">
+                and target_source = #{targetSource}
+            </if>
+        </where>
+        order by create_time desc
+        limit #{pageSize} offset #{offset}
+    </select>
+
+    <!-- 编辑预警专题（动态更新） -->
+    <update id="update" parameterType="com.crawler.entity.CrawlerCron">
+        update crawler_cron
+        <set>
+            <if test="crawlerName != null and crawlerName != ''">crawler_name = #{crawlerName},</if>
+            <if test="targetSource != null and targetSource != ''">target_source = #{targetSource},</if>
+            <if test="keyWord != null">key_word = #{keyWord},</if>
+            <if test="params != null">params = #{params},</if>
+            <if test="frequency != null">frequency = #{frequency},</if>
+            <if test="alertTrigger != null">alert_trigger = #{alertTrigger},</if>
+            <if test="timeRange != null">time_range = #{timeRange},</if>
+            <if test="alertMethod != null">alert_method = #{alertMethod},</if>
+            <if test="dedupEnable != null">dedup_enable = #{dedupEnable},</if>
+        </set>
+        where crawler_id = #{crawlerId}
+    </update>
+
+    <!-- 更新启用状态 -->
+    <update id="updateTriggerState">
+        update crawler_cron
+        set trigger_state = #{triggerState}
+        where crawler_id = #{crawlerId}
+    </update>
+
+    <!-- 更新运行状态（Python回调使用） -->
+    <update id="updateState">
+        update crawler_cron
+        set state = #{state}
+        where crawler_id = #{crawlerId}
+    </update>
+
+    <!-- 运行次数+1 -->
+    <update id="incrementRunTimes">
+        update crawler_cron
+        set run_times = run_times + 1
+        where crawler_id = #{crawlerId}
+    </update>
+
+    <!-- 删除专题 -->
+    <delete id="deleteByCrawlerId">
+        delete from crawler_cron where crawler_id = #{crawlerId}
+    </delete>
 
 </mapper>

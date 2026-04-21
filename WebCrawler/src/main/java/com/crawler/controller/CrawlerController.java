@@ -1,7 +1,6 @@
 package com.crawler.controller;
 
 
-
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.CrawlerDto;
@@ -64,22 +63,28 @@ public class CrawlerController {
     @PostMapping("/execute")
     public Result execute(@RequestParam  Integer jobId){
         //调用Service
-        crawlerService.executeCrawler(jobId);
-        return Result.success();
+        if(crawlerService.executeCrawler(jobId).getCode()==200){
+            return Result.success();
+        }
+        return Result.error("调用执行服务失败");
     }
 
     @PostMapping("/activate")
     public Result activate(@RequestParam  Integer jobId){
         //调用Service
-        crawlerService.activateCrawler(jobId);
-        return Result.success();
+        if(crawlerService.activateCrawler(jobId).getCode()==200){
+            return Result.success();
+        }
+        return Result.error("调用激活、停用服务失败");
     }
 
     @PostMapping("/delete")
     public Result delete(@RequestParam  Integer jobId){
         //调用Service
-        crawlerService.deleteCrawler(jobId);
-        return Result.success();
+        if(crawlerService.deleteCrawler(jobId).getCode()==200){
+            return Result.success();
+        }
+        return Result.error("调用删除服务失败");
     }
 
     @PostMapping("/script")
