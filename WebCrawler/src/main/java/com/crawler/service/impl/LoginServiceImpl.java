@@ -62,9 +62,7 @@ public class LoginServiceImpl implements LoginService {
     public Map<String,Object> Codelogin(CodeLoginDto user) {
         User u = loginMapper.selectByPhone(user.getPhone());
         if(u!=null){
-            Map<String,Object> map =  getToken(u);
-            map.put("userName",u.getUsername());
-            return map;
+            return getToken(u);
         }
         throw new RuntimeException("该手机号未注册");
     }
@@ -95,10 +93,12 @@ public class LoginServiceImpl implements LoginService {
         {
             Map<String,Object> claims = new HashMap<>();
             claims.put("userId",u.getUserId());
-            claims.put("username",u.getUsername());
+            claims.put("userName",u.getUsername());
             String jwt = JwtUtil.generateToken(String.valueOf(u.getUserId()),claims);
             Map<String,Object> m =new HashMap<>();
             m.put("token",jwt);
+            claims.put("phone",u.getPhone());
+            m.put("userInfo",claims);
             redisTemplate.opsForValue().set(jwt, u, token_expiration, TimeUnit.SECONDS);
             return m;
         }

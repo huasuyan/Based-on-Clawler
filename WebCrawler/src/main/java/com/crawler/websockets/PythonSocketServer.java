@@ -1,19 +1,20 @@
 package com.crawler.websockets;
 
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import com.crawler.config.WebSocketConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
-@ServerEndpoint("/ws/python")
+@ServerEndpoint(value = "/ws/python")
 public class PythonSocketServer {
 
     // 在线Python
@@ -36,17 +37,30 @@ public class PythonSocketServer {
         }
     }
 
+    // 异常处理
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        log.error("【WebSocket异常】已捕获", throwable);
+    }
+
     // Python 回消息 → 转发给前端
-    @OnMessage
+    @OnMessage()
     public void onMessage(String message, Session session) {
-        log.info("【Python消息】{}", message);
 
-        // 获取绑定的前端
-        String frontId = PYTHON_TO_VUE.get(session.getId());
-        if (frontId == null) return;
-
-        // 转发给前端
-        VueSocketServer.sendToVue(frontId, message);
+        // 1. 把 Python 发来的 JSON 转成 Map
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            Map<String, Object> msgMap = objectMapper.readValue(message, Map.class);
+            // 2. 从消息里拿出 user_id
+            if (msgMap.containsKey("user_id")) {
+                String userId = msgMap.get("user_id").toString();
+                // 3. 直接根据 user_id 发给前端
+                VueSocketServer.sendToVue(userId, message);
+            }
+            log.info(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @OnClose
