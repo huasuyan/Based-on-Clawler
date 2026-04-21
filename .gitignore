@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+WebCrawler/src/test/
+WebCrawler/src/main/java/com/crawler/controller/CrawlerCronTestController.java
