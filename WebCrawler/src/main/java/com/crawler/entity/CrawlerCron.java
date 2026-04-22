@@ -26,4 +26,6 @@ public class CrawlerCron {
     private Integer state;          // 运行状态，-1：监测失败，等待下一次执行，0：等待下一次执行，1：爬取数据中，2：数据清洗中，3：数据保存中
     private Integer runTimes;       // 运行次数，每执行一次+1
     private Date createTime;        // 创建时间
+    private Integer pendingCount;   // 累计待预警舆情数
+    private Date lastTriggerTime;   // 上次触发时间
 }

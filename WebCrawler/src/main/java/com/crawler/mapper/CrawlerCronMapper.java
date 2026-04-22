@@ -45,4 +45,13 @@ public interface CrawlerCronMapper {
     Date selectLatestPublishTime(@Param("crawlerId") Integer crawlerId);
 
     List<CrawlerCron> selectByTriggerState(@Param("triggerState") Integer triggerState);
+
+    // 重置 pending_count 并更新 last_trigger_time（发送预警后调用）
+    void resetPendingCount(@Param("crawlerId") Integer crawlerId);
+
+    // 累加 pending_count（每次爬取后调用）
+    void addPendingCount(@Param("crawlerId") Integer crawlerId,
+                         @Param("delta") int delta);
+
+    void updateLastTriggerTime(@Param("crawlerId") Integer crawlerId);
 }

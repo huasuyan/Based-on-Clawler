@@ -104,4 +104,24 @@
         where trigger_state = #{triggerState}
     </select>
 
+    <update id="addPendingCount">
+        UPDATE crawler_cron
+        SET pending_count = pending_count + #{delta},
+            last_trigger_time = NOW()
+        WHERE crawler_id = #{crawlerId}
+    </update>
+
+    <update id="resetPendingCount">
+        UPDATE crawler_cron
+        SET pending_count = 0,
+            last_trigger_time = NOW()
+        WHERE crawler_id = #{crawlerId}
+    </update>
+
+    <update id="updateLastTriggerTime">
+        UPDATE crawler_cron
+        SET last_trigger_time = NOW()
+        WHERE crawler_id = #{crawlerId}
+    </update>
+
 </mapper>
