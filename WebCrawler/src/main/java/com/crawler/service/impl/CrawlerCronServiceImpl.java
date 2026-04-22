@@ -1,22 +1,17 @@
 package com.crawler.service.impl;
 
-import cn.hutool.json.JSONUtil;
 import com.crawler.entity.CrawlerCron;
+import com.crawler.entity.NewsDataCron;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
 import com.crawler.mapper.CrawlerCronMapper;
+import com.crawler.mapper.NewsDataCronMapper;
 import com.crawler.service.CrawlerCronService;
 import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,8 +23,8 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
     @Resource
     private CrawlerCronMapper crawlerCronMapper;
 
-    @Value("${crawler.cron.result-root-path}")
-    private String resultRootPath;
+    @Resource
+    private NewsDataCronMapper newsDataCronMapper;
 
     @Resource
     private PythonCronAsync pythonCronAsync;
@@ -110,7 +105,6 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
         }
 
         Map<String, Object> result = new HashMap<>();
-
         if (existing.getTriggerState() == 0) {
             // ── 当前关闭 → 启用 ──────────────────────────────────────
             // 1. 更新 DB，主线程立即返回前端
@@ -122,6 +116,7 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
             // ── 当前启用 → 关闭 ──────────────────────────────────────
             // 只更新 DB，Python 侧定时任务自然停止（不再被调用）
             crawlerCronMapper.updateTriggerState(crawlerId, 0);
+            crawlerCronMapper.updateState(crawlerId, 0);
             result.put("triggerState", 0);
         }
         return result;
@@ -141,82 +136,26 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
         return Result.success();
     }
 
-    // 预警信息文件操作
+    // 舆情消息列表---待修改逻辑
     @Override
-    public Map<String, Object> infoList(Integer crawlerId, Integer pageNum, Integer pageSize) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
-        if (existing == null) {
-            throw new RuntimeException("预警专题不存在");
-        }
-
-        String dirPath = resultRootPath + "/" + existing.getUserId() + "/" + crawlerId;
-        File dir = new File(dirPath);
-
-        List<String> fileNames = new ArrayList<>();
-        if (dir.exists() && dir.isDirectory()) {
-            File[] files = dir.listFiles(f -> f.getName().endsWith(".json"));
-            if (files != null) {
-                // 按文件名（即时间戳）倒序排列，最新的在前
-                Arrays.sort(files, (a, b) -> b.getName().compareTo(a.getName()));
-                fileNames = Arrays.stream(files)
-                        .map(File::getName)
-                        .collect(Collectors.toList());
-            }
-        }
-
-        // 手动分页
-        int total = fileNames.size();
-        int fromIndex = Math.min((pageNum - 1) * pageSize, total);
-        int toIndex = Math.min(fromIndex + pageSize, total);
-        List<String> pageData = fileNames.subList(fromIndex, toIndex);
-
+    public Map<String, Object> infoList(CrawlerCronInfoDto queryDto) {
+        List<NewsDataCron> newsData = newsDataCronMapper.infoList(queryDto)
+                .stream()
+                .map(NewsDataCron::new)
+                .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
-        result.put("infoList", pageData);
-        result.put("total", total);
+        result.put("NewsDataList", newsData);
         return result;
     }
 
+    // 删除舆情消息
     @Override
-    public Map<String, Object> info(Integer crawlerId, String infoFileName) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
+    public Result infoDelete(Integer crawlerId, String url) {
+        NewsDataCron existing = newsDataCronMapper.select(url,crawlerId);
         if (existing == null) {
-            throw new RuntimeException("预警专题不存在");
+            throw new RuntimeException("舆情消息不存在");
         }
-
-        String filePath = resultRootPath + "/" + existing.getUserId() + "/" + crawlerId + "/" + infoFileName;
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new RuntimeException("预警信息文件不存在：" + infoFileName);
-        }
-
-        try {
-            String content = new String(Files.readAllBytes(Paths.get(filePath)), StandardCharsets.UTF_8);
-            Object dataList = JSONUtil.parseArray(content);
-            Map<String, Object> result = new HashMap<>();
-            result.put("dataList", dataList);
-            return result;
-        } catch (IOException e) {
-            log.error("读取预警信息文件失败：{}", filePath, e);
-            throw new RuntimeException("读取预警信息文件失败");
-        }
-    }
-
-    @Override
-    public Result infoDelete(Integer crawlerId, String infoFileName) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
-        if (existing == null) {
-            throw new RuntimeException("预警专题不存在");
-        }
-
-        String filePath = resultRootPath + "/" + existing.getUserId() + "/" + crawlerId + "/" + infoFileName;
-        File file = new File(filePath);
-        if (!file.exists()) {
-            throw new RuntimeException("预警信息文件不存在：" + infoFileName);
-        }
-
-        if (!file.delete()) {
-            throw new RuntimeException("预警消息删除失败");
-        }
+        newsDataCronMapper.delete(url,crawlerId);
         return Result.success();
     }
 

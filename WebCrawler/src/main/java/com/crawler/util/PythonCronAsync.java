@@ -8,6 +8,7 @@ import cn.hutool.json.JSONUtil;
 import com.crawler.entity.CrawlerCron;
 import com.crawler.entity.NewsDataCron;
 import com.crawler.mapper.CrawlerCronMapper;
+import com.crawler.mapper.NewsDataCronMapper;
 import com.crawler.websockets.VueSocketServer;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,9 @@ public class PythonCronAsync {
     private CrawlerCronMapper crawlerCronMapper;
 
     @Resource
+    private NewsDataCronMapper newsDataCronMapper;
+
+    @Resource
     private AlertUtil alertUtil;
 
     @Value("${crawler.cron.python-base-url:http://127.0.0.1:8088/api/python/crawler}")
@@ -39,7 +43,6 @@ public class PythonCronAsync {
      * 1. 调用Python接口
      * 2. 解析结果存入 news_data_cron
      * 3. WebSocket推送前端
-     *
      * 注意：定时触发逻辑由 CrawlerCronScheduler 负责，此方法只执行一次。
      */
     @Async
@@ -51,7 +54,9 @@ public class PythonCronAsync {
         try {
             // Step2：构造请求体（根据 targetSource 选择接口）
             String apiPath;
-            Map<String, Object> body = buildRequestBody(crawlerId);
+            Map<String, Object> body = new HashMap<>();
+            body.put("crawler_id", crawlerId);
+            body.put("crawler_way", "cron");
 
             if ("integration".equals(crawlerCron.getTargetSource())) {
                 apiPath = "/runIntegration";
@@ -106,7 +111,7 @@ public class PythonCronAsync {
             List<NewsDataCron> newsList = parseDataList(dataList, crawlerId);
             int insertedCount = 0;
             if (!newsList.isEmpty()) {
-                crawlerCronMapper.batchInsertIgnore(newsList);
+                newsDataCronMapper.batchInsertIgnore(newsList);
                 insertedCount = newsList.size();
                 log.info("[进程2] 存入 {} 条新闻，crawlerId={}", insertedCount, crawlerId);
             }
@@ -114,8 +119,9 @@ public class PythonCronAsync {
             // Step9：预警判断（在 updateState 之前）
             checkAndSendAlert(crawlerCron, insertedCount);
 
-            // Step10：更新 state=0（等待下次执行）
+            // Step10：更新 state=0（等待下次执行）,更新上次触发时间
             updateState(crawlerCron, userId, 0);
+            crawlerCronMapper.updateLastTriggerTime(crawlerCron.getCrawlerId());
 
             log.info("[进程2] 完成，crawlerId={}", crawlerId);
 
@@ -136,7 +142,6 @@ public class PythonCronAsync {
         if (threshold == null) {
             // null：有新增就直接预警
             alertUtil.sendAlertAsync(crawlerCron, insertedCount);
-            crawlerCronMapper.updateLastTriggerTime(crawlerCron.getCrawlerId());
         } else {
             // 有值：累计达到阈值才预警
             crawlerCronMapper.addPendingCount(crawlerCron.getCrawlerId(), insertedCount);
@@ -149,15 +154,6 @@ public class PythonCronAsync {
                 crawlerCronMapper.resetPendingCount(crawlerCron.getCrawlerId());
             }
         }
-    }
-
-    /**s
-     * 根据 targetSource 构造 Python 接口请求体
-     */
-    private Map<String, Object> buildRequestBody(Integer crawlerId) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("crawler_id",crawlerId);
-        return body;
     }
 
     private void updateState(CrawlerCron crawlerCron,Long userId,Integer state) {

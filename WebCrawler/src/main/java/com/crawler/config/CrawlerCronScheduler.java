@@ -21,14 +21,14 @@ public class CrawlerCronScheduler {
     @Resource
     private PythonCronAsync pythonCronAsync;
 
-    @Scheduled(cron = "0 0/10 * * * ?")
+    @Scheduled(cron = "0 0/1 * * * ?")
     public void triggerScheduled() {
         List<CrawlerCron> list = crawlerCronMapper.selectByTriggerState(1);
         if (list == null || list.isEmpty()) return;
 
         // 遍历所有启用的专题，如果状态不是运行中，跳过
         for (CrawlerCron crawlerCron : list) {
-            if (crawlerCron.getState() != null && crawlerCron.getState() != 0) {
+            if (crawlerCron.getState() != null && (crawlerCron.getState() != 0 && crawlerCron.getState() != -1)) {
                 log.info("[调度器] crawlerId={} state={} 跳过",
                         crawlerCron.getCrawlerId(), crawlerCron.getState());
                 continue;

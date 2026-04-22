@@ -63,33 +63,18 @@ public class CrawlerCronController {
         return crawlerCronService.delete(crawlerId);
     }
 
-    //  显示预警信息文件列表
+    //  显示舆情消息列表
     @PostMapping("/infoList")
-    public Result infoList(@RequestBody Map<String, Object> body) {
-        Integer crawlerId = (Integer) body.get("crawlerId");
-        Integer pageNum = body.get("pageNum") != null ? (Integer) body.get("pageNum") : 1;
-        Integer pageSize = body.get("pageSize") != null ? (Integer) body.get("pageSize") : 20;
-
-        Map<String, Object> data = crawlerCronService.infoList(crawlerId, pageNum, pageSize);
+    public Result infoList(@RequestBody CrawlerCronInfoDto queryDto) {
+        Map<String, Object> data = crawlerCronService.infoList(queryDto);
         return Result.success(data);
     }
 
-    //  显示单次预警信息详情
-    @PostMapping("/info")
-    public Result info(@RequestBody Map<String, Object> body) {
-        Integer crawlerId = (Integer) body.get("crawlerId");
-        String infoFileName = (String) body.get("info");
-
-        Map<String, Object> data = crawlerCronService.info(crawlerId, infoFileName);
-        return Result.success(data);
-    }
-
-    //  删除预警信息文件
+    //  删除舆情消息
     @PostMapping("/infoDelete")
     public Result infoDelete(@RequestBody Map<String, Object> body) {
         Integer crawlerId = (Integer) body.get("crawlerId");
-        String infoFileName = (String) body.get("info");
-
-        return crawlerCronService.infoDelete(crawlerId, infoFileName);
+        String url = (String) body.get("url");
+        return crawlerCronService.infoDelete(crawlerId, url);
     }
 }
