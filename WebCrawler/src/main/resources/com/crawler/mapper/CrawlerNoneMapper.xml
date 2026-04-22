@@ -7,4 +7,40 @@
 <mapper namespace="com.crawler.mapper.CrawlerNoneMapper">
 
 
+    <insert id="insert" useGeneratedKeys="true" keyProperty="crawlerId" keyColumn="crawler_id">
+        insert into crawler_none (user_id, crawler_name, state,target_source,key_word,params,create_time,finish_time)
+        values (#{userId}, #{crawlerName}, #{state}, #{targetSource}, #{keyWord}, #{params}, #{createTime}, #{finishTime})
+    </insert>
+
+    <insert id="insertData" parameterType="java.util.List">
+        INSERT INTO news_data_none (crawler_id, title, content, publish_time, source, url, pic_url)
+        VALUES
+        <foreach collection="dataList" item="item" separator=",">
+            (#{item.crawlerId}, #{item.title}, #{item.content}, #{item.publishTime}, #{item.source}, #{item.url}, #{item.picUrl})
+        </foreach>
+    </insert>
+
+    <update id="updateById">
+        update crawler_none
+        <set>
+            <if test="state != null">state = #{state},</if>
+            <if test="targetSource != null">target_source = #{targetSource},</if>
+            <if test="keyWord != null">key_word = #{keyWord},</if>
+            <if test="params != null">params = #{params},</if>
+            <if test="finishTime != null">finish_time = #{finishTime}</if>
+        </set>
+        where crawler_id = #{crawlerId}
+    </update>
+
+    <select id="selectById" resultType="com.crawler.entity.CrawlerCreate">
+        select * from crawler_none where crawler_id = #{crawlerId}
+    </select>
+
+    <select id="selectData" resultType="com.crawler.entity.OpinionData">
+        select n.user_id,n.title,n.content,n.create_time from news_data_none n join crawler_none c on n.user_id = c.crawler_id where c.crawler_id = #{crawlerId}
+    </select>
+
+
+
+
 </mapper>
