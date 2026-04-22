@@ -15,7 +15,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/crawlerCron")
 public class CrawlerCronController {
-
     @Resource
     private CrawlerCronService crawlerCronService;
 
