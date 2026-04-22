@@ -83,25 +83,27 @@
         delete from crawler_cron where crawler_id = #{crawlerId}
     </delete>
 
-    <!-- 批量插入，url重复则忽略（联合主键 crawler_id+url） -->
-    <insert id="batchInsertIgnore">
-        INSERT IGNORE INTO news_data_cron
-        (crawler_id, title, content, publish_time, source, url, pic_url)
-        VALUES
-        <foreach collection="list" item="item" separator=",">
-            (#{item.crawlerId}, #{item.title}, #{item.content},
-            #{item.publishTime}, #{item.source}, #{item.url}, #{item.picUrl})
-        </foreach>
-    </insert>
-
-    <select id="selectLatestPublishTime" resultType="java.util.Date">
-        SELECT MAX(publish_time) FROM news_data_cron
-        WHERE crawler_id = #{crawlerId}
-    </select>
-
     <select id="selectByTriggerState" resultType="com.crawler.entity.CrawlerCron">
         select * from crawler_cron
         where trigger_state = #{triggerState}
     </select>
+
+    <update id="addPendingCount">
+        UPDATE crawler_cron
+        SET pending_count = pending_count + #{delta},
+        WHERE crawler_id = #{crawlerId}
+    </update>
+
+    <update id="resetPendingCount">
+        UPDATE crawler_cron
+        SET pending_count = 0,
+        WHERE crawler_id = #{crawlerId}
+    </update>
+
+    <update id="updateLastTriggerTime">
+        UPDATE crawler_cron
+        SET last_trigger_time = NOW()
+        WHERE crawler_id = #{crawlerId}
+    </update>
 
 </mapper>

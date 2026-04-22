@@ -68,7 +68,6 @@ crawler:
     executorTimeout: 0
     executorFailRetryCount: 0
   cron:
-    result-root-path: crawlerCronResult
     python-base-url: http://127.0.0.1:8088/api/python/crawler
     http-timeout-ms: 60000
 

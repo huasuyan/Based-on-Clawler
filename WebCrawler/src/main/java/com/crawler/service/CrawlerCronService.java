@@ -1,9 +1,7 @@
 package com.crawler.service;
 
-import com.crawler.entity.CrawlerCron;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.Map;
 
@@ -26,12 +24,9 @@ public interface CrawlerCronService {
 
     // -------------------- 预警信息（JSON文件） --------------------
 
-    //显示某专题的预警信息文件列表
-    Map<String, Object> infoList(Integer crawlerId, Integer pageNum, Integer pageSize);
+    //显示某专题的舆情消息列表
+    Map<String, Object> infoList(CrawlerCronInfoDto queryDto);
 
-    //显示预警信息的详细内容
-    Map<String, Object> info(Integer crawlerId, String infoFileName);
-
-    //删除预警信息文件
-    Result infoDelete(Integer crawlerId, String infoFileName);
+    //删除舆情消息
+    Result infoDelete(Integer crawlerId, String url);
 }
