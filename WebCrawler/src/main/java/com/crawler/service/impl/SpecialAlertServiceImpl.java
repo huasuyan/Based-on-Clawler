@@ -1,12 +1,12 @@
 package com.crawler.service.impl;
 
-import com.crawler.entity.CrawlerCron;
-import com.crawler.entity.NewsDataCron;
+import com.crawler.entity.NewsData;
+import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
-import com.crawler.mapper.CrawlerCronMapper;
-import com.crawler.mapper.NewsDataCronMapper;
-import com.crawler.service.CrawlerCronService;
+import com.crawler.mapper.SpecialAlertSettingMapper;
+import com.crawler.mapper.NewsDataMapper;
+import com.crawler.service.SpecialAlertService;
 import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -18,55 +18,55 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class CrawlerCronServiceImpl implements CrawlerCronService {
+public class SpecialAlertServiceImpl implements SpecialAlertService {
 
     @Resource
-    private CrawlerCronMapper crawlerCronMapper;
+    private SpecialAlertSettingMapper specialAlertSettingMapper;
 
     @Resource
-    private NewsDataCronMapper newsDataCronMapper;
+    private NewsDataMapper newsDataMapper;
 
     @Resource
     private PythonCronAsync pythonCronAsync;
 
     // 列表查询
     @Override
-    public Map<String, Object> pageList(CrawlerCronPageQueryDto queryDto) {
-        List<CrawlerCronDto> crawlerInfo = crawlerCronMapper.pageList(queryDto)
+    public Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto) {
+        List<SpecialAlertDto> alertInfo = specialAlertSettingMapper.pageList(queryDto)
                 .stream()
-                .map(CrawlerCronDto::new)
+                .map(SpecialAlertDto::new)
                 .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
-        result.put("crawlerInfo", crawlerInfo);
+        result.put("alertInfo", alertInfo);
         return result;
     }
 
     // 新增
     @Override
-    public Map<String, Object> create(CrawlerCronCreateDto createDto) {
-        CrawlerCron crawlerCron = new CrawlerCron();
-        crawlerCron.setUserId(createDto.getUserId());
-        crawlerCron.setCrawlerName(createDto.getCrawlerName());
-        crawlerCron.setTargetSource(createDto.getTargetSource());
-        crawlerCron.setKeyWord(createDto.getKeyWord());
-        crawlerCron.setParams(createDto.getParams());
-        crawlerCron.setFrequency(createDto.getFrequency());
-        crawlerCron.setAlertTrigger(createDto.getAlertTrigger());
-        crawlerCron.setTimeRange(createDto.getTimeRange());
-        crawlerCron.setAlertMethod(createDto.getAlertMethod());
-        crawlerCron.setDedupEnable(createDto.getDedupEnable());
+    public Map<String, Object> create(SpecialAlertCreateDto createDto) {
+        SpecialAlertSetting specialAlertSetting = new SpecialAlertSetting();
+        specialAlertSetting.setUserId(createDto.getUserId());
+        specialAlertSetting.setAlertName(createDto.getAlertName());
+        specialAlertSetting.setTargetSource(createDto.getTargetSource());
+        specialAlertSetting.setKeyWord(createDto.getKeyWord());
+        specialAlertSetting.setParams(createDto.getParams());
+        specialAlertSetting.setFrequency(createDto.getFrequency());
+        specialAlertSetting.setAlertTrigger(createDto.getAlertTrigger());
+        specialAlertSetting.setTimeRange(createDto.getTimeRange());
+        specialAlertSetting.setAlertMethod(createDto.getAlertMethod());
+        specialAlertSetting.setDedupEnable(createDto.getDedupEnable());
 
-        crawlerCronMapper.insert(crawlerCron);  // useGeneratedKeys，crawlerId 回填
+        specialAlertSettingMapper.insert(specialAlertSetting);  // useGeneratedKeys，alertId 回填
 
         Map<String, Object> result = new HashMap<>();
-        result.put("crawlerId", crawlerCron.getCrawlerId());
+        result.put("alertId", specialAlertSetting.getAlertId());
         return result;
     }
 
     // 编辑（专题须处于关闭状态）
     @Override
-    public Map<String, Object> edit(CrawlerCronEditDto editDto) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(editDto.getCrawlerId());
+    public Map<String, Object> edit(SpecialAlertEditDto editDto) {
+        SpecialAlertSetting existing = specialAlertSettingMapper.selectByAlertId(editDto.getAlertId());
         if (existing == null) {
             throw new RuntimeException("预警专题不存在");
         }
@@ -74,9 +74,9 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
             throw new RuntimeException("请先关闭预警专题后再编辑");
         }
 
-        CrawlerCron update = new CrawlerCron();
-        update.setCrawlerId(editDto.getCrawlerId());
-        update.setCrawlerName(editDto.getCrawlerName());
+        SpecialAlertSetting update = new SpecialAlertSetting();
+        update.setAlertId(editDto.getAlertId());
+        update.setAlertName(editDto.getAlertName());
         update.setTargetSource(editDto.getTargetSource());
         update.setKeyWord(editDto.getKeyWord());
         update.setParams(editDto.getParams());
@@ -86,10 +86,10 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
         update.setAlertMethod(editDto.getAlertMethod());
         update.setDedupEnable(editDto.getDedupEnable());
 
-        crawlerCronMapper.update(update);
+        specialAlertSettingMapper.update(update);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("crawlerId", editDto.getCrawlerId());
+        result.put("alertId", editDto.getAlertId());
         return result;
     }
 
@@ -98,8 +98,8 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
     // ----------------------------------------------------------------
 
     @Override
-    public Map<String, Object> toggleTriggerState(Integer crawlerId) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
+    public Map<String, Object> toggleTriggerState(Integer alertId) {
+        SpecialAlertSetting existing = specialAlertSettingMapper.selectByAlertId(alertId);
         if (existing == null) {
             throw new RuntimeException("预警专题不存在");
         }
@@ -108,15 +108,15 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
         if (existing.getTriggerState() == 0) {
             // ── 当前关闭 → 启用 ──────────────────────────────────────
             // 1. 更新 DB，主线程立即返回前端
-            crawlerCronMapper.updateTriggerState(crawlerId, 1);
+            specialAlertSettingMapper.updateTriggerState(alertId, 1);
             // 2. 开启进程2：异步 HTTP 调用 Python，等待结果后写文件
             pythonCronAsync.callPythonAsync(existing);
             result.put("triggerState", 1);
         } else {
             // ── 当前启用 → 关闭 ──────────────────────────────────────
             // 只更新 DB，Python 侧定时任务自然停止（不再被调用）
-            crawlerCronMapper.updateTriggerState(crawlerId, 0);
-            crawlerCronMapper.updateState(crawlerId, 0);
+            specialAlertSettingMapper.updateTriggerState(alertId, 0);
+            specialAlertSettingMapper.updateState(alertId, 0);
             result.put("triggerState", 0);
         }
         return result;
@@ -124,24 +124,24 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
 
     // 删除专题（须处于关闭状态）
     @Override
-    public Result delete(Integer crawlerId) {
-        CrawlerCron existing = crawlerCronMapper.selectByCrawlerId(crawlerId);
+    public Result delete(Integer alertId) {
+        SpecialAlertSetting existing = specialAlertSettingMapper.selectByAlertId(alertId);
         if (existing == null) {
             throw new RuntimeException("预警专题不存在");
         }
         if (existing.getTriggerState() == 1) {
             throw new RuntimeException("请先关闭预警专题后再删除");
         }
-        crawlerCronMapper.deleteByCrawlerId(crawlerId);
+        specialAlertSettingMapper.deleteByAlertId(alertId);
         return Result.success();
     }
 
     // 舆情消息列表---待修改逻辑
     @Override
-    public Map<String, Object> infoList(CrawlerCronInfoDto queryDto) {
-        List<NewsDataCron> newsData = newsDataCronMapper.infoList(queryDto)
+    public Map<String, Object> infoList(SpecialAlertInfoDto queryDto) {
+        List<NewsData> newsData = newsDataMapper.infoList(queryDto)
                 .stream()
-                .map(NewsDataCron::new)
+                .map(NewsData::new)
                 .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
         result.put("NewsDataList", newsData);
@@ -150,12 +150,12 @@ public class CrawlerCronServiceImpl implements CrawlerCronService {
 
     // 删除舆情消息
     @Override
-    public Result infoDelete(Integer crawlerId, String url) {
-        NewsDataCron existing = newsDataCronMapper.select(url,crawlerId);
+    public Result infoDelete(Integer alertId, String url) {
+        NewsData existing = newsDataMapper.select(url,alertId);
         if (existing == null) {
             throw new RuntimeException("舆情消息不存在");
         }
-        newsDataCronMapper.delete(url,crawlerId);
+        newsDataMapper.delete(url,alertId);
         return Result.success();
     }
 

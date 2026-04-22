@@ -3,8 +3,8 @@ package com.crawler.entity.dto;
 import lombok.Data;
 
 @Data
-public class CrawlerCronInfoDto {
-    private String crawlerId;
+public class SpecialAlertInfoDto {
+    private Integer alertId;
     private Integer pageNum;
     private Integer pageSize;
     /**

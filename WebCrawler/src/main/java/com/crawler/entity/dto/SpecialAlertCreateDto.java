@@ -4,13 +4,13 @@ import lombok.Data;
 
 /**
  * 新增预警专题请求DTO
- * 对应接口：POST /api/v1/crawlerCron/create
+ * 对应接口：POST /api/v1/specialAlert/create
  */
 @Data
-public class CrawlerCronCreateDto {
+public class SpecialAlertCreateDto {
     // userId 由 token 从 request 中获取，不由前端传入
     private Long userId;
-    private String crawlerName;     // 专题名称
+    private String alertName;     // 专题名称
     private String keyWord;         // 预警词组，JSON格式，{"keywordGroups":[["关键词A1","关键词A2"],["关键词B1"]]}
     private String targetSource;    // 数据源
     private String params;          // 可变参数

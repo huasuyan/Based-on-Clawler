@@ -1,18 +1,16 @@
 package com.crawler.entity.dto;
 
 import cn.hutool.json.JSONUtil;
-import com.crawler.entity.CrawlerCron;
+import com.crawler.entity.SpecialAlertSetting;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Date;
 
 /**
  * JSON字段（keyWord / params / timeRange）在构造时自动反序列化为结构化对象，
  * Jackson 序列化后前端直接收到嵌套对象，无需额外处理。
  */
 @Data
-public class CrawlerCronDto {
+public class SpecialAlertDto {
 
     private Integer crawlerId;      // 专题ID
     private String crawlerName;     // 专题名称
@@ -31,9 +29,9 @@ public class CrawlerCronDto {
      * 三个 JSON 字符串字段通过 {@link #parseJson(String)} 转为结构化对象，
      * 若原始值为 null 或空字符串则保持 null，不抛出异常。
      */
-    public CrawlerCronDto(CrawlerCron c) {
-        this.crawlerId    = c.getCrawlerId();
-        this.crawlerName  = c.getCrawlerName();
+    public SpecialAlertDto(SpecialAlertSetting c) {
+        this.crawlerId    = c.getAlertId();
+        this.crawlerName  = c.getAlertName();
         this.triggerState = c.getTriggerState();
         this.targetSource = c.getTargetSource();
         this.keyWord      = parseJson(c.getKeyWord());

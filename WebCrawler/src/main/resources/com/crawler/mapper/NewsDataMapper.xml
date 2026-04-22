@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.NewsDataMapper">
+
+    <!-- 批量插入，original_url重复则忽略（unique key: original_url） -->
+    <insert id="batchInsertIgnore">
+        INSERT IGNORE INTO news_data
+        (special_report_id, alert_id, title, content, video, platform,
+        source, publisher, publish_time, comment, region,
+        original_url, article_type, source_url)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.specialReportId}, #{item.alertId}, #{item.title}, #{item.content},
+            #{item.video}, #{item.platform}, #{item.source}, #{item.publisher},
+            #{item.publishTime}, #{item.comment}, #{item.region},
+            #{item.originalUrl}, #{item.articleType}, #{item.sourceUrl})
+        </foreach>
+    </insert>
+
+    <!-- 按 alertId 分页查询，按发布时间倒序 -->
+    <select id="infoList" resultType="com.crawler.entity.NewsData">
+        SELECT * FROM news_data
+        WHERE alert_id = #{alertId}
+        ORDER BY publish_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 按 original_url + alert_id 删除 -->
+    <delete id="delete">
+        DELETE FROM news_data
+        WHERE original_url = #{url}
+        AND alert_id = #{alertId}
+    </delete>
+
+    <!-- 按 original_url + alert_id 查询单条 -->
+    <select id="select" resultType="com.crawler.entity.NewsData">
+        SELECT * FROM news_data
+        WHERE original_url = #{url}
+        AND alert_id = #{alertId}
+    </select>
+
+</mapper>

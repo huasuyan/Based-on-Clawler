@@ -4,34 +4,34 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
-<mapper namespace="com.crawler.mapper.CrawlerCronMapper">
+<mapper namespace="com.crawler.mapper.SpecialAlertSettingMapper">
 
     <!-- 新增预警专题 -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="crawlerId">
-        insert into crawler_cron
-            (user_id, crawler_name, trigger_state, target_source,
+    <insert id="insert" useGeneratedKeys="true" keyProperty="alertId">
+        insert into special_alert_setting
+            (user_id, alert_name, trigger_state, target_source,
              key_word, params, frequency, alert_trigger,
              time_range, alert_method, dedup_enable, state, run_times, create_time)
         values
-            (#{userId}, #{crawlerName}, 0, #{targetSource},
+            (#{userId}, #{alertName}, 0, #{targetSource},
              #{keyWord}, #{params}, #{frequency}, #{alertTrigger},
              #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, 0, now())
     </insert>
 
-    <!-- 根据crawlerId查询 -->
-    <select id="selectByCrawlerId" resultType="com.crawler.entity.CrawlerCron">
-        select * from crawler_cron where crawler_id = #{crawlerId}
+    <!-- 根据alertId查询 -->
+    <select id="selectByAlertId" resultType="com.crawler.entity.SpecialAlertSetting">
+        select * from special_alert_setting where alert_id = #{alertId}
     </select>
 
     <!-- 分页 + 多条件筛选 -->
-    <select id="pageList" resultType="com.crawler.entity.CrawlerCron">
-        select * from crawler_cron
+    <select id="pageList" resultType="com.crawler.entity.SpecialAlertSetting">
+        select * from special_alert_setting
         <where>
             <if test="userId != null">
                 and user_id = #{userId}
             </if>
-            <if test="crawlerName != null and crawlerName != ''">
-                and crawler_name like concat('%', #{crawlerName}, '%')
+            <if test="alertName != null and alertName != ''">
+                and alert_name like concat('%', #{alertName}, '%')
             </if>
             <if test="keyWord != null and keyWord != ''">
                 and key_word like concat('%', #{keyWord}, '%')
@@ -48,10 +48,10 @@
     </select>
 
     <!-- 编辑预警专题（动态更新） -->
-    <update id="update" parameterType="com.crawler.entity.CrawlerCron">
-        update crawler_cron
+    <update id="update" parameterType="com.crawler.entity.SpecialAlertSetting">
+        update special_alert_setting
         <set>
-            <if test="crawlerName != null and crawlerName != ''">crawler_name = #{crawlerName},</if>
+            <if test="alertName != null and alertName != ''">alert_name = #{alertName},</if>
             <if test="targetSource != null and targetSource != ''">target_source = #{targetSource},</if>
             <if test="keyWord != null">key_word = #{keyWord},</if>
             <if test="params != null">params = #{params},</if>
@@ -61,49 +61,51 @@
             <if test="alertMethod != null">alert_method = #{alertMethod},</if>
             <if test="dedupEnable != null">dedup_enable = #{dedupEnable},</if>
         </set>
-        where crawler_id = #{crawlerId}
+        where alert_id = #{alertId}
     </update>
+
+
 
     <!-- 更新启用状态 -->
     <update id="updateTriggerState">
-        update crawler_cron
+        update special_alert_setting
         set trigger_state = #{triggerState}
-        where crawler_id = #{crawlerId}
+        where alert_id = #{alertId}
     </update>
 
     <!-- 更新运行状态（Python回调使用） -->
     <update id="updateState">
-        update crawler_cron
+        update special_alert_setting
         set state = #{state}
-        where crawler_id = #{crawlerId}
+        where alert_id = #{alertId}
     </update>
 
     <!-- 删除专题 -->
-    <delete id="deleteByCrawlerId">
-        delete from crawler_cron where crawler_id = #{crawlerId}
+    <delete id="deleteByAlertId">
+        delete from special_alert_setting where alert_id = #{alertId}
     </delete>
 
-    <select id="selectByTriggerState" resultType="com.crawler.entity.CrawlerCron">
-        select * from crawler_cron
+    <select id="selectByTriggerState" resultType="com.crawler.entity.SpecialAlertSetting">
+        select * from special_alert_setting
         where trigger_state = #{triggerState}
     </select>
 
     <update id="addPendingCount">
-        UPDATE crawler_cron
+        UPDATE special_alert_setting
         SET pending_count = pending_count + #{delta},
-        WHERE crawler_id = #{crawlerId}
+        WHERE alert_id = #{alertId}
     </update>
 
     <update id="resetPendingCount">
-        UPDATE crawler_cron
+        UPDATE special_alert_setting
         SET pending_count = 0,
-        WHERE crawler_id = #{crawlerId}
+        WHERE alert_id = #{alertId}
     </update>
 
     <update id="updateLastTriggerTime">
-        UPDATE crawler_cron
+        UPDATE special_alert_setting
         SET last_trigger_time = NOW()
-        WHERE crawler_id = #{crawlerId}
+        WHERE alert_id = #{alertId}
     </update>
 
 </mapper>

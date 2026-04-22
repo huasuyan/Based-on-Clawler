@@ -8,9 +8,9 @@ import lombok.Data;
  * 注意：编辑要求专题处于关闭状态（triggerState=0）
  */
 @Data
-public class CrawlerCronEditDto {
-    private Integer crawlerId;      // 专题ID（必填）
-    private String crawlerName;     // 专题名称
+public class SpecialAlertEditDto {
+    private Integer alertId;      // 专题ID（必填）
+    private String alertName;     // 专题名称
     private String keyWord;         // 预警词组，JSON格式，{"keywordGroups":[["关键词A1","关键词A2"],["关键词B1"]]}
     private String targetSource;    // 数据源
     private String params;          // 可变参数

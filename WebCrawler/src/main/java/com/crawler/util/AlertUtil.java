@@ -2,15 +2,13 @@ package com.crawler.util;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.crawler.entity.CrawlerCron;
+import com.crawler.entity.SpecialAlertSetting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.DayOfWeek;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,15 +25,15 @@ public class AlertUtil {
      * 若当前不在 time_range 内，则延迟到允许时间点再发
      */
     @Async
-    public void sendAlertAsync(CrawlerCron crawlerCron, int newCount) {
-        long delayMs = calcDelayMs(crawlerCron.getTimeRange());
+    public void sendAlertAsync(SpecialAlertSetting specialAlertSetting, int newCount) {
+        long delayMs = calcDelayMs(specialAlertSetting.getTimeRange());
         if (delayMs <= 0) {
-            doSendAlert(crawlerCron, newCount);
+            doSendAlert(specialAlertSetting, newCount);
         } else {
-            log.info("[预警] crawlerId={} 当前不在预警时间内，延迟 {}ms 后发送",
-                    crawlerCron.getCrawlerId(), delayMs);
+            log.info("[预警] alertId={} 当前不在预警时间内，延迟 {}ms 后发送",
+                    specialAlertSetting.getAlertId(), delayMs);
             scheduler.schedule(
-                    () -> doSendAlert(crawlerCron, newCount),
+                    () -> doSendAlert(specialAlertSetting, newCount),
                     delayMs,
                     TimeUnit.MILLISECONDS
             );
@@ -45,36 +43,36 @@ public class AlertUtil {
     /**
      * 实际发送逻辑
      */
-    private void doSendAlert(CrawlerCron crawlerCron, int newCount) {
-        Integer alertMethod = crawlerCron.getAlertMethod();
-        String crawlerName = crawlerCron.getCrawlerName();
+    private void doSendAlert(SpecialAlertSetting specialAlertSetting, int newCount) {
+        Integer alertMethod = specialAlertSetting.getAlertMethod();
+        String alertName = specialAlertSetting.getAlertName();
 
         String content = String.format(
                 "【快爬预警】专题「%s」检测到 %d 条新舆情，请及时查看。",
-                crawlerName, newCount
+                alertName, newCount
         );
 
-        log.info("[预警] crawlerId={} alertMethod={} 发送：{}",
-                crawlerCron.getCrawlerId(), alertMethod, content);
+        log.info("[预警] alertId={} alertMethod={} 发送：{}",
+                specialAlertSetting.getAlertId(), alertMethod, content);
 
-            sendInternalMessage(crawlerCron, content);
+            sendInternalMessage(specialAlertSetting, content);
     }
 
     /**
      * 站内信：通过 WebSocket 推送给前端
      */
-    private void sendInternalMessage(CrawlerCron crawlerCron, String content) {
+    private void sendInternalMessage(SpecialAlertSetting specialAlertSetting, String content) {
         try {
             cn.hutool.json.JSONObject msg = JSONUtil.createObj()
                     .set("type", "alert_message")
-                    .set("user_id", crawlerCron.getUserId())
-                    .set("crawler_id", crawlerCron.getCrawlerId())
-                    .set("crawler_name", crawlerCron.getCrawlerName())
+                    .set("user_id", specialAlertSetting.getUserId())
+                    .set("alert_id", specialAlertSetting.getAlertId())
+                    .set("alert_name", specialAlertSetting.getAlertName())
                     .set("content", content);
             com.crawler.websockets.VueSocketServer
-                    .sendToVue(crawlerCron.getUserId().toString(),
+                    .sendToVue(specialAlertSetting.getUserId().toString(),
                             JSONUtil.toJsonStr(msg));
-            log.info("[预警-站内信] 已推送 crawlerId={}", crawlerCron.getCrawlerId());
+            log.info("[预警-站内信] 已推送 alertId={}", specialAlertSetting.getAlertId());
         } catch (Exception e) {
             log.error("[预警-站内信] 推送失败", e);
         }
