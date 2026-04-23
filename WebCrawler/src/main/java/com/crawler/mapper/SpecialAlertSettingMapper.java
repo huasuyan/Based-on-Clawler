@@ -39,7 +39,7 @@ public interface SpecialAlertSettingMapper {
 
     List<SpecialAlertSetting> selectByTriggerState(@Param("triggerState") Integer triggerState);
 
-    // 重置 pending_count 并更新 last_trigger_time（发送预警后调用）
+    // 重置 pending_count
     void resetPendingCount(@Param("alertId") Integer alertId);
 
     // 累加 pending_count（每次爬取后调用）

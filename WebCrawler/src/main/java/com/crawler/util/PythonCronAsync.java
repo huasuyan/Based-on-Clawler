@@ -46,6 +46,8 @@ public class PythonCronAsync {
     public void callPythonAsync(SpecialAlertSetting specialAlertSetting) {
         Integer alertId = specialAlertSetting.getAlertId();
         Long userId = specialAlertSetting.getUserId();
+        //更新上次触发时间
+        specialAlertSettingMapper.updateLastTriggerTime(alertId);
         log.info("[进程2] 启动，alertId={}", alertId);
 
         try {
@@ -108,7 +110,6 @@ public class PythonCronAsync {
 
             // Step7：更新 state=0（等待下次执行），更新上次触发时间
             updateState(specialAlertSetting, userId, 0);
-            specialAlertSettingMapper.updateLastTriggerTime(alertId);
 
             log.info("[进程2] 完成，alertId={}", alertId);
 
@@ -119,7 +120,7 @@ public class PythonCronAsync {
     }
 
     /**
-     * 根据 frequency 判断是否触发预警
+     * 根据 alert_trigger 判断是否触发预警
      */
     private void checkAndSendAlert(SpecialAlertSetting specialAlertSetting, int insertedCount) {
         if (insertedCount <= 0) return;
