@@ -150,12 +150,12 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
 
     // 删除舆情消息
     @Override
-    public Result infoDelete(Integer alertId, String url) {
-        NewsData existing = newsDataMapper.select(url,alertId);
+    public Result infoDelete(Long newsId) {
+        NewsData existing = newsDataMapper.select(newsId);
         if (existing == null) {
             throw new RuntimeException("舆情消息不存在");
         }
-        newsDataMapper.delete(url,alertId);
+        newsDataMapper.delete(newsId);
         return Result.success();
     }
 

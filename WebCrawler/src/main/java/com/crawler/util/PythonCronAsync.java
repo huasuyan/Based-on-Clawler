@@ -55,8 +55,8 @@ public class PythonCronAsync {
             // Step2：构造请求体（根据 targetSource 选择接口）
             String apiPath;
             Map<String, Object> body = new HashMap<>();
-            body.put("alert_id", alertId);
-            body.put("task_way", "cron");
+            body.put("task_id", alertId);
+            body.put("task_way", "alert");
 
             if ("integration".equals(specialAlertSetting.getTargetSource())) {
                 apiPath = "/runIntegration";
@@ -108,7 +108,7 @@ public class PythonCronAsync {
             updateState(specialAlertSetting,userId, 3);
 
             // Step8：转换并批量存入数据库
-            List<NewsData> newsList = parseDataList(dataList, alertId);
+            List<NewsData> newsList = parseDataList(dataList);
             int insertedCount = 0;
             if (!newsList.isEmpty()) {
                 newsDataMapper.batchInsertIgnore(newsList);
@@ -172,7 +172,7 @@ public class PythonCronAsync {
     /**
      * 将 Python 返回的 dataList 转换为实体列表
      */
-    private List<NewsData> parseDataList(JSONArray dataList, Integer alertId) {
+    private List<NewsData> parseDataList(JSONArray dataList) {
         List<NewsData> result = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -180,14 +180,21 @@ public class PythonCronAsync {
             JSONObject item = dataList.getJSONObject(i);
             try {
                 NewsData news = new NewsData();
-                news.setAlertId(Long.valueOf(alertId));
                 news.setTitle(item.getStr("title", ""));
                 news.setContent(item.getStr("content", ""));
+                news.setVideo(item.getStr("video", ""));
+                news.setPlatform(item.getStr("platform", ""));
                 news.setSource(item.getStr("source", ""));
-                news.setOriginalUrl(item.getStr("url", ""));
+                news.setPublisher(item.getStr("publisher", ""));
+                news.setComment(item.getInt("comment", 0));
+                news.setRegion(item.getStr("region", ""));
+                news.setOriginalUrl(item.getStr("original_url", ""));
+                news.setArticleType(item.getStr("article_type", ""));
+                news.setSourceUrl(item.getStr("source_url", ""));
+                news.setAlertId(item.getLong("alert_id"));
 
                 // 解析发布时间，格式可能是 "2026-04-16" 或 "2026-04-16 10:30:00"
-                String publishTimeStr = item.getStr("publishTime", "");
+                String publishTimeStr = item.getStr("publish_time", "");
                 if (publishTimeStr != null && !publishTimeStr.isEmpty()) {
                     try {
                         if (publishTimeStr.length() == 10) {

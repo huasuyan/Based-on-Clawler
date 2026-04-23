@@ -28,5 +28,5 @@ public interface SpecialAlertService {
     Map<String, Object> infoList(SpecialAlertInfoDto queryDto);
 
     //删除舆情消息
-    Result infoDelete(Integer alertId, String url);
+    Result infoDelete(Long newsId);
 }

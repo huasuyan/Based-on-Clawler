@@ -11,11 +11,11 @@
         insert into special_alert_setting
             (user_id, alert_name, trigger_state, target_source,
              key_word, params, frequency, alert_trigger,
-             time_range, alert_method, dedup_enable, state, run_times, create_time)
+             time_range, alert_method, dedup_enable, state, create_time)
         values
             (#{userId}, #{alertName}, 0, #{targetSource},
              #{keyWord}, #{params}, #{frequency}, #{alertTrigger},
-             #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, 0, now())
+             #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, now())
     </insert>
 
     <!-- 根据alertId查询 -->
@@ -92,13 +92,13 @@
 
     <update id="addPendingCount">
         UPDATE special_alert_setting
-        SET pending_count = pending_count + #{delta},
+        SET pending_count = pending_count + #{delta}
         WHERE alert_id = #{alertId}
     </update>
 
     <update id="resetPendingCount">
         UPDATE special_alert_setting
-        SET pending_count = 0,
+        SET pending_count = 0
         WHERE alert_id = #{alertId}
     </update>
 

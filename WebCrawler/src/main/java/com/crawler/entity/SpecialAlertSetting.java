@@ -26,5 +26,5 @@ public class SpecialAlertSetting {
     private Date createTime;        // 创建时间
     private Integer pendingCount;   // 累计待预警舆情数
     private Date lastTriggerTime;   // 上次触发时间
-    private Date latestNewsTime;
+    private Date latestNewsTime;    // 最新舆情时间
 }

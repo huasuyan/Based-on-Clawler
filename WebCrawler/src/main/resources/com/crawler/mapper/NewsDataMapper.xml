@@ -31,15 +31,13 @@
     <!-- 按 original_url + alert_id 删除 -->
     <delete id="delete">
         DELETE FROM news_data
-        WHERE original_url = #{url}
-        AND alert_id = #{alertId}
+        WHERE news_id = #{newsId}
     </delete>
 
     <!-- 按 original_url + alert_id 查询单条 -->
     <select id="select" resultType="com.crawler.entity.NewsData">
         SELECT * FROM news_data
-        WHERE original_url = #{url}
-        AND alert_id = #{alertId}
+        WHERE news_id = #{newsId}
     </select>
 
 </mapper>

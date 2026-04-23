@@ -72,8 +72,7 @@ public class SpecialAlertController {
     //  删除舆情消息
     @PostMapping("/infoDelete")
     public Result infoDelete(@RequestBody Map<String, Object> body) {
-        Integer alertId = (Integer) body.get("alertId");
-        String url = (String) body.get("url");
-        return specialAlertService.infoDelete(alertId, url);
+        Long newsId = (Long) body.get("newsId");
+        return specialAlertService.infoDelete(newsId);
     }
 }

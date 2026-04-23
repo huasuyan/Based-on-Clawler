@@ -15,7 +15,7 @@ public interface NewsDataMapper {
     // 列表查询
     List<NewsData> infoList(SpecialAlertInfoDto queryDto);
 
-    void delete (@Param("url") String url,@Param("alertId") Integer alertId);
+    void delete (@Param("newsId") Long newsId);
 
-    NewsData select (@Param("url") String url,@Param("alertId") Integer alertId);
+    NewsData select (@Param("newsId") Long newsId);
 }
