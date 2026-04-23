@@ -1,9 +1,9 @@
 package com.crawler.service;
 
-import com.crawler.entity.dto.UpdateDto;
+import com.crawler.entity.dto.UserUpdateDto;
 
 public interface UserService {
 
-    void updateUser(UpdateDto updateDto);
+    void updateUser(UserUpdateDto userUpdateDto);
 
 }

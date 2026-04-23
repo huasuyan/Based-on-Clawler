@@ -1,7 +1,7 @@
 package com.crawler.service.impl;
 
 
-import com.crawler.entity.dto.UpdateDto;
+import com.crawler.entity.dto.UserUpdateDto;
 import com.crawler.mapper.UserMapper;
 import com.crawler.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +13,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMapper userMapper;
     @Override
-    public void updateUser(UpdateDto updateDto) {
+    public void updateUser(UserUpdateDto userUpdateDto) {
 
-        userMapper.updateUser(updateDto);
+        userMapper.updateUser(userUpdateDto);
     }
 }
