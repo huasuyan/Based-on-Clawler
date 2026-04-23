@@ -31,6 +31,7 @@ public class SpecialAlertDto {
     private Date lastTriggerTime;   // 上次触发时间
     private Date latestNewsTime;    // 最新舆情时间
     private Integer alertLevel;
+    private String userName;         // 用户名
 
     /**
      * 从实体构建DTO。

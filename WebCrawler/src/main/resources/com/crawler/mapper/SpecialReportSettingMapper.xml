@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.SpecialReportSettingMapper">
+
+    <!-- 新增报告专题 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="specialReportId">
+        insert into special_report_setting
+            (report_name, create_user_id, monitor_keywords, data_source,
+             params, monitor_region, report_type, type_params,
+             status_enabled, execute_status, last_execute_time, create_time)
+        values
+            (#{reportName}, #{createUserId}, #{monitorKeywords}, #{dataSource},
+             #{params}, #{monitorRegion}, #{reportType}, #{typeParams},
+             #{statusEnabled}, 0, #{lastExecuteTime}, now())
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultType="com.crawler.entity.SpecialReportSetting">
+        select * from special_report_setting where special_report_id = #{specialReportId}
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="pageList" resultType="com.crawler.entity.SpecialReportSetting">
+        select * from special_report_setting
+        <where>
+            <if test="createUserId != null">
+                and create_user_id = #{createUserId}
+            </if>
+            <if test="reportName != null and reportName != ''">
+                and report_name like concat('%', #{reportName}, '%')
+            </if>
+            <if test="reportType != null">
+                and report_type = #{reportType}
+            </if>
+            <if test="statusEnabled != null">
+                and status_enabled = #{statusEnabled}
+            </if>
+        </where>
+        order by create_time desc
+        limit #{pageSize} offset #{offset}
+    </select>
+
+    <!-- 编辑（动态更新） -->
+    <update id="update" parameterType="com.crawler.entity.dto.SpecialReportEditDto">
+        update special_report_setting
+        <set>
+            <if test="reportName != null and reportName != ''">report_name = #{reportName},</if>
+            <if test="monitorKeywords != null">monitor_keywords = #{monitorKeywords},</if>
+            <if test="dataSource != null">data_source = #{dataSource},</if>
+            <if test="params != null">params = #{params},</if>
+            <if test="monitorRegion != null">monitor_region = #{monitorRegion},</if>
+            <if test="statusEnabled != null">status_enabled = #{statusEnabled},</if>
+        </set>
+        where special_report_id = #{specialReportId}
+    </update>
+
+    <!-- 更新启用状态 -->
+    <update id="updateStatusEnabled">
+        update special_report_setting
+        set status_enabled = #{statusEnabled}
+        where special_report_id = #{specialReportId}
+    </update>
+
+    <!-- 更新执行状态 -->
+    <update id="updateExecuteStatus">
+        update special_report_setting
+        set execute_status = #{executeStatus}
+        where special_report_id = #{specialReportId}
+    </update>
+
+    <!-- 更新 lastExecuteTime -->
+    <update id="updateLastExecuteTime">
+        update special_report_setting
+        set last_execute_time = #{lastExecuteTime}
+        where special_report_id = #{specialReportId}
+    </update>
+
+    <update id="updateLastUpdateTime">
+        update special_report_setting
+        set last_update_time = #{lastUpdateTime}
+        where special_report_id = #{specialReportId}
+    </update>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        delete from special_report_setting where special_report_id = #{specialReportId}
+    </delete>
+
+    <!-- 查询所有启用中的专题（调度器使用） -->
+    <select id="selectAllEnabled" resultType="com.crawler.entity.SpecialReportSetting">
+        select * from special_report_setting where status_enabled = 1
+    </select>
+
+</mapper>

@@ -45,30 +45,8 @@ sms:
     expireTime: 5
 
 crawler:
-  config:
-    crawlerSource: |
-      #!/usr/bin/python
-      # -*- coding: UTF-8 -*-
-      import time
-      import sys
-    
-      print("xxl-job: hello python")
-
-      print("脚本位置：", sys.argv[0])
-      print("任务参数：", sys.argv[1])
-      print("分片序号：", sys.argv[2])
-      print("分片总数：", sys.argv[3])
-
-      print("Good bye!")
-      exit(0)
-    jobGroup: 10 #默认采用id为10的执行器
-    executorRouteStrategy: FIRST #默认执行器路由策略
-    misfireStrategy: DO_NOTHING #调度过期策略
-    executorBlockStrategy: SERIAL_EXECUTION #阻塞处理策略
-    executorTimeout: 0
-    executorFailRetryCount: 0
   cron:
-    python-base-url: http://127.0.0.1:8088/api/python/crawler
+    python-base-url: http://127.0.0.1:8088/api/python
     http-timeout-ms: 60000
 
   pageList:

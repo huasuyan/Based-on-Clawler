@@ -30,7 +30,7 @@ public class PythonCronAsync {
     @Resource
     private AlertUtil alertUtil;
 
-    @Value("${crawler.cron.python-base-url:http://127.0.0.1:8088/api/python/crawler}")
+    @Value("${crawler.cron.python-base-url:http://127.0.0.1:8088/api/python}")
     private String pythonBaseUrl;
 
     @Value("${crawler.cron.http-timeout-ms:60000}")
@@ -71,7 +71,7 @@ public class PythonCronAsync {
                     alertId, body.get("filter_time"));
 
             HttpResponse response = HttpRequest
-                    .post(pythonBaseUrl + "/runIntegration")
+                    .post(pythonBaseUrl + "/crawler/runIntegration")
                     .body(JSONUtil.toJsonStr(body))
                     .contentType("application/json")
                     .timeout(httpTimeoutMs)
