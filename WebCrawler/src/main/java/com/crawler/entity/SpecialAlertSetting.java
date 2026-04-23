@@ -1,6 +1,9 @@
 package com.crawler.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 import java.util.Date;
 
@@ -8,6 +11,8 @@ import java.util.Date;
  * 舆情预警专题实体
  * 对应数据库表 crawler_cron
  */
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 public class SpecialAlertSetting {
     private Integer alertId;      // 专题ID（主键）

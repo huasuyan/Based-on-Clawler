@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class SpecialAlertPageQueryDto {
     // userId 由 token 从 request 中获取
-    private Long userId;
     private Integer pageNum = 1;
     private Integer pageSize = 10;
     // 以下为可选筛选条件（searchByalertInfo接口使用）
+    private Long userId;
     private String alertName;     // 专题名称（模糊查询）
     private String keyWord;         // 预警词（模糊查询）
     private Integer triggerState;   // 启用状态：0停止 1启用
