@@ -6,7 +6,7 @@
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
 <mapper namespace="com.crawler.mapper.UserMapper">
 
-    <update id="updateUser" parameterType="com.crawler.entity.dto.UpdateDto">
+    <update id="updateUser" parameterType="com.crawler.entity.dto.UserUpdateDto">
         update user
         <set>
             <if test="password != null and password != ''">password = #{password},</if>

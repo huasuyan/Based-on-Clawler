@@ -4,7 +4,7 @@ import lombok.Data;
 
 import java.util.Date;
 @Data
-public class UpdateDto {
+public class UserUpdateDto {
     private Integer userId;
     private String password;
     private String phone;
