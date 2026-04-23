@@ -30,6 +30,7 @@ public class SpecialAlertDto {
     private Integer pendingCount;   // 累计待预警舆情数
     private Date lastTriggerTime;   // 上次触发时间
     private Date latestNewsTime;    // 最新舆情时间
+    private Integer alertLevel;
 
     /**
      * 从实体构建DTO。
@@ -52,6 +53,7 @@ public class SpecialAlertDto {
         this.pendingCount = c.getPendingCount();
         this.lastTriggerTime = c.getLastTriggerTime();
         this.latestNewsTime = c.getLatestNewsTime();
+        this.alertLevel    = c.getAlertLevel();
     }
 
     /**
