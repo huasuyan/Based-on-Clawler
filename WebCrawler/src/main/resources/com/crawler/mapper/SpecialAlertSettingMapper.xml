@@ -108,4 +108,10 @@
         WHERE alert_id = #{alertId}
     </update>
 
+    <update id="updateLatestNewsTime">
+        UPDATE special_alert_setting
+        SET latest_news_time = #{latestNewsTime}
+        WHERE alert_id = #{alertId}
+    </update>
+
 </mapper>

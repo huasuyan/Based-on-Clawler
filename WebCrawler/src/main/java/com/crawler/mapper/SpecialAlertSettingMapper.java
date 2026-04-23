@@ -5,6 +5,7 @@ import com.crawler.entity.dto.SpecialAlertPageQueryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,4 +47,8 @@ public interface SpecialAlertSettingMapper {
                          @Param("delta") int delta);
 
     void updateLastTriggerTime(@Param("alertId") Integer alertId);
+
+    void updateLatestNewsTime(@Param("alertId") Integer alertId,
+                              @Param("latestNewsTime") Date latestNewsTime);
+
 }
