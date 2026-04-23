@@ -31,14 +31,12 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
 
     // 列表查询
     @Override
-    public Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto) {
+    public List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto) {
         List<SpecialAlertDto> alertInfo = specialAlertSettingMapper.pageList(queryDto)
                 .stream()
                 .map(SpecialAlertDto::new)
                 .collect(Collectors.toList());
-        Map<String, Object> result = new HashMap<>();
-        result.put("alertInfo", alertInfo);
-        return result;
+        return alertInfo;
     }
 
     // 新增
