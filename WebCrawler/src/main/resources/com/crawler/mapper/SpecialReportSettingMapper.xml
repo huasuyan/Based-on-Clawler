@@ -10,11 +10,11 @@
         insert into special_report_setting
             (report_name, create_user_id, monitor_keywords, data_source,
              params, monitor_region, report_type, type_params,
-             status_enabled, execute_status, last_execute_time, create_time)
+             status_enabled, execute_status, last_execute_time, create_time,last_update_time)
         values
             (#{reportName}, #{createUserId}, #{monitorKeywords}, #{dataSource},
              #{params}, #{monitorRegion}, #{reportType}, #{typeParams},
-             #{statusEnabled}, 0, #{lastExecuteTime}, now())
+             #{statusEnabled}, 0, #{lastExecuteTime}, now(),#{lastUpdateTime})
     </insert>
 
     <!-- 根据ID查询 -->

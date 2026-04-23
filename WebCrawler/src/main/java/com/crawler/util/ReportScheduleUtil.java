@@ -23,7 +23,7 @@ public class ReportScheduleUtil {
             DateTimeFormatter.ofPattern("HH:mm");
 
     /**
-     * 判断当前时刻是否需要触发该专题的爬取+报告生成
+     * 判断当前时刻是否需要触发该专题的报告生成
      *
      * @param setting 报告专题配置
      * @return true=需要触发

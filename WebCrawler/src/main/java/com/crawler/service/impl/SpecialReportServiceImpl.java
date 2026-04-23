@@ -1,5 +1,6 @@
 package com.crawler.service.impl;
 
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.SpecialReportSetting;
 import com.crawler.entity.dto.SpecialReportCreateDto;
@@ -10,9 +11,13 @@ import com.crawler.mapper.SpecialReportSettingMapper;
 import com.crawler.service.SpecialReportService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,9 +47,6 @@ public class SpecialReportServiceImpl implements SpecialReportService {
             throw new RuntimeException("类型参数不能为空");
         }
 
-        // 校验 typeParams 格式，并设置 lastExecuteTime
-        Date lastExecuteTime = resolveLastExecuteTime(createDto);
-
         SpecialReportSetting setting = new SpecialReportSetting();
         setting.setReportName(createDto.getReportName());
         setting.setCreateUserId(createDto.getCreateUserId());
@@ -55,10 +57,29 @@ public class SpecialReportServiceImpl implements SpecialReportService {
         // 默认启用
         setting.setStatusEnabled(
                 createDto.getStatusEnabled() != null ? createDto.getStatusEnabled() : 1);
-        setting.setReportType(createDto.getReportType());
+
+        Integer reportType = createDto.getReportType();
+        JSONObject tp = JSONUtil.parseObj(createDto.getTypeParams().toString());
+
+        setting.setReportType(reportType);
         setting.setTypeParams(createDto.getTypeParams());
-        setting.setLastExecuteTime(lastExecuteTime);
-        setting.setLastUpdateTime(new Date());
+        if (reportType == 1) {
+            String startDateStr = tp.getStr("start_date");
+            if (StringUtils.isNotBlank(startDateStr)) {
+                try {
+                    LocalDate localDate = LocalDate.parse(startDateStr);
+                    Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                    setting.setLastUpdateTime(date);
+                } catch (DateTimeParseException e) {
+                    log.error("start_date 格式错误，应为 yyyy-MM-dd，实际值: {}", startDateStr, e);
+                }
+            }
+        }
+        if(reportType == 2){
+            setting.setLastUpdateTime(new Date());
+        }
+        setting.setLastExecuteTime(new Date());
+
 
         specialReportSettingMapper.insert(setting);
 
@@ -101,30 +122,4 @@ public class SpecialReportServiceImpl implements SpecialReportService {
         specialReportSettingMapper.deleteById(specialReportId);
     }
 
-    /**
-     * 根据报告类型和 typeParams 推导初始 lastExecuteTime：
-     * - 即时报告：初始设置为 start_date 当天的 00:00:00（保证当天可以触发）
-     * - 定时报告：初始设置为当前时间（保证首次判断正确）
-     */
-    private Date resolveLastExecuteTime(SpecialReportCreateDto createDto) {
-        try {
-            if (createDto.getReportType() == 1) {
-                // 即时报告：取 start_date，转为 Date，时间部分设为 00:00:00 前一秒
-                // 这样调度器扫描到当天时，lastExecuteTime 不是今天，会触发
-                Map<String, Object> tp = JSONUtil.parseObj(createDto.getTypeParams());
-                String startDateStr = (String) tp.get("start_date");
-                if (startDateStr == null) throw new RuntimeException("即时报告缺少 start_date");
-                LocalDate startDate = LocalDate.parse(startDateStr);
-                // 设为开始日期前一天，确保开始当天可以触发
-                return java.sql.Date.valueOf(startDate.minusDays(1));
-            } else {
-                // 定时报告：初始为当前时间
-                return new Date();
-            }
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("typeParams 格式错误：" + e.getMessage());
-        }
-    }
 }
