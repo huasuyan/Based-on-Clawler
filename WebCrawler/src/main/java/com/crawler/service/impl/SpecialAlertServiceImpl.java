@@ -145,12 +145,9 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     // 舆情消息列表---待修改逻辑
     @Override
     public Map<String, Object> infoList(SpecialAlertInfoDto queryDto) {
-        List<NewsData> newsData = newsDataMapper.infoList(queryDto)
-                .stream()
-                .map(NewsData::new)
-                .collect(Collectors.toList());
+        List<ClearNewsData> ClearNewsData = newsDataMapper.infoList(queryDto);
         Map<String, Object> result = new HashMap<>();
-        result.put("NewsDataList", newsData);
+        result.put("NewsDataList", ClearNewsData);
         return result;
     }
 

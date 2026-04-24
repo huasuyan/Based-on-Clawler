@@ -1,6 +1,7 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.NewsData;
+import com.crawler.entity.dto.ClearNewsData;
 import com.crawler.entity.dto.SpecialAlertInfoDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +12,7 @@ import java.util.List;
 @Mapper
 public interface NewsDataMapper {
     // 列表查询
-    List<NewsData> infoList(SpecialAlertInfoDto queryDto);
+    List<ClearNewsData> infoList(SpecialAlertInfoDto queryDto);
 
     void delete (@Param("newsId") Long newsId);
 
