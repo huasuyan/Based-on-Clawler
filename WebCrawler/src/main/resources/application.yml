@@ -48,6 +48,7 @@ crawler:
   cron:
     python-base-url: http://127.0.0.1:8088/api/python
     http-timeout-ms: 60000
+    http-readTimeout-ms: 300000
 
   pageList:
      searchMethod: 0 # 0代表模糊查询 ， 1代表精确查询(爬虫名称）
