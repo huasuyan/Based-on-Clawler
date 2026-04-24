@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.ReportResultMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="reportId">
+        insert into report_result
+            (special_report_id, report_name, monitor_keywords, report_type,
+             brief_summary, monitor_summary, opinion_trend, source_media_analysis,
+             emotion_analysis, region_distribution, hot_analysis_words, hot_information,
+             disposal_opinions, create_time, update_time)
+        values
+            (#{specialReportId}, #{reportName}, #{monitorKeywords}, #{reportType},
+             #{briefSummary}, #{monitorSummary}, #{opinionTrend}, #{sourceMediaAnalysis},
+             #{emotionAnalysis}, #{regionDistribution}, #{hotAnalysisWords}, #{hotInformation},
+             #{disposalOpinions}, now(), now())
+    </insert>
+
+    <select id="selectById" resultType="com.crawler.entity.ReportResult">
+        select * from report_result where report_id = #{reportId}
+    </select>
+
+    <select id="pageList" resultType="com.crawler.entity.ReportResult">
+        select * from report_result
+        <where>
+            <if test="reportName != null and reportName != ''">
+                and report_name like concat('%', #{reportName}, '%')
+            </if>
+            <if test="reportType != null and reportType != ''">
+                and report_type = #{reportType}
+            </if>
+        </where>
+
+        order by create_time desc
+        limit #{pageSize} offset #{offset}
+    </select>
+
+    <select id="countPageList" resultType="int">
+        select count(1) from report_result
+        <where>
+            <if test="reportName != null and reportName != ''">
+                and report_name like concat('%', #{reportName}, '%')
+            </if>
+            <if test="reportType != null and reportType != ''">
+                and report_type = #{reportType}
+            </if>
+        </where>
+    </select>
+
+    <update id="update" parameterType="com.crawler.entity.dto.ReportResultEditDto">
+        update report_result
+        <set>
+            <if test="reportName != null">report_name = #{reportName},</if>
+            <if test="briefSummary != null">brief_summary = #{briefSummary},</if>
+            <if test="monitorSummary != null">monitor_summary = #{monitorSummary},</if>
+            <if test="opinionTrend != null">opinion_trend = #{opinionTrend},</if>
+            <if test="sourceMediaAnalysis != null">source_media_analysis = #{sourceMediaAnalysis},</if>
+            <if test="emotionAnalysis != null">emotion_analysis = #{emotionAnalysis},</if>
+            <if test="regionDistribution != null">region_distribution = #{regionDistribution},</if>
+            <if test="hotAnalysisWords != null">hot_analysis_words = #{hotAnalysisWords},</if>
+            <if test="hotInformation != null">hot_information = #{hotInformation},</if>
+            <if test="disposalOpinions != null">disposal_opinions = #{disposalOpinions},</if>
+            update_time = now()
+        </set>
+        where report_id = #{reportId}
+    </update>
+
+    <delete id="deleteById">
+        delete from report_result where report_id = #{reportId}
+    </delete>
+
+    <select id="selectBySpecialReportId" resultType="com.crawler.entity.ReportResult">
+        select * from report_result where special_report_id = #{specialReportId}
+        order by create_time desc
+    </select>
+
+</mapper>

@@ -1,12 +1,10 @@
 package com.crawler.entity.dto;
 
-import cn.hutool.json.JSONUtil;
 import com.crawler.entity.SpecialAlertSetting;
+import com.crawler.util.CommonUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
 
 @Data
@@ -35,7 +33,7 @@ public class SpecialAlertDto {
 
     /**
      * 从实体构建DTO。
-     * 三个 JSON 字符串字段通过 {@link #parseJson(String)} 转为结构化对象，
+     * 三个 JSON 字符串字段通过方法转换为结构化对象
      * 若原始值为 null 或空字符串则保持 null，不抛出异常。
      */
     public SpecialAlertDto(SpecialAlertSetting c) {
@@ -44,40 +42,16 @@ public class SpecialAlertDto {
         this.alertName = c.getAlertName();
         this.triggerState = c.getTriggerState();
         this.targetSource = c.getTargetSource();
-        this.keyWord      = parseJson(c.getKeyWord());
-        this.params       = parseJson(c.getParams());
+        this.keyWord      = CommonUtil.parseJson(c.getKeyWord());
+        this.params       = CommonUtil.parseJson(c.getParams());
         this.frequency    = c.getFrequency();
         this.alertTrigger = c.getAlertTrigger();
-        this.timeRange    = parseJson(c.getTimeRange());
+        this.timeRange    = CommonUtil.parseJson(c.getTimeRange());
         this.alertMethod  = c.getAlertMethod();
         this.state        = c.getState();
         this.pendingCount = c.getPendingCount();
         this.lastTriggerTime = c.getLastTriggerTime();
         this.latestNewsTime = c.getLatestNewsTime();
         this.alertLevel    = c.getAlertLevel();
-    }
-
-    /**
-     * 将 JSON 字符串安全地解析为结构化对象（Map 或 List）。
-     * - 以 '{' 开头 → 解析为 JSONObject（序列化后是嵌套对象）
-     * - 以 '[' 开头 → 解析为 JSONArray（序列化后是数组）
-     * - null / 空字符串 → 返回 null
-     *
-     * @param json 数据库中存储的原始 JSON 字符串
-     * @return 结构化对象，或 null
-     */
-    private static Object parseJson(String json) {
-        if (StringUtils.isBlank(json)) {
-            return null;
-        }
-        String trimmed = json.trim();
-        if (trimmed.startsWith("{")) {
-            return JSONUtil.parseObj(trimmed);
-        }
-        if (trimmed.startsWith("[")) {
-            return JSONUtil.parseArray(trimmed);
-        }
-        // 既不是对象也不是数组，原样返回字符串，避免数据丢失
-        return json;
     }
 }
