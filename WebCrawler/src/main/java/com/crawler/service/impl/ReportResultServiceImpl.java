@@ -59,6 +59,11 @@ public class ReportResultServiceImpl implements ReportResultService {
                 .collect(Collectors.toList());
 
         Map<String, Object> result = new HashMap<>();
+
+        int total = reportResultMapper.countPageList(queryDto);
+        result.put("total", total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
         result.put("resultList", dtoList);
         return result;
     }

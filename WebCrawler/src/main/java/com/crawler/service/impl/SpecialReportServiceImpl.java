@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -105,6 +104,11 @@ public class SpecialReportServiceImpl implements SpecialReportService {
                 .map(SpecialReportDto::new)
                 .collect(Collectors.toList());
         Map<String, Object> result = new HashMap<>();
+
+        int total = specialReportSettingMapper.countPageList(queryDto);
+        result.put("total",    total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
         result.put("reportList", list);
         return result;
     }

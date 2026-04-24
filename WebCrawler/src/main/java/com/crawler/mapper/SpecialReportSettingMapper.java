@@ -45,4 +45,6 @@ public interface SpecialReportSettingMapper {
     void updateLastUpdateTime(@Param("specialReportId") Long specialReportId,
                                @Param("lastUpdateTime") Date lastUpdateTime);
 
+    // 统计总条数（分页用）
+    int countPageList(SpecialReportPageQueryDto queryDto);
 }

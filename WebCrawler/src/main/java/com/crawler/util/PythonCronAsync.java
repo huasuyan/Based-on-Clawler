@@ -36,6 +36,9 @@ public class PythonCronAsync {
     @Value("${crawler.cron.http-timeout-ms:60000}")
     private int httpTimeoutMs;
 
+    @Value("${crawler.cron.http-readTimeout-ms}")
+    private int httpReadTimeoutMs;
+
     /**
      * 异步执行一次预警专题爬取：
      * 1. 调用Python接口，
@@ -64,6 +67,8 @@ public class PythonCronAsync {
             if (latestNewsTime != null) {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 body.put("filter_time", sdf.format(latestNewsTime));
+            }else{
+                body.put("filter_time", null);
             }
 
             // Step3：HTTP POST 调用 Python，阻塞等待返回
@@ -75,6 +80,7 @@ public class PythonCronAsync {
                     .body(JSONUtil.toJsonStr(body))
                     .contentType("application/json")
                     .timeout(httpTimeoutMs)
+                    .setReadTimeout(httpReadTimeoutMs)
                     .execute();
 
             if (!response.isOk()) {

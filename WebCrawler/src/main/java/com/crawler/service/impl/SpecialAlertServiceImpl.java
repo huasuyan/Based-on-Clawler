@@ -6,6 +6,7 @@ import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
 import com.crawler.mapper.SpecialAlertSettingMapper;
 import com.crawler.mapper.NewsDataMapper;
+import com.crawler.mapper.UserMapper;
 import com.crawler.service.SpecialAlertService;
 import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
@@ -29,13 +30,37 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     @Resource
     private PythonCronAsync pythonCronAsync;
 
+    @Resource
+    private UserMapper userMapper;
+
     // 列表查询
     @Override
-    public List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto) {
+    public Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto) {
+        Map<String, Object> result = new HashMap<>();
         List<SpecialAlertDto> alertInfo = specialAlertSettingMapper.pageList(queryDto)
                 .stream()
                 .map(SpecialAlertDto::new)
                 .collect(Collectors.toList());
+        int total = specialAlertSettingMapper.countPageList(queryDto);
+
+        // 给列表每一项设置 userName（当前登录用户名称）
+        if (alertInfo != null && !alertInfo.isEmpty()) {
+            for (SpecialAlertDto dto : alertInfo) {
+                dto.setUserName(userMapper.selectUserName(dto.getUserId()));
+            }
+        }
+
+        result.put("total",    total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
+        result.put("alertInfo", alertInfo);
+
+        return result;
+    }
+
+    @Override
+    public SpecialAlertSetting getSpecialAlertById(Integer alertId) {
+        SpecialAlertSetting alertInfo = specialAlertSettingMapper.selectByAlertId(alertId);
         return alertInfo;
     }
 
@@ -138,12 +163,13 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     // 舆情消息列表---待修改逻辑
     @Override
     public Map<String, Object> infoList(SpecialAlertInfoDto queryDto) {
-        List<NewsData> newsData = newsDataMapper.infoList(queryDto)
-                .stream()
-                .map(NewsData::new)
-                .collect(Collectors.toList());
+        List<ClearNewsData> ClearNewsData = newsDataMapper.infoList(queryDto);
         Map<String, Object> result = new HashMap<>();
-        result.put("NewsDataList", newsData);
+        int total = newsDataMapper.countPageList(queryDto);
+        result.put("total", total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
+        result.put("NewsDataList", ClearNewsData);
         return result;
     }
 
@@ -156,6 +182,14 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
         }
         newsDataMapper.delete(newsId);
         return Result.success();
+    }
+
+    @Override
+    public Map<String, Object> searchAllAlert(Integer userId) {
+        List<SpecialAlertListDto> res = specialAlertSettingMapper.searchAllAlert(userId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("alertInfos", res);
+        return result;
     }
 
 }

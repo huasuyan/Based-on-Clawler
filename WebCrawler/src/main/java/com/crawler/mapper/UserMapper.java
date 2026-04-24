@@ -9,4 +9,6 @@ public interface UserMapper {
     void updateUser(User user);
 
     User selectById(Long userId);
+
+    String selectUserName(Long userId);
 }

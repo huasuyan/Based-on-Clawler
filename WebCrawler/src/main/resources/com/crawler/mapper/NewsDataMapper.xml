@@ -6,10 +6,15 @@
 <mapper namespace="com.crawler.mapper.NewsDataMapper">
 
     <!-- 按 alertId 分页查询，按发布时间倒序 -->
-    <select id="infoList" resultType="com.crawler.entity.NewsData">
-        SELECT * FROM news_data
-        WHERE alert_id = #{alertId}
-        ORDER BY publish_time DESC
+    <select id="infoList" resultType="com.crawler.entity.dto.ClearNewsData">
+        SELECT
+        n.*,
+        c.*
+        FROM news_data n
+        LEFT JOIN clear_data c
+        ON n.news_id = c.news_id
+        WHERE n.alert_id = #{alertId}
+        ORDER BY n.publish_time DESC
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
@@ -32,6 +37,16 @@
     <select id="countNewsByAlertId" resultType="int">
         SELECT COUNT(1) FROM news_data
         WHERE alert_id = #{alertId}
+    </select>
+
+    <!-- 统计总条数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM news_data
+        <where>
+            <if test="alertId != null">
+                AND alert_id = #{alertId}
+            </if>
+        </where>
     </select>
 
 </mapper>

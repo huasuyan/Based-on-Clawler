@@ -1,15 +1,18 @@
 package com.crawler.service;
 
 import com.crawler.entity.Result;
+import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.entity.dto.*;
 
-import java.util.List;
 import java.util.Map;
 
 public interface SpecialAlertService {
 
     //显示预警专题列表（分页）
-    List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto);
+    Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto);
+
+    //查询预警专题
+    SpecialAlertSetting getSpecialAlertById(Integer alertId);
 
     //新增预警专题
     Map<String, Object> create(SpecialAlertCreateDto createDto);
@@ -30,4 +33,6 @@ public interface SpecialAlertService {
 
     //删除舆情消息
     Result infoDelete(Long newsId);
+
+    Map<String, Object> searchAllAlert(Integer userId);
 }

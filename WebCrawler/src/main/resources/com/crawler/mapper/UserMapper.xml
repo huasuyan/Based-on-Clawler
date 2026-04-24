@@ -38,4 +38,8 @@
         where u.user_id = #{userId}
     </select>
 
+    <select id="selectUserName" resultType="java.lang.String">
+        select username from user where user_id = #{userId}
+    </select>
+
 </mapper>
