@@ -39,6 +39,12 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
         return alertInfo;
     }
 
+    @Override
+    public SpecialAlertSetting getSpecialAlertById(Integer alertId) {
+        SpecialAlertSetting alertInfo = specialAlertSettingMapper.selectByAlertId(alertId);
+        return alertInfo;
+    }
+
     // 新增
     @Override
     public Map<String, Object> create(SpecialAlertCreateDto createDto) {

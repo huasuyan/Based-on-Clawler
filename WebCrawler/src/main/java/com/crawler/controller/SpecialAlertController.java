@@ -1,6 +1,7 @@
 package com.crawler.controller;
 
 import com.crawler.entity.Result;
+import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.*;
 import com.crawler.service.SpecialAlertService;
@@ -42,6 +43,17 @@ public class SpecialAlertController {
         result.put("alertInfo", alertInfo);
 
         return Result.success(result);
+    }
+
+    // 根据预警Id查询预警配置信息
+    @GetMapping("/searchById")
+    public Result searchById(HttpServletRequest request,
+                          @RequestParam Integer alertId){
+
+        SpecialAlertSetting specialAlertInfo = specialAlertService.getSpecialAlertById(alertId);
+
+        return Result.success(specialAlertInfo);
+
     }
 
     //  新增预警专题

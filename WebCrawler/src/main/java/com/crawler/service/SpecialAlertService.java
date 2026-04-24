@@ -1,6 +1,7 @@
 package com.crawler.service;
 
 import com.crawler.entity.Result;
+import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.entity.dto.*;
 
 import java.util.List;
@@ -10,6 +11,9 @@ public interface SpecialAlertService {
 
     //显示预警专题列表（分页）
     List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto);
+
+    //查询预警专题
+    SpecialAlertSetting getSpecialAlertById(Integer alertId);
 
     //新增预警专题
     Map<String, Object> create(SpecialAlertCreateDto createDto);
