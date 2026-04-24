@@ -92,6 +92,10 @@
         select * from special_alert_setting
         where trigger_state = #{triggerState}
     </select>
+    <select id="searchAllAlert" resultType="com.crawler.entity.dto.SpecialAlertListDto">
+        select * from special_alert_setting
+        where user_id = #{userId}
+    </select>
 
     <update id="addPendingCount">
         UPDATE special_alert_setting

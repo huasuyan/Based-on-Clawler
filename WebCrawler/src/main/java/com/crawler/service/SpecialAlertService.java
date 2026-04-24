@@ -34,4 +34,6 @@ public interface SpecialAlertService {
 
     //删除舆情消息
     Result infoDelete(Long newsId);
+
+    Map<String, Object> searchAllAlert(Integer userId);
 }

@@ -87,7 +87,16 @@ public class SpecialAlertController {
     public Result alertDelete(@RequestParam Integer alertId) {
         return specialAlertService.delete(alertId);
     }
-    
+
+    // 查询用户可见的预警专题
+    @GetMapping("/searchAllAlert")
+    public Result searchAllAlert(HttpServletRequest request){
+        User currentUser = (User) request.getAttribute("currentUser");
+        // TODO 这里需要根据用户权限重新设计
+        Map<String, Object> data = specialAlertService.searchAllAlert(currentUser.getUserId());
+        return Result.success(data);
+    }
+
     //  显示舆情消息列表
     @PostMapping("/infoList")
     public Result infoList(@RequestBody SpecialAlertInfoDto queryDto) {

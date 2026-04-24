@@ -9,6 +9,7 @@ import com.crawler.mapper.NewsDataMapper;
 import com.crawler.service.SpecialAlertService;
 import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -162,6 +163,14 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
         }
         newsDataMapper.delete(newsId);
         return Result.success();
+    }
+
+    @Override
+    public Map<String, Object> searchAllAlert(Integer userId) {
+        List<SpecialAlertListDto> res = specialAlertSettingMapper.searchAllAlert(userId);
+        Map<String, Object> result = new HashMap<>();
+        result.put("alertInfos", res);
+        return result;
     }
 
 }
