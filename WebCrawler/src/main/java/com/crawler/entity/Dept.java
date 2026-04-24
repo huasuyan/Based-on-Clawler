@@ -5,18 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-    private Integer userId;
-    private String username;
-    private String password;
-    private String phone;
+public class Dept {
+    private Long deptId;
+    private Long parentDeptId;
+    private String deptName;
+    private Integer deptLevel;
+    private Integer status;
     private Date createTime;
     private Date updateTime;
-    private Long deptId;
-    private Integer status;
+
+    private List<Dept> children;
 }
