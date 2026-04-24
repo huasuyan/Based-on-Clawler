@@ -28,7 +28,6 @@ public class AsyncTaskUtil {
     @Value("${python.url:}")
     private String pythonUrl;
 
-
     @Async
     public void asyncRunTask(Integer crawlerId) {
 
@@ -60,7 +59,7 @@ public class AsyncTaskUtil {
         } catch (Exception e) {
             // 状态-1：任务失败
             updateState(crawlerId, -1);
-            e.printStackTrace();
+            log.error("异步任务执行失败，任务ID: {}", crawlerId, e);
         }
     }
 
