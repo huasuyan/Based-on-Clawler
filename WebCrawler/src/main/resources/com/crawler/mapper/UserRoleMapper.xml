@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全限定类名一致 -->
+<mapper namespace="com.crawler.mapper.UserRoleMapper">
+
+
+    <insert id="insertBatch">
+        INSERT INTO user_role (user_id, role_id)
+        VALUES
+        <foreach collection="roleIds" item="roleId" separator=",">
+            (#{userId}, #{roleId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteByUserId" parameterType="java.lang.Long">
+        delete from user_role where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteByUserIds">
+        DELETE FROM user_role WHERE user_id IN
+        <foreach collection="userIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

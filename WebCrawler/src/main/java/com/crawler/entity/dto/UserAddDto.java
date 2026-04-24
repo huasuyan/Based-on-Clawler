@@ -5,8 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class UserUpdateDto {
-    private Long userId;
+public class UserAddDto {
     private String username;
     private String password;
     private String phone;

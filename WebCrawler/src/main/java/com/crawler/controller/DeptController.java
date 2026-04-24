@@ -5,14 +5,11 @@ import com.crawler.entity.Dept;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.service.DeptService;
-import com.crawler.service.UserService;
+import com.crawler.service.DeptUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -22,7 +19,7 @@ public class DeptController {
     @Autowired
     private DeptService deptService;
     @Autowired
-    private UserService userService;
+    private DeptUserService deptUserService;
 
     @GetMapping("/tree")
     public Result getDeptTree(HttpServletRequest request) {
