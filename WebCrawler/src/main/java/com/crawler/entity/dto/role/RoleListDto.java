@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.role;
 
 import com.crawler.entity.Role;
 import com.crawler.util.CommonUtil;

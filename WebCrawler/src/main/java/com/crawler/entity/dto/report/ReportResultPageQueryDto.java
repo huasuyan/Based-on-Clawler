@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.report;
 
 import lombok.Data;
 

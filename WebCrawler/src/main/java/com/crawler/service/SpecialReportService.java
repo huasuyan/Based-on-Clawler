@@ -1,8 +1,8 @@
 package com.crawler.service;
 
-import com.crawler.entity.dto.SpecialReportCreateDto;
-import com.crawler.entity.dto.SpecialReportEditDto;
-import com.crawler.entity.dto.SpecialReportPageQueryDto;
+import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
+import com.crawler.entity.dto.special_report.SpecialReportEditDto;
+import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
 
 import java.util.Map;
 

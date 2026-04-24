@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.role;
 
 import lombok.Data;
 import java.util.Date;

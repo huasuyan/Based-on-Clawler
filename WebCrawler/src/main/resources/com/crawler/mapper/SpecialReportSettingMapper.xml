@@ -44,7 +44,7 @@
     </select>
 
     <!-- 编辑（动态更新） -->
-    <update id="update" parameterType="com.crawler.entity.dto.SpecialReportEditDto">
+    <update id="update" parameterType="com.crawler.entity.dto.special_report.SpecialReportEditDto">
         update special_report_setting
         <set>
             <if test="reportName != null and reportName != ''">report_name = #{reportName},</if>

@@ -1,8 +1,8 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.SpecialReportSetting;
-import com.crawler.entity.dto.SpecialReportEditDto;
-import com.crawler.entity.dto.SpecialReportPageQueryDto;
+import com.crawler.entity.dto.special_report.SpecialReportEditDto;
+import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

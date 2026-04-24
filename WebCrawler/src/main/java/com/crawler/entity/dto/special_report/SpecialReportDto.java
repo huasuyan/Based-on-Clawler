@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.special_report;
 
 import com.crawler.entity.SpecialReportSetting;
 import com.crawler.util.CommonUtil;

@@ -2,7 +2,11 @@ package com.crawler.controller;
 
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
-import com.crawler.entity.dto.*;
+import com.crawler.entity.dto.role.RoleCreateDto;
+import com.crawler.entity.dto.role.RoleDropdownDto;
+import com.crawler.entity.dto.role.RoleEditDto;
+import com.crawler.entity.dto.role.RolePageQueryDto;
+import com.crawler.service.PermissionService;
 import com.crawler.service.RoleService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +23,9 @@ public class RoleController {
 
     @Resource
     private RoleService roleService;
+
+    @Resource
+    private PermissionService permissionService;
 
     /** 角色条件分页查询 */
     @PostMapping("/pageList")
@@ -85,5 +92,13 @@ public class RoleController {
         Map<String, Object> data = roleService.getAuthority(
                 Long.valueOf(currentUser.getUserId()));
         return Result.success(data);
+    }
+
+    /** 手动刷新权限 */
+    @GetMapping("/refreshAuthority")
+    public Result refreshAuthority(HttpServletRequest request) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        permissionService.evictCache(Long.valueOf(currentUser.getUserId()));
+        return Result.success();
     }
 }

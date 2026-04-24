@@ -92,7 +92,7 @@
         select * from special_alert_setting
         where trigger_state = #{triggerState}
     </select>
-    <select id="searchAllAlert" resultType="com.crawler.entity.dto.SpecialAlertListDto">
+    <select id="searchAllAlert" resultType="com.crawler.entity.dto.special_alert.SpecialAlertListDto">
         select * from special_alert_setting
         where user_id = #{userId}
     </select>

@@ -50,7 +50,7 @@
     </select>
 
     <!-- 编辑 -->
-    <update id="update" parameterType="com.crawler.entity.dto.RoleEditDto">
+    <update id="update" parameterType="com.crawler.entity.dto.role.RoleEditDto">
         UPDATE role
         <set>
             <if test="roleName   != null and roleName   != ''">role_name  = #{roleName},</if>
@@ -82,7 +82,7 @@
     </select>
 
     <!-- 查询某角色下的用户（关联user、dept表） -->
-    <select id="selectUsersByRoleId" resultType="com.crawler.entity.dto.RoleUserListDto">
+    <select id="selectUsersByRoleId" resultType="com.crawler.entity.dto.role.RoleUserListDto">
         SELECT u.user_id,
         u.username,
         u.phone,

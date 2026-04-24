@@ -1,9 +1,9 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.Role;
-import com.crawler.entity.dto.RoleEditDto;
-import com.crawler.entity.dto.RolePageQueryDto;
-import com.crawler.entity.dto.RoleUserListDto;
+import com.crawler.entity.dto.role.RoleEditDto;
+import com.crawler.entity.dto.role.RolePageQueryDto;
+import com.crawler.entity.dto.role.RoleUserListDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.special_alert;
 
 import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.util.CommonUtil;

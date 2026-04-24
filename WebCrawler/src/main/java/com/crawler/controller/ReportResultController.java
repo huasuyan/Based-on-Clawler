@@ -1,8 +1,8 @@
 package com.crawler.controller;
 
 import com.crawler.entity.Result;
-import com.crawler.entity.dto.ReportResultEditDto;
-import com.crawler.entity.dto.ReportResultPageQueryDto;
+import com.crawler.entity.dto.report.ReportResultEditDto;
+import com.crawler.entity.dto.report.ReportResultPageQueryDto;
 import com.crawler.service.ReportResultService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.SpecialAlertSetting;
-import com.crawler.entity.dto.SpecialAlertListDto;
-import com.crawler.entity.dto.SpecialAlertPageQueryDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertListDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertPageQueryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

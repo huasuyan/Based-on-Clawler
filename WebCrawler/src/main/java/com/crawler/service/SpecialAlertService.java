@@ -2,7 +2,10 @@ package com.crawler.service;
 
 import com.crawler.entity.Result;
 import com.crawler.entity.SpecialAlertSetting;
-import com.crawler.entity.dto.*;
+import com.crawler.entity.dto.special_alert.SpecialAlertCreateDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertEditDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertInfoDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertPageQueryDto;
 
 import java.util.Map;
 

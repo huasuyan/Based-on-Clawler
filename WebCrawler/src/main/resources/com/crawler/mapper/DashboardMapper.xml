@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.DashboardMapper">
+
+    <!-- ==================== dashboard_stats ==================== -->
+    <select id="selectTodayStats" resultType="com.crawler.entity.DashboardStats">
+        SELECT * FROM dashboard_stats
+        WHERE stat_date = #{statDate} AND stat_type = #{statType}
+        LIMIT 1
+    </select>
+
+    <insert id="insertOrUpdateStats">
+        INSERT INTO dashboard_stats (
+        stat_date, stat_type, total_news, total_news_article, total_news_video,
+        total_alert, total_alert_article, total_alert_video,
+        total_case, case_in_progress, case_finished, case_conversion_rate,
+        today_news, today_news_article, today_news_video, today_news_yoy,
+        today_alert, today_alert_yoy,
+        today_alert_level1, today_alert_level2, today_alert_level3
+        ) VALUES (
+        #{statDate}, #{statType}, #{totalNews}, #{totalNewsArticle}, #{totalNewsVideo},
+        #{totalAlert}, #{totalAlertArticle}, #{totalAlertVideo},
+        #{totalCase}, #{caseInProgress}, #{caseFinished}, #{caseConversionRate},
+        #{todayNews}, #{todayNewsArticle}, #{todayNewsVideo}, #{todayNewsYoy},
+        #{todayAlert}, #{todayAlertYoy},
+        #{todayAlertLevel1}, #{todayAlertLevel2}, #{todayAlertLevel3}
+        )
+        ON DUPLICATE KEY UPDATE
+        total_news = VALUES(total_news),
+        total_news_article = VALUES(total_news_article),
+        total_news_video = VALUES(total_news_video),
+        total_alert = VALUES(total_alert),
+        total_alert_article = VALUES(total_alert_article),
+        total_alert_video = VALUES(total_alert_video),
+        total_case = VALUES(total_case),
+        case_in_progress = VALUES(case_in_progress),
+        case_finished = VALUES(case_finished),
+        case_conversion_rate = VALUES(case_conversion_rate),
+        today_news = VALUES(today_news),
+        today_news_article = VALUES(today_news_article),
+        today_news_video = VALUES(today_news_video),
+        today_news_yoy = VALUES(today_news_yoy),
+        today_alert = VALUES(today_alert),
+        today_alert_yoy = VALUES(today_alert_yoy),
+        today_alert_level1 = VALUES(today_alert_level1),
+        today_alert_level2 = VALUES(today_alert_level2),
+        today_alert_level3 = VALUES(today_alert_level3),
+        update_time = NOW()
+    </insert>
+
+    <!-- ==================== dashboard_trend ==================== -->
+    <select id="selectTrendByDays" resultType="com.crawler.entity.DashboardTrend">
+        SELECT * FROM dashboard_trend
+        WHERE stat_date >= #{startDate}
+        ORDER BY stat_date ASC
+    </select>
+
+    <insert id="insertOrUpdateTrend">
+        INSERT INTO dashboard_trend (stat_date, news_count, alert_count)
+        VALUES (#{statDate}, #{newsCount}, #{alertCount})
+        ON DUPLICATE KEY UPDATE
+        news_count = VALUES(news_count),
+        alert_count = VALUES(alert_count)
+    </insert>
+
+    <!-- ==================== dashboard_platform_stats ==================== -->
+    <select id="selectPlatformStats" resultType="com.crawler.entity.DashboardPlatformStats">
+        SELECT * FROM dashboard_platform_stats
+        WHERE stat_date BETWEEN #{startDate} AND #{endDate}
+        AND stat_type = #{statType}
+        ORDER BY total_count DESC
+    </select>
+
+    <insert id="insertOrUpdatePlatformStats">
+        INSERT INTO dashboard_platform_stats
+        (stat_date, stat_type, platform, sensitive_count, neutral_count, normal_count, total_count)
+        VALUES
+        (#{statDate}, #{statType}, #{platform}, #{sensitiveCount}, #{neutralCount}, #{normalCount}, #{totalCount})
+        ON DUPLICATE KEY UPDATE
+        sensitive_count = VALUES(sensitive_count),
+        neutral_count   = VALUES(neutral_count),
+        normal_count    = VALUES(normal_count),
+        total_count     = VALUES(total_count)
+    </insert>
+
+    <!-- ==================== dashboard_region_stats ==================== -->
+    <select id="selectRegionStats" resultType="com.crawler.entity.DashboardRegionStats">
+        SELECT * FROM dashboard_region_stats
+        WHERE stat_date BETWEEN #{startDate} AND #{endDate}
+        AND stat_type = #{statType}
+        ORDER BY news_count DESC
+    </select>
+
+    <insert id="insertOrUpdateRegionStats">
+        INSERT INTO dashboard_region_stats (stat_date, stat_type, region, news_count)
+        VALUES (#{statDate}, #{statType}, #{region}, #{newsCount})
+        ON DUPLICATE KEY UPDATE news_count = VALUES(news_count)
+    </insert>
+
+    <!-- ==================== dashboard_hot_words ==================== -->
+    <select id="selectHotWords" resultType="com.crawler.entity.DashboardHotWord">
+        SELECT * FROM dashboard_hot_words
+        WHERE stat_date = #{statDate}
+        AND stat_type = #{statType}
+        AND word_type = #{wordType}
+        ORDER BY word_count DESC
+        LIMIT #{limit}
+    </select>
+
+    <insert id="insertOrUpdateHotWord">
+        INSERT INTO dashboard_hot_words (stat_date, stat_type, word, word_count, word_type)
+        VALUES (#{statDate}, #{statType}, #{word}, #{wordCount}, #{wordType})
+        ON DUPLICATE KEY UPDATE word_count = VALUES(word_count)
+    </insert>
+
+    <delete id="deleteHotWordsByDate">
+        DELETE FROM dashboard_hot_words
+        WHERE stat_date = #{statDate} AND stat_type = #{statType}
+    </delete>
+
+    <select id="selectTodayNewsText" resultType="java.lang.String">
+        SELECT CONCAT(title, ' ', COALESCE(LEFT(content, 500), ''))
+        FROM news_data
+        WHERE DATE(create_time) = #{today}
+          AND (title IS NOT NULL AND title != '')
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- ==================== 聚合查询（从 news_data） ==================== -->
+    <select id="countTotalNews" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data
+    </select>
+
+    <select id="countTotalNewsArticle" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE article_type != 'video' OR article_type IS NULL
+    </select>
+
+    <select id="countTotalNewsVideo" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE article_type = 'video'
+    </select>
+
+    <select id="countTodayNews" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE DATE(create_time) = #{today}
+    </select>
+
+    <select id="countTodayNewsArticle" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data
+        WHERE DATE(create_time) = #{today}
+        AND (article_type != 'video' OR article_type IS NULL)
+    </select>
+
+    <select id="countTodayNewsVideo" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data
+        WHERE DATE(create_time) = #{today} AND article_type = 'video'
+    </select>
+
+    <select id="countYesterdayNews" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE DATE(create_time) = #{yesterday}
+    </select>
+
+    <!-- ==================== 聚合查询（预警） ==================== -->
+    <select id="countTotalAlert" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE alert_id IS NOT NULL AND alert_id != 0
+    </select>
+
+    <select id="countTodayAlert" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data
+        WHERE DATE(create_time) = #{today}
+        AND alert_id IS NOT NULL AND alert_id != 0
+    </select>
+
+    <select id="countYesterdayAlert" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data
+        WHERE DATE(create_time) = #{yesterday}
+        AND alert_id IS NOT NULL AND alert_id != 0
+    </select>
+
+    <select id="countTodayAlertByLevel" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM news_data n
+        JOIN special_alert_setting s ON n.alert_id = s.alert_id
+        WHERE DATE(n.create_time) = #{today}
+        AND s.alert_level = #{level}
+    </select>
+
+    <!-- ==================== 平台聚合（news_data + clear_data） ==================== -->
+    <select id="aggregatePlatformStats" resultType="com.crawler.entity.DashboardPlatformStats">
+        SELECT
+        n.platform,
+        SUM(CASE WHEN c.sensitivity_level >= 2 THEN 1 ELSE 0 END) AS sensitiveCount,
+        SUM(CASE WHEN c.sensitivity_level = 1 THEN 1 ELSE 0 END)  AS neutralCount,
+        SUM(CASE WHEN c.sensitivity_level = 0 OR c.sensitivity_level IS NULL THEN 1 ELSE 0 END) AS normalCount,
+        COUNT(1) AS totalCount
+        FROM news_data n
+        LEFT JOIN clear_data c ON n.news_id = c.news_id
+        WHERE DATE(n.create_time) BETWEEN #{startDate} AND #{endDate}
+        AND n.platform IS NOT NULL
+        GROUP BY n.platform
+        ORDER BY totalCount DESC
+        LIMIT 10
+    </select>
+
+    <!-- ==================== 地域聚合 ==================== -->
+    <select id="aggregateRegionStats" resultType="com.crawler.entity.DashboardRegionStats">
+        SELECT
+        region,
+        COUNT(1) AS newsCount
+        FROM news_data
+        WHERE DATE(create_time) BETWEEN #{startDate} AND #{endDate}
+        AND region IS NOT NULL AND region != ''
+        GROUP BY region
+        ORDER BY newsCount DESC
+        LIMIT 10
+    </select>
+
+    <!-- ==================== 热词聚合（source 字段近似） ==================== -->
+    <select id="aggregateHotWords" resultType="com.crawler.entity.DashboardHotWord">
+        SELECT
+        source AS word,
+        COUNT(1) AS wordCount
+        FROM news_data
+        WHERE DATE(create_time) BETWEEN #{startDate} AND #{endDate}
+        AND source IS NOT NULL AND source != ''
+        GROUP BY source
+        ORDER BY wordCount DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

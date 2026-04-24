@@ -2,7 +2,7 @@ package com.crawler.mapper;
 
 import com.crawler.entity.NewsData;
 import com.crawler.entity.dto.ClearNewsData;
-import com.crawler.entity.dto.SpecialAlertInfoDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertInfoDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

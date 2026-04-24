@@ -2,7 +2,7 @@ package com.crawler.service.impl;
 
 import com.crawler.entity.AlertTabulate;
 import com.crawler.entity.dto.ClearNewsData;
-import com.crawler.entity.dto.SpecialAlertInfoDto;
+import com.crawler.entity.dto.special_alert.SpecialAlertInfoDto;
 import com.crawler.mapper.AlertTabulateMapper;
 import com.crawler.mapper.NewsDataMapper;
 import com.crawler.service.DataTabulateService;

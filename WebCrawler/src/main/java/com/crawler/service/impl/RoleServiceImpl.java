@@ -2,7 +2,7 @@ package com.crawler.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Role;
-import com.crawler.entity.dto.*;
+import com.crawler.entity.dto.role.*;
 import com.crawler.mapper.RoleMapper;
 import com.crawler.mapper.UserRoleMapper;
 import com.crawler.service.PermissionService;
@@ -248,4 +248,5 @@ public class RoleServiceImpl implements RoleService {
         }
         return mergedAuthority;
     }
+
 }

@@ -1,4 +1,4 @@
-package com.crawler.entity.dto;
+package com.crawler.entity.dto.report;
 
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.ReportResult;

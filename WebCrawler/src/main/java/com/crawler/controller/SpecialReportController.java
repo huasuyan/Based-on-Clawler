@@ -2,9 +2,9 @@ package com.crawler.controller;
 
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
-import com.crawler.entity.dto.SpecialReportCreateDto;
-import com.crawler.entity.dto.SpecialReportEditDto;
-import com.crawler.entity.dto.SpecialReportPageQueryDto;
+import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
+import com.crawler.entity.dto.special_report.SpecialReportEditDto;
+import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
 import com.crawler.service.SpecialReportService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;

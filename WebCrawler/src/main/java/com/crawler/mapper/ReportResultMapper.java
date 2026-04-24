@@ -1,8 +1,8 @@
 package com.crawler.mapper;
 
 import com.crawler.entity.ReportResult;
-import com.crawler.entity.dto.ReportResultEditDto;
-import com.crawler.entity.dto.ReportResultPageQueryDto;
+import com.crawler.entity.dto.report.ReportResultEditDto;
+import com.crawler.entity.dto.report.ReportResultPageQueryDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

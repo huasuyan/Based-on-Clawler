@@ -4,6 +4,7 @@ import com.crawler.entity.NewsData;
 import com.crawler.entity.SpecialAlertSetting;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
+import com.crawler.entity.dto.special_alert.*;
 import com.crawler.mapper.SpecialAlertSettingMapper;
 import com.crawler.mapper.NewsDataMapper;
 import com.crawler.mapper.UserMapper;

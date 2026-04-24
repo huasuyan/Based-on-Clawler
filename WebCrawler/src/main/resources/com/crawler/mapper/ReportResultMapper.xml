@@ -49,7 +49,7 @@
         </where>
     </select>
 
-    <update id="update" parameterType="com.crawler.entity.dto.ReportResultEditDto">
+    <update id="update" parameterType="com.crawler.entity.dto.report.ReportResultEditDto">
         update report_result
         <set>
             <if test="reportName != null">report_name = #{reportName},</if>
