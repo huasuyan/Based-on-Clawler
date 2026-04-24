@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.UserRoleMapper">
+
+    <!-- 查询角色下是否有关联用户 -->
+    <select id="countByRoleId" resultType="int">
+        SELECT COUNT(1) FROM user_role WHERE role_id = #{roleId}
+    </select>
+
+    <!-- 批量校验多个角色是否有关联用户 -->
+    <select id="countByRoleIds" resultType="int">
+        SELECT COUNT(1) FROM user_role WHERE role_id IN
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <!-- 删除角色关联（单条） -->
+    <delete id="deleteByRoleId">
+        DELETE FROM user_role WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- 批量删除角色关联 -->
+    <delete id="batchDeleteByRoleIds">
+        DELETE FROM user_role WHERE role_id IN
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 查询用户的所有角色ID（用于权限查询） -->
+    <select id="selectRoleIdsByUserId" resultType="java.lang.Long">
+        SELECT role_id FROM user_role WHERE user_id = #{userId}
+    </select>
+
+</mapper>

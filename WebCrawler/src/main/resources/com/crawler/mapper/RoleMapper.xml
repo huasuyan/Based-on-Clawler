@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.RoleMapper">
+
+    <!-- 新增 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="roleId">
+        INSERT INTO role (role_name, data_scope, remark, status, authority, create_time, update_time)
+        VALUES (#{roleName}, #{dataScope}, #{remark}, #{status}, #{authority}, NOW(), NOW())
+    </insert>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultType="com.crawler.entity.Role">
+        SELECT * FROM role WHERE role_id = #{roleId}
+    </select>
+
+    <!-- 根据角色名查询（重名校验） -->
+    <select id="selectByRoleName" resultType="com.crawler.entity.Role">
+        SELECT * FROM role WHERE role_name = #{roleName} LIMIT 1
+    </select>
+
+    <!-- 分页列表查询 -->
+    <select id="pageList" resultType="com.crawler.entity.Role">
+        SELECT * FROM role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 统计总条数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                AND role_name LIKE CONCAT('%', #{roleName}, '%')
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!-- 编辑 -->
+    <update id="update" parameterType="com.crawler.entity.dto.RoleEditDto">
+        UPDATE role
+        <set>
+            <if test="roleName   != null and roleName   != ''">role_name  = #{roleName},</if>
+            <if test="dataScope  != null">data_scope = #{dataScope},</if>
+            <if test="remark     != null">remark     = #{remark},</if>
+            <if test="status     != null">status     = #{status},</if>
+            <if test="authority  != null">authority  = #{authority},</if>
+            update_time = NOW()
+        </set>
+        WHERE role_id = #{roleId}
+    </update>
+
+    <!-- 单条删除 -->
+    <delete id="deleteById">
+        DELETE FROM role WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- 批量删除 -->
+    <delete id="batchDelete">
+        DELETE FROM role WHERE role_id IN
+        <foreach collection="roleIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 下拉列表：只返回启用角色 -->
+    <select id="selectAllEnabled" resultType="com.crawler.entity.Role">
+        SELECT * FROM role WHERE status = 1 ORDER BY create_time ASC
+    </select>
+
+    <!-- 查询某角色下的用户（关联user、dept表） -->
+    <select id="selectUsersByRoleId" resultType="com.crawler.entity.dto.RoleUserListDto">
+        SELECT u.user_id,
+        u.username,
+        u.phone,
+        d.dept_name AS deptName,
+        u.status,
+        u.create_time AS createTime
+        FROM user_role ur
+        JOIN user  u ON ur.user_id = u.user_id
+        LEFT JOIN dept d ON u.dept_id  = d.dept_id
+        WHERE ur.role_id = #{roleId}
+        ORDER BY u.create_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 统计某角色下用户总数 -->
+    <select id="countUsersByRoleId" resultType="int">
+        SELECT COUNT(1) FROM user_role WHERE role_id = #{roleId}
+    </select>
+
+</mapper>
