@@ -31,7 +31,7 @@ public class ReportAsync {
     @Value("${crawler.cron.http-timeout-ms:60000}")
     private int httpTimeoutMs;
 
-    @Value("${http-readTimeout-ms}")
+    @Value("${crawler.cron.http-readTimeout-ms}")
     private int httpReadTimeoutMs;
 
 

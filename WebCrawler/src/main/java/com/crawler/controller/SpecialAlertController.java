@@ -88,7 +88,8 @@ public class SpecialAlertController {
     public Result searchAllAlert(HttpServletRequest request){
         User currentUser = (User) request.getAttribute("currentUser");
         // TODO 这里需要根据用户权限重新设计
-        Map<String, Object> data = specialAlertService.searchAllAlert(currentUser.getUserId());
+        Integer userId = Math.toIntExact(currentUser.getUserId());
+        Map<String, Object> data = specialAlertService.searchAllAlert(userId);
         return Result.success(data);
     }
 
