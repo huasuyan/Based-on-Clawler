@@ -18,6 +18,7 @@ public class SpecialAlertPageQueryDto {
     private String keyWord;         // 预警词（模糊查询）
     private Integer triggerState;   // 启用状态：0停止 1启用
     private String targetSource;    // 数据源
+    private Integer alertLevel;   // 预警等级
     /**
      * 供 MyBatis XML 使用，自动计算 OFFSET
      * XML中写: limit #{pageSize} offset #{offset}

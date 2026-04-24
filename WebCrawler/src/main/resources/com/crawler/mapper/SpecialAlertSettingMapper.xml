@@ -42,6 +42,9 @@
             <if test="targetSource != null and targetSource != ''">
                 and target_source = #{targetSource}
             </if>
+            <if test="alertLevel != null">
+                and alert_level = #{alertLevel}
+            </if>
         </where>
         order by create_time desc
         limit #{pageSize} offset #{offset}
