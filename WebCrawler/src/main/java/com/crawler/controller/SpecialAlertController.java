@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -26,8 +28,20 @@ public class SpecialAlertController {
         User currentUser = (User) request.getAttribute("currentUser");
         queryDto.setUserId(Long.valueOf(currentUser.getUserId()));
 
-        Map<String, Object> list = specialAlertService.pageList(queryDto);
-        return Result.success(list);
+        List<SpecialAlertDto> alertInfo = specialAlertService.pageList(queryDto);
+
+        // 给列表每一项设置 userName（当前登录用户名称）
+        if (alertInfo != null && !alertInfo.isEmpty()) {
+            String currentUserName = currentUser.getUsername();
+            for (SpecialAlertDto dto : alertInfo) {
+                dto.setUserName(currentUserName);
+            }
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("alertInfo", alertInfo);
+
+        return Result.success(result);
     }
 
     //  新增预警专题

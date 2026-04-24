@@ -3,12 +3,13 @@ package com.crawler.service;
 import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SpecialAlertService {
 
     //显示预警专题列表（分页）
-    Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto);
+    List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto);
 
     //新增预警专题
     Map<String, Object> create(SpecialAlertCreateDto createDto);
