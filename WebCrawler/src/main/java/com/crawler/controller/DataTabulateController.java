@@ -17,7 +17,7 @@ public class DataTabulateController {
     @Resource
     private DataTabulateService dataTabulateService;
 
-    @GetMapping("/SpecialAlert")
+    @GetMapping("/specialAlert")
     public Result  countSpecialAlert(@RequestParam Integer alertId) {
 
         AlertTabulate res = dataTabulateService.countSpecialAlert(alertId);

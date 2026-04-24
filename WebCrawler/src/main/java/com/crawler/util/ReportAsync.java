@@ -31,6 +31,9 @@ public class ReportAsync {
     @Value("${crawler.cron.http-timeout-ms:60000}")
     private int httpTimeoutMs;
 
+    @Value("${http-readTimeout-ms}")
+    private int httpReadTimeoutMs;
+
 
     /**
      * 异步执行一次报告专题任务：
@@ -65,6 +68,7 @@ public class ReportAsync {
                     .body(JSONUtil.toJsonStr(crawlBody))
                     .contentType("application/json")
                     .timeout(httpTimeoutMs)
+                    .setReadTimeout(httpReadTimeoutMs)
                     .execute();
 
             if (!crawlResp.isOk()) {
