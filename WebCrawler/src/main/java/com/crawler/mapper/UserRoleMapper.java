@@ -17,4 +17,6 @@ public interface UserRoleMapper {
     void batchDeleteByRoleIds(@Param("roleIds") List<Long> roleIds);
     // 查询用户绑定的所有角色
     List<Long> selectRoleIdsByUserId(@Param("userId") Long userId);
+    // 查询角色下所有用户
+    List<Long> selectUserIdsByRoleId(Long roleId);
 }

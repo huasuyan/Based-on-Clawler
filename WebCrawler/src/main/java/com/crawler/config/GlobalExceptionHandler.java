@@ -1,10 +1,12 @@
 package com.crawler.config;
 
 import com.crawler.entity.Result;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
@@ -42,6 +44,13 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public Result handleRuntimeException(RuntimeException e) {
+        return Result.error(e.getMessage());
+    }
+
+    // 新增：专门处理权限不足，返回 403
+    @ExceptionHandler(com.crawler.exception.PermissionDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result handlePermissionDenied(com.crawler.exception.PermissionDeniedException e) {
         return Result.error(e.getMessage());
     }
 

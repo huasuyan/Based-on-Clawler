@@ -5,6 +5,7 @@ import com.crawler.entity.Role;
 import com.crawler.entity.dto.*;
 import com.crawler.mapper.RoleMapper;
 import com.crawler.mapper.UserRoleMapper;
+import com.crawler.service.PermissionService;
 import com.crawler.service.RoleService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Resource
     private UserRoleMapper userRoleMapper;
+
+    @Resource
+    private PermissionService permissionService;
+
 
     /* ------------------------------------------------------------------ */
     /*  分页列表                                                             */
@@ -108,6 +113,11 @@ public class RoleServiceImpl implements RoleService {
         Role updated = roleMapper.selectById(editDto.getRoleId());
         Map<String, Object> result = new HashMap<>();
         result.put("updatedRole", new RoleListDto(updated));
+
+        // 清除该角色下所有用户的权限缓存
+        List<Long> affectedUserIds = userRoleMapper.selectUserIdsByRoleId(editDto.getRoleId());
+        affectedUserIds.forEach(permissionService::evictCache);
+
         return result;
     }
 
@@ -205,7 +215,6 @@ public class RoleServiceImpl implements RoleService {
                 .map(RoleDropdownDto::new)
                 .collect(Collectors.toList());
     }
-
     /* ------------------------------------------------------------------ */
     /*  当前用户所有权限（聚合所有角色authority，同名字段取最大值 1优先）           */
     /* ------------------------------------------------------------------ */
