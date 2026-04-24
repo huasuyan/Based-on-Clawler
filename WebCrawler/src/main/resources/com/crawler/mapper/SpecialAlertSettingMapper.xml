@@ -97,6 +97,28 @@
         where user_id = #{userId}
     </select>
 
+    <!-- 统计总条数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM special_alert_setting
+        <where>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="alertName != null and alertName != ''">
+                and alert_name like concat('%', #{alertName}, '%')
+            </if>
+            <if test="keyWord != null and keyWord != ''">
+                and key_word like concat('%', #{keyWord}, '%')
+            </if>
+            <if test="triggerState != null">
+                and trigger_state = #{triggerState}
+            </if>
+            <if test="targetSource != null and targetSource != ''">
+                and target_source = #{targetSource}
+            </if>
+        </where>
+    </select>
+
     <update id="addPendingCount">
         UPDATE special_alert_setting
         SET pending_count = pending_count + #{delta}

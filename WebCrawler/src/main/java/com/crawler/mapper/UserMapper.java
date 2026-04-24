@@ -10,5 +10,7 @@ public interface UserMapper {
     void updateUser(UserUpdateDto userUpdateDto);
 
     User selectById(Long userId);
+
+    String selectUserName(Long userId);
 }
 

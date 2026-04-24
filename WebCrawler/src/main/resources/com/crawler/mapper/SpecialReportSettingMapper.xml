@@ -94,4 +94,23 @@
         select * from special_report_setting where status_enabled = 1
     </select>
 
+    <!-- 统计总条数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM role
+        <where>
+            <if test="createUserId != null">
+                and create_user_id = #{createUserId}
+            </if>
+            <if test="reportName != null and reportName != ''">
+                and report_name like concat('%', #{reportName}, '%')
+            </if>
+            <if test="reportType != null">
+                and report_type = #{reportType}
+            </if>
+            <if test="statusEnabled != null">
+                and status_enabled = #{statusEnabled}
+            </if>
+        </where>
+    </select>
+
 </mapper>

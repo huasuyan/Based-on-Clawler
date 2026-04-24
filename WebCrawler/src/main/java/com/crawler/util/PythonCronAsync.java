@@ -65,6 +65,9 @@ public class PythonCronAsync {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 body.put("filter_time", sdf.format(latestNewsTime));
             }
+            else {
+                body.put("filter_time", "");
+            }
 
             // Step3：HTTP POST 调用 Python，阻塞等待返回
             log.info("[进程2] 调用Python接口，alertId={}, filter_time={}",

@@ -52,5 +52,8 @@ public interface SpecialAlertSettingMapper {
     void updateLatestNewsTime(@Param("alertId") Integer alertId,
                               @Param("latestNewsTime") Date latestNewsTime);
 
+    // 统计总条数（分页用）
+    int countPageList(SpecialAlertPageQueryDto queryDto);
+
     List<SpecialAlertListDto> searchAllAlert(Integer userId);
 }

@@ -7,7 +7,7 @@ public class ReportResultPageQueryDto {
     private Long specialReportId;
     private Integer pageNum = 1;
     private Integer pageSize = 10;
-    private String reportType;
+        private String reportType;
     private String reportName;
     private Object monitorKeywords;
 

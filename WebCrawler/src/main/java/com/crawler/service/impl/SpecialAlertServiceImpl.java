@@ -6,10 +6,10 @@ import com.crawler.entity.Result;
 import com.crawler.entity.dto.*;
 import com.crawler.mapper.SpecialAlertSettingMapper;
 import com.crawler.mapper.NewsDataMapper;
+import com.crawler.mapper.UserMapper;
 import com.crawler.service.SpecialAlertService;
 import com.crawler.util.PythonCronAsync;
 import jakarta.annotation.Resource;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,14 +30,32 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     @Resource
     private PythonCronAsync pythonCronAsync;
 
+    @Resource
+    private UserMapper userMapper;
+
     // 列表查询
     @Override
-    public List<SpecialAlertDto> pageList(SpecialAlertPageQueryDto queryDto) {
+    public Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto) {
+        Map<String, Object> result = new HashMap<>();
         List<SpecialAlertDto> alertInfo = specialAlertSettingMapper.pageList(queryDto)
                 .stream()
                 .map(SpecialAlertDto::new)
                 .collect(Collectors.toList());
-        return alertInfo;
+        int total = specialAlertSettingMapper.countPageList(queryDto);
+
+        // 给列表每一项设置 userName（当前登录用户名称）
+        if (alertInfo != null && !alertInfo.isEmpty()) {
+            for (SpecialAlertDto dto : alertInfo) {
+                dto.setUserName(userMapper.selectUserName(dto.getUserId()));
+            }
+        }
+
+        result.put("total",    total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
+        result.put("alertInfo", alertInfo);
+
+        return result;
     }
 
     @Override
