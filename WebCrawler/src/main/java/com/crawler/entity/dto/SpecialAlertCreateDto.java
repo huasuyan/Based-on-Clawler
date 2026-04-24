@@ -19,4 +19,5 @@ public class SpecialAlertCreateDto {
     private Integer alertTrigger;   // 定量触发阈值（frequency=2时必填）
     private String timeRange;       // 预警时间范围，JSON格式
     private Integer alertMethod;    // 预警方式，0：全部、1：站内信、2：邮箱
+    private Integer alertLevel;     // 预警等级，1：一级、2：二级、3：三级
 }

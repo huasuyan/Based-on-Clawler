@@ -11,11 +11,11 @@
         insert into special_alert_setting
             (user_id, alert_name, trigger_state, target_source,
              key_word, params, frequency, alert_trigger,
-             time_range, alert_method, dedup_enable, state, create_time)
+             time_range, alert_method, dedup_enable, state, create_time, alert_level)
         values
             (#{userId}, #{alertName}, 0, #{targetSource},
              #{keyWord}, #{params}, #{frequency}, #{alertTrigger},
-             #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, now())
+             #{timeRange}, #{alertMethod}, #{dedupEnable}, 0, now(), #{alertLevel})
     </insert>
 
     <!-- 根据alertId查询 -->

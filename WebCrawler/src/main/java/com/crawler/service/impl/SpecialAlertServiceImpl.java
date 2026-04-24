@@ -53,6 +53,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
         specialAlertSetting.setTimeRange(createDto.getTimeRange());
         specialAlertSetting.setAlertMethod(createDto.getAlertMethod());
         specialAlertSetting.setDedupEnable(createDto.getDedupEnable());
+        specialAlertSetting.setAlertLevel(createDto.getAlertLevel());
 
         specialAlertSettingMapper.insert(specialAlertSetting);  // useGeneratedKeys，alertId 回填
 
