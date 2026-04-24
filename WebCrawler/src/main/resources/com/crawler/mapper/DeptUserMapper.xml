@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全限定类名一致 -->
+<mapper namespace="com.crawler.mapper.DeptUserMapper">
+
+    <resultMap id="UserResultMap" type="com.crawler.entity.User">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="dept_id" property="deptId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="last_operation" property="lastOperation"/>
+        <result column="last_active_time" property="lastActiveTime"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="role_name" property="roleNames"/>
+    </resultMap>
+
+    <select id="selectUserList" resultMap="UserResultMap">
+        SELECT
+        u.*,
+        d.dept_name,
+        IFNULL(GROUP_CONCAT(r.role_name SEPARATOR ','), '') AS role_name
+        FROM user u
+        LEFT JOIN dept d ON u.dept_id = d.dept_id
+        LEFT JOIN user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.role_id
+        WHERE 1=1
+        <if test="deptId != null">AND u.dept_id = #{deptId}</if>
+        <if test="username != null and username != ''">AND u.username LIKE CONCAT('%',#{username},'%')</if>
+        <if test="status != null">AND u.status = #{status}</if>
+        GROUP BY u.user_id
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countUser" resultType="long">
+        SELECT COUNT(*) FROM user u
+        WHERE 1=1
+        <if test="deptId != null">AND u.dept_id = #{deptId}</if>
+        <if test="username != null and username != ''">AND u.username LIKE CONCAT('%',#{username},'%')</if>
+        <if test="status != null">AND u.status = #{status}</if>
+    </select>
+
+    <select id="selectById" resultMap="UserResultMap">
+        SELECT
+        u.*,
+        d.dept_name,
+        IFNULL(GROUP_CONCAT(r.role_name SEPARATOR ','), '') AS role_names
+        FROM user u
+        LEFT JOIN dept d ON u.dept_id = d.dept_id
+        LEFT JOIN user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.role_id
+        WHERE u.user_id = #{userId}
+        GROUP BY u.user_id
+    </select>
+
+    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user (username, password, phone, dept_Id, status)
+        VALUES (#{username}, #{password}, #{phone}, #{deptId}, #{status})
+    </insert>
+
+
+    <select id="selectByUsername" resultType="com.crawler.entity.User">
+        select * from user where username = #{username}
+    </select>
+
+    <update id="updateUser">
+        UPDATE user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = NOW()
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM user WHERE user_id = #{userId}
+    </delete>
+
+    <delete id="batchDelete">
+        DELETE FROM user WHERE user_id IN
+        <foreach collection="userIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+<!--    <select id="selectUserList" resultMap="UserResultMap">-->
+<!--        SELECT-->
+<!--        u.*,-->
+<!--        d.dept_name,-->
+<!--        r.role_name,-->
+<!--        r.role_id-->
+<!--        FROM user u-->
+<!--        LEFT JOIN sys_dept d ON u.dept_id = d.dept_id-->
+<!--        LEFT JOIN user_role ur ON u.user_id = ur.user_id-->
+<!--        LEFT JOIN sys_role r ON ur.role_id = r.role_id-->
+<!--        WHERE 1=1-->
+<!--        <if test="deptId != null"> AND u.dept_id = #{deptId} </if>-->
+<!--        <if test="username != null and username != ''"> AND u.username LIKE CONCAT('%',#{username},'%') </if>-->
+<!--        <if test="status != null"> AND u.status = #{status} </if>-->
+<!--        LIMIT #{offset}, #{pageSize}-->
+<!--    </select>-->
+
+<!--    <select id="countUser" resultType="long">-->
+<!--        SELECT COUNT(*) FROM user u-->
+<!--        WHERE 1=1-->
+<!--        <if test="deptId != null"> AND u.dept_id = #{deptId} </if>-->
+<!--        <if test="username != null and username != ''"> AND u.username LIKE CONCAT('%', #{username}, '%') </if>-->
+<!--        <if test="status != null"> AND u.status = #{status} </if>-->
+<!--    </select>-->
+
+
+
+<!--    <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">-->
+<!--        INSERT INTO user (username, password, phone, dept_id, status)-->
+<!--        VALUES (#{username}, #{password}, #{phone}, #{deptId}, #{status})-->
+<!--    </insert>-->
+
+<!--    <update id="updateUser" parameterType="com.crawler.entity.User">-->
+<!--        UPDATE user-->
+<!--        <set>-->
+<!--            <if test="username != null">username = #{username},</if>-->
+<!--            <if test="password != null">password = #{password},</if>-->
+<!--            <if test="phone != null">phone = #{phone},</if>-->
+<!--            <if test="deptId != null">dept_id = #{deptId},</if>-->
+<!--            <if test="status != null">status = #{status},</if>-->
+<!--            update_time = NOW()-->
+<!--        </set>-->
+<!--        WHERE user_id = #{userId}-->
+<!--    </update>-->
+
+<!--    <delete id="deleteById" parameterType="java.lang.Long">-->
+<!--        delete from user where user_id = #{userId}-->
+<!--    </delete>-->
+
+<!--    <delete id="batchDeleteByIds">-->
+<!--        DELETE FROM user WHERE user_id IN-->
+<!--        <foreach collection="userIds" item="id" open="(" separator="," close=")">-->
+<!--            #{id}-->
+<!--        </foreach>-->
+<!--    </delete>-->
+
+<!--    <select id="selectById" resultMap="UserResultMap">-->
+<!--        SELECT u.*, d.dept_name, r.role_name, r.role_id-->
+<!--        FROM user u-->
+<!--        LEFT JOIN dept d ON u.dept_id = d.dept_id-->
+<!--        LEFT JOIN user_role ur ON u.user_id = ur.user_id-->
+<!--        LEFT JOIN role r ON ur.role_id = r.role_id-->
+<!--        WHERE u.user_id = #{userId}-->
+<!--    </select>-->
+
+
+</mapper>

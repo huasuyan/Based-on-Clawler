@@ -1,6 +1,5 @@
 package com.crawler.controller;
 
-
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.UserUpdateDto;
@@ -9,8 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -18,20 +15,21 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    //从请求中获取当前登录用户
-    @PostMapping("/update")
-    public Result updateUser(HttpServletRequest request,@RequestBody UserUpdateDto userUpdateDto) {
-//         从请求中获取当前登录用户
+    @PostMapping("update")
+    public Result updateUser(HttpServletRequest request, @RequestBody UserUpdateDto userUpdateDto) {
+
         User currentUser = (User) request.getAttribute("currentUser");
         userUpdateDto.setUserId(currentUser.getUserId());
 
-        userUpdateDto.setUpdateTime(new Date());
+        userService.updateUser(userUpdateDto);
+        return Result.success("修改成功");
+    }
 
-        try {
-            userService.updateUser(userUpdateDto);
-            return Result.success("用户信息修改成功");
-        } catch (Exception e) {
-            return Result.error("用户信息修改失败：" + e.getMessage());
-        }
+
+    @PostMapping("info")
+    public Result info(HttpServletRequest request) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        User user = userService.getUserInfo(currentUser.getUserId());
+        return Result.success(user);
     }
 }

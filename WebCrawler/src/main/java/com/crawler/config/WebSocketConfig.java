@@ -35,8 +35,6 @@ public class WebSocketConfig {
                 response.getHeaders().put("Sec-WebSocket-Protocol", protocols);
                 sec.getUserProperties().put("userId", userId);
             }
-
-
         }
     }
 }

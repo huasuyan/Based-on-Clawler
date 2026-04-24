@@ -1,5 +1,6 @@
 package com.crawler.mapper;
 
+import com.crawler.entity.UserRole;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -7,6 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface UserRoleMapper {
+
+    void insertBatch(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
+
+    void deleteByUserId(Long userId);
+
+    void deleteByUserIds(@Param("userIds") List<Long> userIds);
+
     // 查询角色下是否有关联用户（删除前校验）
     int countByRoleId(@Param("roleId") Long roleId);
     // 批量校验多个角色是否有关联用户

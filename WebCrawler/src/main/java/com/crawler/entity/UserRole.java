@@ -1,6 +1,7 @@
 package com.crawler.entity;
 
 import lombok.Data;
+
 import java.util.Date;
 
 @Data

@@ -6,18 +6,36 @@
 <!-- namespace必须与Mapper接口的全限定类名一致 -->
 <mapper namespace="com.crawler.mapper.UserMapper">
 
-    <update id="updateUser" parameterType="com.crawler.entity.dto.UserUpdateDto">
+    <resultMap id="userResultMap" type="com.crawler.entity.User">
+        <id column="user_id" property="userId" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="phone" property="phone" />
+        <result column="dept_id" property="deptId" />
+        <result column="status" property="status" />
+        <result column="create_time" property="createTime" />
+        <collection property="roleIds" ofType="java.lang.Long">
+            <constructor>
+                <arg column="role_id" />
+            </constructor>
+        </collection>
+    </resultMap>
+
+    <update id="updateUser" parameterType="com.crawler.entity.User">
         update user
         <set>
-            <if test="password != null and password != ''">password = #{password},</if>
-            <if test="phone != null and phone != ''">phone = #{phone},</if>
-            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="phone != null">phone = #{phone},</if>
         </set>
-        where user_id = #{userId}
+        where
+            user_id = #{userId}
     </update>
 
-    <select id="selectById" resultType="com.crawler.entity.User">
-        select * from user where user_id = #{userId}
+    <select id="selectById" resultMap="userResultMap">
+        select u.user_id, u.username, u.password, u.phone, u.dept_id, u.status, u.create_time, ur.role_id
+        from user u left join user_role ur on u.user_id = ur.user_id
+        where u.user_id = #{userId}
     </select>
 
     <select id="selectUserName" resultType="java.lang.String">
