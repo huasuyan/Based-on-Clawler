@@ -1,6 +1,7 @@
 package com.crawler.service.impl;
 
 
+import com.crawler.entity.User;
 import com.crawler.entity.dto.UserUpdateDto;
 import com.crawler.mapper.UserMapper;
 import com.crawler.service.UserService;
@@ -16,5 +17,10 @@ public class UserServiceImpl implements UserService {
     public void updateUser(UserUpdateDto userUpdateDto) {
 
         userMapper.updateUser(userUpdateDto);
+    }
+
+    @Override
+    public User getUserById(Long userId) {
+        return userMapper.selectById(userId);
     }
 }

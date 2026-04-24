@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace必须与Mapper接口的全限定类名一致 -->
+<mapper namespace="com.crawler.mapper.DeptMapper">
+
+    <resultMap id="DeptResultMap" type="com.crawler.entity.Dept">
+        <id column="dept_id" property="deptId"/>
+        <result column="parent_dept_id" property="parentDeptId"/>
+        <result column="dept_name" property="deptName"/>
+        <result column="dept_level" property="deptLevel"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="deptId">
+        INSERT INTO dept (parent_dept_id, dept_name, dept_level, status)
+        VALUES (#{parentDeptId}, #{deptName}, #{deptLevel}, #{status})
+    </insert>
+    <select id="selectAll" resultMap="DeptResultMap">
+        SELECT dept_id, parent_dept_id, dept_name, dept_level, status FROM dept WHERE status = 1
+    </select>
+
+    <select id="selectByParentAndName" resultMap="DeptResultMap">
+        SELECT * FROM dept WHERE parent_dept_id = #{parentDeptId} AND dept_name = #{deptName}
+    </select>
+
+    <select id="selectById" resultMap="DeptResultMap">
+        SELECT * FROM dept WHERE dept_id = #{deptId}
+    </select>
+
+    <update id="update">
+        UPDATE dept
+        <set>
+            <if test="parentDeptId != null">parent_dept_id = #{parentDeptId},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="deptLevel != null">dept_level = #{deptLevel},</if>
+            <if test="status != null">status = #{status},</if>
+            update_time = #{updateTime}
+        </set>
+        where dept_id = #{deptId}
+    </update>
+
+    <!-- 查询是否存在子部门 -->
+    <select id="countChildrenDept" resultType="int">
+        SELECT COUNT(*) FROM dept WHERE parent_dept_id = #{deptId}
+    </select>
+
+    <!-- 查询 user 表中是否存在该部门的用户 -->
+    <select id="countUserByDeptId" resultType="int">
+        SELECT COUNT(*) FROM user WHERE dept_id = #{deptId}
+    </select>
+
+    <!-- 模糊查询部门 -->
+    <select id="selectByDeptNameLike" resultMap="DeptResultMap">
+        SELECT * FROM dept WHERE status = 1 AND dept_name LIKE CONCAT('%', #{searchName}, '%')
+    </select>
+
+    <!-- 查询部门的所有上级部门ID（递归） -->
+    <select id="selectParentIdsByDeptId" resultType="long">
+        WITH RECURSIVE parent AS (
+        SELECT dept_id, parent_dept_id FROM dept WHERE dept_id = #{deptId}
+        UNION ALL
+        SELECT d.dept_id, d.parent_dept_id FROM dept d JOIN parent p ON d.dept_id = p.parent_dept_id
+        )
+        SELECT dept_id FROM parent WHERE dept_id != #{deptId}
+    </select>
+
+    <!-- 删除部门 -->
+    <delete id="deleteById">
+        DELETE FROM dept WHERE dept_id = #{deptId}
+    </delete>
+</mapper>
