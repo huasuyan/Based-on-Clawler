@@ -165,6 +165,10 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     public Map<String, Object> infoList(SpecialAlertInfoDto queryDto) {
         List<ClearNewsData> ClearNewsData = newsDataMapper.infoList(queryDto);
         Map<String, Object> result = new HashMap<>();
+        int total = newsDataMapper.countPageList(queryDto);
+        result.put("total", total);
+        result.put("pageNum",  queryDto.getPageNum());
+        result.put("pageSize", queryDto.getPageSize());
         result.put("NewsDataList", ClearNewsData);
         return result;
     }

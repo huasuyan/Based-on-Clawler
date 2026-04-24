@@ -24,4 +24,7 @@ public interface NewsDataMapper {
 
     // 查询某 alertId 下的全部数据数量（首次执行时使用）
     int countNewsByAlertId(@Param("alertId") Integer alertId);
+
+    // 统计总条数（分页用）
+    int countPageList(SpecialAlertInfoDto queryDto);
 }

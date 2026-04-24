@@ -39,4 +39,14 @@
         WHERE alert_id = #{alertId}
     </select>
 
+    <!-- 统计总条数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM news_data
+        <where>
+            <if test="alertId != null">
+                AND alert_id = #{alertId}
+            </if>
+        </where>
+    </select>
+
 </mapper>
