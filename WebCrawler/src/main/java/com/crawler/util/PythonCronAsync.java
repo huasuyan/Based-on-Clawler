@@ -127,7 +127,7 @@ public class PythonCronAsync {
 
         Integer threshold = specialAlertSetting.getAlertTrigger();
 
-        if (threshold == null) {
+        if (threshold == null || threshold == 0){
             // null：有新增就直接预警
             alertUtil.sendAlertAsync(specialAlertSetting, insertedCount);
         } else {

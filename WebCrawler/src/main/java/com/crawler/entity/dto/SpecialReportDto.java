@@ -1,9 +1,8 @@
 package com.crawler.entity.dto;
 
-import cn.hutool.json.JSONUtil;
 import com.crawler.entity.SpecialReportSetting;
+import com.crawler.util.CommonUtil;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
@@ -32,12 +31,12 @@ public class SpecialReportDto {
         this.specialReportId  = s.getSpecialReportId();
         this.reportName       = s.getReportName();
         this.createUserId     = s.getCreateUserId();
-        this.monitorKeywords  = parseJson(s.getMonitorKeywords());
+        this.monitorKeywords  = CommonUtil.parseJson(s.getMonitorKeywords());
         this.dataSource       = s.getDataSource();
-        this.params           = parseJson(s.getParams());
+        this.params           = CommonUtil.parseJson(s.getParams());
         this.monitorRegion    = s.getMonitorRegion();
         this.reportType       = s.getReportType();
-        this.typeParams       = parseJson(s.getTypeParams());
+        this.typeParams       = CommonUtil.parseJson(s.getTypeParams());
         this.statusEnabled    = s.getStatusEnabled();
         this.createTime       = s.getCreateTime();
         this.executeStatus    = s.getExecuteStatus();
@@ -45,12 +44,4 @@ public class SpecialReportDto {
         this.lastUpdateTime     = s.getLastUpdateTime();
     }
 
-    private static Object parseJson(Object raw) {
-        if (raw == null) return null;
-        String json = raw.toString().trim();
-        if (StringUtils.isBlank(json)) return null;
-        if (json.startsWith("{")) return JSONUtil.parseObj(json);
-        if (json.startsWith("[")) return JSONUtil.parseArray(json);
-        return raw;
-    }
 }
