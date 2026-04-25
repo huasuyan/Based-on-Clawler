@@ -1,5 +1,6 @@
 package com.crawler.entity;
 
+import cn.hutool.json.JSON;
 import lombok.Data;
 
 import java.util.Date;
@@ -17,8 +18,9 @@ public class ReportResult {
     private String sourceMediaAnalysis;
     private String emotionAnalysis;
     private String regionDistribution;
-    private String hotAnalysisWords;
-    private String hotInformation;
+    private String regionDistributionList;
+    private String hotAnalysisWordsList;
+    private String hotInformationList;
     private String disposalOpinions;
     private Date createTime;
     private Date updateTime;

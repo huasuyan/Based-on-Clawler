@@ -19,9 +19,10 @@ public class ReportResultDto {
     private String opinionTrend;
     private String sourceMediaAnalysis;
     private String emotionAnalysis;
+    private String regionDistributionList;
     private String regionDistribution;
-    private String hotAnalysisWords;
-    private String hotInformation;
+    private String hotAnalysisWordsList;
+    private String hotInformationList;
     private String disposalOpinions;
     private Date createTime;
     private Date updateTime;
@@ -38,8 +39,9 @@ public class ReportResultDto {
         this.sourceMediaAnalysis = r.getSourceMediaAnalysis();
         this.emotionAnalysis = r.getEmotionAnalysis();
         this.regionDistribution = r.getRegionDistribution();
-        this.hotAnalysisWords = r.getHotAnalysisWords();
-        this.hotInformation = r.getHotInformation();
+        this.regionDistributionList = r.getRegionDistributionList();
+        this.hotAnalysisWordsList = r.getHotAnalysisWordsList();
+        this.hotInformationList = r.getHotInformationList();
         this.disposalOpinions = r.getDisposalOpinions();
         this.createTime = r.getCreateTime();
         this.updateTime = r.getUpdateTime();
