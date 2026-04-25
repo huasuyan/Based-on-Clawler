@@ -39,7 +39,6 @@ public class DeptUserController {
         return Result.success("用户添加成功");
     }
 
-    //从请求中获取当前登录用户
     @PostMapping("/update")
     @RequirePermission(module = "dept_user", action = "dept_user_update")
     public Result updateUser(@RequestBody UserUpdateDto userUpdateDto) {

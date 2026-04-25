@@ -194,6 +194,10 @@ public class DeptServiceImpl implements DeptService {
             return getDeptTree(deptId, 1);
         }
 
+        if (showEnable ==  null) {
+            showEnable = 0;
+        }
+
         // 1. 获取所有部门
         List<Dept> allDepts;
         if (showEnable == 1) {
