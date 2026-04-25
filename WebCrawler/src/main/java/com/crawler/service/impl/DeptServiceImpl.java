@@ -22,30 +22,41 @@ public class DeptServiceImpl implements DeptService {
      * 获取部门树形列表
      */
     @Override
-// 修改 getDeptTree 方法，返回 VO
-    public Result getDeptTree(Long deptId) {
-        List<Dept> allDepts = deptMapper.selectAll();
+    public Result getDeptTree(Long deptId, Integer showEnable) {
+
+        List<Dept> allDepts;
+        if(showEnable == 1) {
+            allDepts = deptMapper.selectAll();
+        }else {
+            allDepts = deptMapper.selectAllActive();
+        }
         List<DeptTree> tree = new ArrayList<>();
 
         if (deptId != null) {
             // 传入了部门ID，构建包含同级部门的树
+//            Dept targetDept = deptMapper.selectById(deptId);
+//            if (targetDept != null) {
+//                Integer targetLevel = targetDept.getDeptLevel();
+//                // 找到所有同级部门（deptLevel相同）
+//                for (Dept dept : allDepts) {
+//                    if (dept.getDeptLevel().equals(targetLevel)) {
+//                        DeptTree vo = new DeptTree();
+//                        vo.setDeptId(dept.getDeptId());
+//                        vo.setParentDeptId(dept.getParentDeptId());
+//                        vo.setDeptName(dept.getDeptName());
+//                        vo.setDeptLevel(dept.getDeptLevel());
+//                        vo.setStatus(dept.getStatus());
+//                        // 递归构建子节点
+//                        vo.setChildren(buildChildren(allDepts, dept.getDeptId()));
+//                        tree.add(vo);
+//                    }
+//                }
+//            }
             Dept targetDept = deptMapper.selectById(deptId);
             if (targetDept != null) {
-                Integer targetLevel = targetDept.getDeptLevel();
-                // 找到所有同级部门（deptLevel相同）
-                for (Dept dept : allDepts) {
-                    if (dept.getDeptLevel().equals(targetLevel)) {
-                        DeptTree vo = new DeptTree();
-                        vo.setDeptId(dept.getDeptId());
-                        vo.setParentDeptId(dept.getParentDeptId());
-                        vo.setDeptName(dept.getDeptName());
-                        vo.setDeptLevel(dept.getDeptLevel());
-                        vo.setStatus(dept.getStatus());
-                        // 递归构建子节点
-                        vo.setChildren(buildChildren(allDepts, dept.getDeptId()));
-                        tree.add(vo);
-                    }
-                }
+                Long parentId = targetDept.getParentDeptId();
+                // 以父部门ID为根节点构建树，这样会包含所有同级部门
+                tree = buildChildren(allDepts, parentId);
             }
         } else {
             // 未传入部门ID，构建完整树
@@ -180,7 +191,7 @@ public class DeptServiceImpl implements DeptService {
     public Result searchDeptTree(String searchName) {
         if (searchName == null || searchName.trim().isEmpty()) {
             // 搜索条件为空，返回完整树
-            return getDeptTree(null);
+            return getDeptTree(null, 1);
         }
 
         // 1. 模糊查询匹配的部门

@@ -33,4 +33,6 @@ public interface DeptMapper{
 
     //删除部门
     int deleteById(@Param("deptId") Long deptId);
+
+    List<Dept> selectAllActive();
 }

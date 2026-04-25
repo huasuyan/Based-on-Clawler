@@ -21,7 +21,7 @@
         VALUES (#{parentDeptId}, #{deptName}, #{deptLevel}, #{status})
     </insert>
     <select id="selectAll" resultMap="DeptResultMap">
-        SELECT dept_id, parent_dept_id, dept_name, dept_level, status FROM dept WHERE status = 1
+        SELECT dept_id, parent_dept_id, dept_name, dept_level, status FROM dept
     </select>
 
     <select id="selectByParentAndName" resultMap="DeptResultMap">
@@ -67,6 +67,9 @@
         SELECT d.dept_id, d.parent_dept_id FROM dept d JOIN parent p ON d.dept_id = p.parent_dept_id
         )
         SELECT dept_id FROM parent WHERE dept_id != #{deptId}
+    </select>
+    <select id="selectAllActive" resultMap="DeptResultMap">
+        SELECT dept_id, parent_dept_id, dept_name, dept_level, status FROM dept WHERE status = 1
     </select>
 
     <!-- 删除部门 -->

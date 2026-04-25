@@ -22,9 +22,14 @@ public class DeptController {
     private DeptUserService deptUserService;
 
     @GetMapping("/tree")
-    public Result getDeptTree(HttpServletRequest request) {
+    public Result getDeptTree(HttpServletRequest request,@RequestParam Integer showEnable) {
         User currentUser = (User) request.getAttribute("currentUser");
-        return deptService.getDeptTree(currentUser.getDeptId());
+
+        if(deptService.getDeptTree(currentUser.getDeptId(), showEnable) == null) {
+            return Result.error("部门树不存在");
+        }
+
+        return deptService.getDeptTree(currentUser.getDeptId(), showEnable);
     }
 
     /**
