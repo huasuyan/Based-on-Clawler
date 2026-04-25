@@ -220,7 +220,6 @@
         AND region IS NOT NULL AND region != ''
         GROUP BY region
         ORDER BY newsCount DESC
-        LIMIT 10
     </select>
 
     <!-- ==================== 热词聚合（source 字段近似） ==================== -->
