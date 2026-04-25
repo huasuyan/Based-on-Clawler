@@ -33,20 +33,4 @@ public interface DeptUserMapper {
     int batchDelete(@Param("userIds") List<Long> userIds);
 }
 
-//    void updateUser(User user);
-//
-//    User selectById(Long userId);
-//
-//    List<User> selectUserList(Long deptId, String username, Integer status, int offset, Integer pageSize);
-//
-//    Long countUser(Long deptId, String username, Integer status);
-//
-//    User selectByUsername(String username);
-//
-//    void insertUser(User user);
-//
-//    void deleteById(Long userId);
-//
-//    void batchDeleteByIds(List<Long> userIds);
-//}
 

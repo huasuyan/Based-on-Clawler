@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 
 @Data
@@ -25,10 +24,10 @@ public class User {
     private Integer status;
 
     private String deptName;
-    private String roleNames;
+    private String roleName;
 
     @JsonIgnore
-    private List<Long> roleIds;
+    private Long roleId;
 
     @JsonIgnore
     private String lastOperation;
