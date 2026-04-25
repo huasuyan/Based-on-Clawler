@@ -15,5 +15,5 @@ public interface DeptService {
 
     void deleteDept(Long deptId);
 
-    Result searchDeptTree(String searchName);
+    Result searchDeptTree(Long deptId, String searchName, Integer showEnable);
 }

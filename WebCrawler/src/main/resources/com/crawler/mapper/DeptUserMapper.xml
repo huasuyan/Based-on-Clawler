@@ -60,7 +60,7 @@
     </select>
 
     <insert id="insertUser" useGeneratedKeys="true" keyProperty="userId">
-        INSERT INTO user (username, password, phone, dept_Id, status)
+        INSERT INTO user (username, password, phone, dept_id, status)
         VALUES (#{username}, #{password}, #{phone}, #{deptId}, #{status})
     </insert>
 

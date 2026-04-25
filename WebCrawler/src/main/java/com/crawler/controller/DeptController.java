@@ -70,8 +70,12 @@ public class DeptController {
 
     // -------------------------- 新增：部门搜索过滤 --------------------------
     @GetMapping("/searchTree")
-    public Result searchDeptTree(@RequestParam(required = false) String searchName) {
-        return deptService.searchDeptTree(searchName);
+    public Result searchDeptTree(HttpServletRequest request,@RequestParam(required = false) String searchName, @RequestParam Integer showEnable) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        if(currentUser == null) {
+            return Result.error("用户未登录");
+        }
+        return deptService.searchDeptTree(currentUser.getDeptId(), searchName, showEnable);
     }
 
 }
