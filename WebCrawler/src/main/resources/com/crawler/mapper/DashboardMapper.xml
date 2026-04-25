@@ -75,9 +75,9 @@
 
     <insert id="insertOrUpdatePlatformStats">
         INSERT INTO dashboard_platform_stats
-        (stat_date, stat_type, platform, sensitive_count, neutral_count, normal_count, total_count)
+        (stat_date, stat_type, source, sensitive_count, neutral_count, normal_count, total_count)
         VALUES
-        (#{statDate}, #{statType}, #{platform}, #{sensitiveCount}, #{neutralCount}, #{normalCount}, #{totalCount})
+        (#{statDate}, #{statType}, #{source}, #{sensitiveCount}, #{neutralCount}, #{normalCount}, #{totalCount})
         ON DUPLICATE KEY UPDATE
         sensitive_count = VALUES(sensitive_count),
         neutral_count   = VALUES(neutral_count),
@@ -142,6 +142,14 @@
         SELECT COUNT(1) FROM news_data WHERE article_type = 'video'
     </select>
 
+    <select id="countTotalAlertArticle" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE (article_type != 'video' OR article_type IS NULL) AND alert_id IS NOT NULL AND alert_id != 0
+    </select>
+
+    <select id="countTotalAlertVideo" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM news_data WHERE article_type = 'video' AND alert_id IS NOT NULL AND alert_id != 0
+    </select>
+
     <select id="countTodayNews" resultType="java.lang.Long">
         SELECT COUNT(1) FROM news_data WHERE DATE(create_time) = #{today}
     </select>
@@ -188,7 +196,7 @@
     <!-- ==================== 平台聚合（news_data + clear_data） ==================== -->
     <select id="aggregatePlatformStats" resultType="com.crawler.entity.DashboardPlatformStats">
         SELECT
-        n.platform,
+        n.source,
         SUM(CASE WHEN c.sensitivity_level >= 2 THEN 1 ELSE 0 END) AS sensitiveCount,
         SUM(CASE WHEN c.sensitivity_level = 1 THEN 1 ELSE 0 END)  AS neutralCount,
         SUM(CASE WHEN c.sensitivity_level = 0 OR c.sensitivity_level IS NULL THEN 1 ELSE 0 END) AS normalCount,
@@ -196,8 +204,8 @@
         FROM news_data n
         LEFT JOIN clear_data c ON n.news_id = c.news_id
         WHERE DATE(n.create_time) BETWEEN #{startDate} AND #{endDate}
-        AND n.platform IS NOT NULL
-        GROUP BY n.platform
+        AND n.source IS NOT NULL
+        GROUP BY n.source
         ORDER BY totalCount DESC
         LIMIT 10
     </select>

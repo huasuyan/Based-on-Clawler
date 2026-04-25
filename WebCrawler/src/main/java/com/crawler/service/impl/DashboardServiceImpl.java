@@ -117,7 +117,7 @@ public class DashboardServiceImpl implements DashboardService {
         // 合并同一平台多天数据
         Map<String, DashboardPlatformStats> merged = new LinkedHashMap<>();
         for (DashboardPlatformStats s : list) {
-            merged.merge(s.getPlatform(), s, (existing, newVal) -> {
+            merged.merge(s.getSource(), s, (existing, newVal) -> {
                 existing.setSensitiveCount(
                         existing.getSensitiveCount() + newVal.getSensitiveCount());
                 existing.setNeutralCount(
@@ -134,7 +134,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .sorted((a, b) -> b.getTotalCount() - a.getTotalCount())
                 .map(s -> {
                     PlatformBarDto bar = new PlatformBarDto();
-                    bar.setPlatform(s.getPlatform());
+                    bar.setSource(s.getSource());
                     bar.setSensitive(s.getSensitiveCount());
                     bar.setNeutral(s.getNeutralCount());
                     bar.setNormal(s.getNormalCount());
@@ -145,7 +145,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<PlatformPieDto> pieData = barData.stream()
                 .map(b -> {
                     PlatformPieDto pie = new PlatformPieDto();
-                    pie.setPlatform(b.getPlatform());
+                    pie.setSource(b.getSource());
                     pie.setValue(b.getTotal());
                     return pie;
                 }).collect(Collectors.toList());
@@ -231,9 +231,9 @@ public class DashboardServiceImpl implements DashboardService {
         Long totalNewsArticle = safe(dashboardMapper.countTotalNewsArticle());
         Long totalNewsVideo = safe(dashboardMapper.countTotalNewsVideo());
         Long totalAlert = safe(dashboardMapper.countTotalAlert());
-        // 预警中文章/视频近似按比例分配（无视频字段时可改为0）
-        Long totalAlertArticle = totalAlert * 63 / 100;
-        Long totalAlertVideo = totalAlert - totalAlertArticle;
+        // 预警中文章/视频
+        Long totalAlertArticle = safe(dashboardMapper.countTotalAlertArticle());
+        Long totalAlertVideo = safe(dashboardMapper.countTotalAlertVideo());
 
         Long todayNews = safe(dashboardMapper.countTodayNews(today));
         Long todayNewsArticle = safe(dashboardMapper.countTodayNewsArticle(today));

@@ -50,7 +50,7 @@ public class PythonCronAsync {
         Integer alertId = specialAlertSetting.getAlertId();
         Long userId = specialAlertSetting.getUserId();
         //更新上次触发时间
-        specialAlertSettingMapper.updateLastTriggerTime(alertId);
+
         log.info("[进程2] 启动，alertId={}", alertId);
 
         try {
@@ -83,6 +83,8 @@ public class PythonCronAsync {
                     .setReadTimeout(httpReadTimeoutMs)
                     .execute();
 
+            // 更新上次触发时间
+            specialAlertSettingMapper.updateLastTriggerTime(alertId);
             if (!response.isOk()) {
                 log.error("[进程2] Python接口返回异常，status={}，alertId={}",
                         response.getStatus(), alertId);
@@ -114,7 +116,7 @@ public class PythonCronAsync {
             // Step6：预警判断
             checkAndSendAlert(specialAlertSetting, insertedCount);
 
-            // Step7：更新 state=0（等待下次执行），更新上次触发时间
+            // Step7：更新 state=0（等待下次执行）
             updateState(specialAlertSetting, userId, 0);
 
             log.info("[进程2] 完成，alertId={}", alertId);

@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PlatformPieDto {
-    private String platform;
+    private String source;
     private Integer value;
 }

@@ -101,4 +101,6 @@ public class RoleController {
         permissionService.evictCache(Long.valueOf(currentUser.getUserId()));
         return Result.success();
     }
+
+
 }

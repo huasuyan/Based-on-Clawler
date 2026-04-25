@@ -9,7 +9,7 @@ public class DashboardPlatformStats {
     private Long id;
     private LocalDate statDate;
     private String statType;
-    private String platform;
+    private String source;
     private Integer sensitiveCount;
     private Integer neutralCount;
     private Integer normalCount;

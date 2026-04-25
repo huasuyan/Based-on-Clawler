@@ -56,6 +56,8 @@ public interface DashboardMapper {
     Long countTotalNews();
     Long countTotalNewsArticle();   // article_type != 'video'
     Long countTotalNewsVideo();     // article_type = 'video'
+    Long countTotalAlertArticle();   // article_type != 'video'
+    Long countTotalAlertVideo();     // article_type = 'video'
     Long countTodayNews(@Param("today") LocalDate today);
     Long countTodayNewsArticle(@Param("today") LocalDate today);
     Long countTodayNewsVideo(@Param("today") LocalDate today);
