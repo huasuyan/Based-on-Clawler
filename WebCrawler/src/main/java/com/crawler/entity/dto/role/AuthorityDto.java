@@ -20,6 +20,8 @@ public class AuthorityDto {
         alert.put("alert_create", "创建预警设置");
         alert.put("alert_update", "更新预警设置");
         alert.put("alert_delete", "删除预警设置");
+        alert.put("info_list", "查询预警记录");
+        alert.put("info_delete", "删除预警记录");
         authority = new HashMap<>();
         authority.put("role", role);
         authority.put("alert", alert);
