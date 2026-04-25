@@ -61,8 +61,8 @@ public class DeptController {
 
 
 
-    @GetMapping("/delete/{deptId}")
-    public Result deleteDept(@PathVariable Long deptId) {
+    @GetMapping("/delete")
+    public Result deleteDept(@RequestParam Long deptId) {
         log.info("删除部门：{}", deptId);
         deptService.deleteDept(deptId);
         return Result.success("删除成功");
