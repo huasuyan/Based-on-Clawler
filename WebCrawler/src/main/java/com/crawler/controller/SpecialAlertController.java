@@ -39,7 +39,7 @@ public class SpecialAlertController {
 
     // 根据预警Id查询预警配置信息
     @GetMapping("/searchById")
-    @RequirePermission(module = "alert", action = "alert_select")
+    @RequirePermission(module = "alert", action = "alert_update")
     public Result searchById(HttpServletRequest request,
                           @RequestParam Integer alertId){
 
@@ -71,7 +71,7 @@ public class SpecialAlertController {
 
     //  启用 / 关闭预警专题（异步通知Python）
     @GetMapping("/triggerState")
-    @RequirePermission(module = "alert", action = "alert_trigger")
+    @RequirePermission(module = "alert", action = "alert_update")
     public Result triggerState(@RequestParam Integer alertId) {
         Map<String, Object> data = specialAlertService.toggleTriggerState(alertId);
         // 返回最新状态码
@@ -98,7 +98,7 @@ public class SpecialAlertController {
 
     //  显示舆情消息列表
     @PostMapping("/infoList")
-    @RequirePermission(module = "alert", action = "info_list")
+    @RequirePermission(module = "alert", action = "alert_select")
     public Result infoList(@RequestBody SpecialAlertInfoDto queryDto) {
         Map<String, Object> data = specialAlertService.infoList(queryDto);
         return Result.success(data);
@@ -106,7 +106,7 @@ public class SpecialAlertController {
 
     //  删除舆情消息
     @PostMapping("/infoDelete")
-    @RequirePermission(module = "alert", action = "info_delete")
+    @RequirePermission(module = "alert", action = "alert_delete")
     public Result infoDelete(@RequestBody Map<String, Object> body) {
         Long newsId = Long.parseLong(String.valueOf(body.get("newsId")));
         return specialAlertService.infoDelete(newsId);

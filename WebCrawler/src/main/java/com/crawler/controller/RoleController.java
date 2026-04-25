@@ -1,5 +1,6 @@
 package com.crawler.controller;
 
+import com.crawler.annotation.RequirePermission;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.role.*;
@@ -33,6 +34,7 @@ public class RoleController {
 
     /** 新增角色 */
     @PostMapping("/add")
+    @RequirePermission(module = "role", action = "role_insert")
     public Result add(@RequestBody RoleCreateDto createDto) {
         Map<String, Object> data = roleService.add(createDto);
         return Result.success(data);
@@ -40,6 +42,7 @@ public class RoleController {
 
     /** 编辑角色 */
     @PostMapping("/update")
+    @RequirePermission(module = "role", action = "role_update")
     public Result update(@RequestBody RoleEditDto editDto) {
         Map<String, Object> data = roleService.update(editDto);
         return Result.success(data);
@@ -54,6 +57,7 @@ public class RoleController {
 
     /** 单条删除 */
     @GetMapping("/delete")
+    @RequirePermission(module = "role", action = "role_delete")
     public Result delete(@RequestParam Long roleId) {
         roleService.delete(roleId);
         return Result.success();
@@ -61,6 +65,7 @@ public class RoleController {
 
     /** 批量删除 */
     @PostMapping("/batchDelete")
+    @RequirePermission(module = "role", action = "role_delete")
     public Result batchDelete(@RequestBody Map<String, List<Long>> body) {
         List<Long> roleIds = body.get("roleIds");
         roleService.batchDelete(roleIds);

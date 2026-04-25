@@ -1,6 +1,7 @@
 package com.crawler.controller;
 
 
+import com.crawler.annotation.RequirePermission;
 import com.crawler.entity.Dept;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
@@ -36,6 +37,7 @@ public class DeptController {
      * 新增顶级部门
      */
     @PostMapping("/addTop")
+    @RequirePermission(module = "dept", action = "dept_insert")
     public Result addTopDept(@RequestBody Dept dept) {
         deptService.addTopDept(dept);
         return Result.success("新增成功");
@@ -45,6 +47,7 @@ public class DeptController {
      * 新增下级部门
      */
     @PostMapping("/addChild")
+    @RequirePermission(module = "dept", action = "dept_insert")
     public Result addChildDept(@RequestBody Dept dept) {
         deptService.addChildDept(dept);
         return Result.success("新增成功");
@@ -54,6 +57,7 @@ public class DeptController {
      * 编辑部门信息
      */
     @PostMapping("/update")
+    @RequirePermission(module = "dept", action = "dept_update")
     public Result updateDept(@RequestBody Dept dept) {
         deptService.updateDept(dept);
         return Result.success("更新成功");
@@ -62,6 +66,7 @@ public class DeptController {
 
 
     @GetMapping("/delete")
+    @RequirePermission(module = "dept", action = "dept_delete")
     public Result deleteDept(@RequestParam Long deptId) {
         log.info("删除部门：{}", deptId);
         deptService.deleteDept(deptId);

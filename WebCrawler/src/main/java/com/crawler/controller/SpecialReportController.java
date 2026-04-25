@@ -1,5 +1,6 @@
 package com.crawler.controller;
 
+import com.crawler.annotation.RequirePermission;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
@@ -23,6 +24,7 @@ public class SpecialReportController {
 
     // 新增报告专题
     @PostMapping("/create")
+    @RequirePermission(module = "report", action = "report_insert")
     public Result create(HttpServletRequest request,
                          @RequestBody SpecialReportCreateDto createDto) {
         User currentUser = (User) request.getAttribute("currentUser");
@@ -33,6 +35,7 @@ public class SpecialReportController {
 
     // 编辑报告专题
     @PostMapping("/edit")
+    @RequirePermission(module = "report", action = "report_update")
     public Result edit(@RequestBody SpecialReportEditDto editDto) {
         specialReportService.edit(editDto);
         return Result.success();
@@ -40,6 +43,7 @@ public class SpecialReportController {
 
     // 分页查询报告专题列表
     @PostMapping("/pageList")
+    @RequirePermission(module = "report", action = "report_select")
     public Result pageList(HttpServletRequest request,
                            @RequestBody SpecialReportPageQueryDto queryDto) {
         User currentUser = (User) request.getAttribute("currentUser");
@@ -50,6 +54,7 @@ public class SpecialReportController {
 
     // 删除报告专题（须停用后才能删除）
     @GetMapping("/delete")
+    @RequirePermission(module = "report", action = "report_delete")
     public Result delete(@RequestParam Long specialReportId) {
         specialReportService.delete(specialReportId);
         return Result.success();

@@ -1,6 +1,7 @@
 package com.crawler.controller;
 
 
+import com.crawler.annotation.RequirePermission;
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.UserAddDto;
@@ -20,6 +21,7 @@ public class DeptUserController {
     private DeptUserService deptUserService;
 
     @GetMapping("/list")
+    @RequirePermission(module = "dept_user", action = "dept_user_select")
     public Result pageList(@RequestParam(defaultValue = "1") Integer pageNum,
                            @RequestParam(defaultValue = "10") Integer pageSize,
                            @RequestParam(required = false) Long deptId,
@@ -31,6 +33,7 @@ public class DeptUserController {
     }
 
     @PostMapping("/add")
+    @RequirePermission(module = "dept_user", action = "dept_user_insert")
     public Result addUser(@RequestBody UserAddDto dto) {
         deptUserService.addUser(dto);
         return Result.success("用户添加成功");
@@ -38,6 +41,7 @@ public class DeptUserController {
 
     //从请求中获取当前登录用户
     @PostMapping("/update")
+    @RequirePermission(module = "dept_user", action = "dept_user_update")
     public Result updateUser(@RequestBody UserUpdateDto userUpdateDto) {
 
         try {
@@ -50,6 +54,7 @@ public class DeptUserController {
 
 
     @GetMapping("/delete")
+    @RequirePermission(module = "dept_user", action = "dept_user_delete")
     public Result deleteUser(HttpServletRequest request, @RequestParam Long userId) {
         // 从request获取当前登录用户ID（简化，实际从token中获取）
         User currentUser = (User) request.getAttribute("currentUser");
@@ -59,6 +64,7 @@ public class DeptUserController {
     }
 
     @PostMapping("/batchDelete")
+    @RequirePermission(module = "dept_user", action = "dept_user_delete")
     public Result batchDelete(HttpServletRequest request, @RequestBody List<Long> userIds) {
         // 从request获取当前登录用户ID（简化，实际从token中获取）
         User currentUser = (User) request.getAttribute("currentUser");
@@ -68,6 +74,7 @@ public class DeptUserController {
     }
 
     @GetMapping("/detail")
+    @RequirePermission(module = "dept_user", action = "dept_user_select")
     public Result detail(@RequestParam Long userId) {
         return Result.success(deptUserService.detail(userId));
     }
