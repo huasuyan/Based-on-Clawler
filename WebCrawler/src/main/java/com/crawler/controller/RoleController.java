@@ -2,10 +2,7 @@ package com.crawler.controller;
 
 import com.crawler.entity.Result;
 import com.crawler.entity.User;
-import com.crawler.entity.dto.role.RoleCreateDto;
-import com.crawler.entity.dto.role.RoleDropdownDto;
-import com.crawler.entity.dto.role.RoleEditDto;
-import com.crawler.entity.dto.role.RolePageQueryDto;
+import com.crawler.entity.dto.role.*;
 import com.crawler.service.PermissionService;
 import com.crawler.service.RoleService;
 import jakarta.annotation.Resource;
@@ -102,5 +99,9 @@ public class RoleController {
         return Result.success();
     }
 
-
+    /** 获取所有权限项 */
+    @GetMapping("/getAuthority")
+    public Result getAuthority(HttpServletRequest request) {
+        return Result.success(new AuthorityDto());
+    }
 }
