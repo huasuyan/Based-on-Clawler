@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(com.crawler.exception.PermissionDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result handlePermissionDenied(com.crawler.exception.PermissionDeniedException e) {
-        return Result.error(e.getMessage());
+        return Result.permissionError(e.getMessage());
     }
 
     /**

@@ -33,4 +33,11 @@ public class Result {
         return result;
     }
 
+    public static Result permissionError(String msg) {
+        Result result = new Result();
+        result.code = -1;
+        result.msg = msg;
+        return result;
+    }
+
 }
