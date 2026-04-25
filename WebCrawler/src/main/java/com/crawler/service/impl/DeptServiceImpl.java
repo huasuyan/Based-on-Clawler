@@ -32,29 +32,18 @@ public class DeptServiceImpl implements DeptService {
         }
         List<DeptTree> tree = new ArrayList<>();
 
-        if (deptId != null) {
+        if (deptId != 0) {
             Dept targetDept = deptMapper.selectById(deptId);
             if (targetDept != null) {
-                Long parentId = targetDept.getParentDeptId();
-                if (parentId == 0) {
-                    // 如果目标部门是根部门，直接构建完整树
-                    tree = buildChildren(allDepts, 0L);
-                } else {
-                    // 找到父部门
-                    Dept parentDept = deptMapper.selectById(parentId);
-                    if (parentDept != null) {
-                        // 为父部门创建树节点
-                        DeptTree parentNode = new DeptTree();
-                        parentNode.setDeptId(parentDept.getDeptId());
-                        parentNode.setParentDeptId(parentDept.getParentDeptId());
-                        parentNode.setDeptName(parentDept.getDeptName());
-                        parentNode.setDeptLevel(parentDept.getDeptLevel());
-                        parentNode.setStatus(parentDept.getStatus());
-                        // 构建父部门的子节点（包含同级部门）
-                        parentNode.setChildren(buildChildren(allDepts, parentId));
-                        tree.add(parentNode);
-                    }
-                }
+                DeptTree rootNode = new DeptTree();
+                rootNode.setDeptId(targetDept.getDeptId());
+                rootNode.setParentDeptId(targetDept.getParentDeptId());
+                rootNode.setDeptName(targetDept.getDeptName());
+                rootNode.setDeptLevel(targetDept.getDeptLevel());
+                rootNode.setStatus(targetDept.getStatus());
+                // 构建子节点
+                rootNode.setChildren(buildChildren(allDepts, deptId));
+                tree.add(rootNode);
             }
         } else {
             // 未传入部门ID，构建完整树
@@ -207,7 +196,7 @@ public class DeptServiceImpl implements DeptService {
         }
         // 2. 确定需要考虑的部门范围（同级和子部门）
         Set<Long> scopeDeptIds = new HashSet<>();
-        if (deptId != null) {
+        if (deptId != 0) {
             Dept targetDept = deptMapper.selectById(deptId);
             if (targetDept != null) {
                 Long parentId = targetDept.getParentDeptId();
@@ -253,10 +242,8 @@ public class DeptServiceImpl implements DeptService {
                 .collect(Collectors.toList());
 
         // 7. 构建树形结构
-        List<DeptTree> tree = new ArrayList<>();
-        if (deptId != null) {
-            tree = buildChildren(filteredDepts, deptId);
-        }
+        List<DeptTree> tree;
+        tree = buildChildren(filteredDepts, deptId);
 
         return Result.success(tree);
     }
