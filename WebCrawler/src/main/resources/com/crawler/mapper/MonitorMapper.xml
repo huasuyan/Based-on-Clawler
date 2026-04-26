@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.MonitorMapper">
+
+    <!-- 根据关键词模糊匹配预警专题，返回匹配的alert_id列表 -->
+    <select id="searchAlertIdsByKeyword" resultType="java.lang.Integer">
+        SELECT alert_id
+        FROM special_alert_setting
+        WHERE alert_name LIKE CONCAT('%', #{keyWord}, '%')
+           OR key_word LIKE CONCAT('%', #{keyWord}, '%')
+    </select>
+
+    <!-- 根据关键词模糊匹配报告专题，返回匹配的special_report_id列表 -->
+    <select id="searchReportIdsByKeyword" resultType="java.lang.Long">
+        SELECT special_report_id
+        FROM special_report_setting
+        WHERE report_name LIKE CONCAT('%', #{keyWord}, '%')
+           OR monitor_keywords LIKE CONCAT('%', #{keyWord}, '%')
+    </select>
+
+    <!-- 多条件筛选查询文章列表 -->
+    <select id="queryArticleList" resultType="com.crawler.entity.dto.ClearNewsData">
+        SELECT
+        n.news_id, n.special_report_id, n.alert_id,
+        n.title, n.content, n.video, n.platform, n.source,
+        n.publisher, n.publish_time, n.comment, n.region,
+        n.original_url, n.article_type, n.source_url, n.create_time,
+        c.sensitivity_level, c.sensitivity_label, c.sentiment_type
+        FROM news_data n
+        LEFT JOIN clear_data c ON n.news_id = c.news_id
+        <where>
+            <if test="startTime != null and startTime != ''">
+                AND n.publish_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND n.publish_time &lt;= #{endTime}
+            </if>
+            <if test="sensitivityLevels != null and sensitivityLevels.size() > 0">
+                AND c.sensitivity_level IN
+                <foreach collection="sensitivityLevels" item="level" open="(" separator="," close=")">
+                    #{level}
+                </foreach>
+            </if>
+            <if test="source != null and source != '' and source != '综合'">
+                AND n.source LIKE CONCAT('%', #{source}, '%')
+            </if>
+            <if test="region != null and region != ''">
+                AND n.region LIKE CONCAT('%', #{region}, '%')
+            </if>
+            <if test="(alertIds != null and alertIds.size() > 0) or (reportIds != null and reportIds.size() > 0)">
+                <if test="alertIds != null and alertIds.size() > 0 and reportIds != null and reportIds.size() > 0">
+                    AND (n.alert_id IN
+                    <foreach collection="alertIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                    OR n.special_report_id IN
+                    <foreach collection="reportIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                    )
+                </if>
+                <if test="alertIds != null and alertIds.size() > 0 and (reportIds == null or reportIds.size() == 0)">
+                    AND n.alert_id IN
+                    <foreach collection="alertIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="reportIds != null and reportIds.size() > 0 and (alertIds == null or alertIds.size() == 0)">
+                    AND n.special_report_id IN
+                    <foreach collection="reportIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </if>
+        </where>
+        ORDER BY n.publish_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 统计筛选条件下的文章总数 -->
+    <select id="countArticleList" resultType="int">
+        SELECT COUNT(1)
+        FROM news_data n
+        LEFT JOIN clear_data c ON n.news_id = c.news_id
+        <where>
+            <if test="startTime != null and startTime != ''">
+                AND n.publish_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                AND n.publish_time &lt;= #{endTime}
+            </if>
+            <if test="sensitivityLevels != null and sensitivityLevels.size() > 0">
+                AND c.sensitivity_level IN
+                <foreach collection="sensitivityLevels" item="level" open="(" separator="," close=")">
+                    #{level}
+                </foreach>
+            </if>
+            <if test="source != null and source != '' and source != '综合'">
+                AND n.source LIKE CONCAT('%', #{source}, '%')
+            </if>
+            <if test="region != null and region != ''">
+                AND n.region LIKE CONCAT('%', #{region}, '%')
+            </if>
+            <if test="(alertIds != null and alertIds.size() > 0) or (reportIds != null and reportIds.size() > 0)">
+                <if test="alertIds != null and alertIds.size() > 0 and reportIds != null and reportIds.size() > 0">
+                    AND (n.alert_id IN
+                    <foreach collection="alertIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                    OR n.special_report_id IN
+                    <foreach collection="reportIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                    )
+                </if>
+                <if test="alertIds != null and alertIds.size() > 0 and (reportIds == null or reportIds.size() == 0)">
+                    AND n.alert_id IN
+                    <foreach collection="alertIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="reportIds != null and reportIds.size() > 0 and (alertIds == null or alertIds.size() == 0)">
+                    AND n.special_report_id IN
+                    <foreach collection="reportIds" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                </if>
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据reportId查询文章列表（alert_id或special_report_id匹配其中任意一个即可） -->
+    <select id="queryInfoList" resultType="com.crawler.entity.dto.ClearNewsData">
+        SELECT
+        n.news_id, n.special_report_id, n.alert_id,
+        n.title, n.content, n.video, n.platform, n.source,
+        n.publisher, n.publish_time, n.comment, n.region,
+        n.original_url, n.article_type, n.source_url, n.create_time,
+        c.sensitivity_level, c.sensitivity_label, c.sentiment_type
+        FROM news_data n
+        LEFT JOIN clear_data c ON n.news_id = c.news_id
+        WHERE n.alert_id = #{reportId}
+           OR n.special_report_id = #{reportId}
+        ORDER BY n.publish_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 统计reportId对应文章总数 -->
+    <select id="countInfoList" resultType="int">
+        SELECT COUNT(1)
+        FROM news_data
+        WHERE alert_id = #{reportId}
+           OR special_report_id = #{reportId}
+    </select>
+
+    <!-- 查询所有预警专题 -->
+    <select id="selectAllAlerts" resultType="com.crawler.entity.SpecialAlertSetting">
+        SELECT * FROM special_alert_setting
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询所有启用中的报告专题 -->
+    <select id="selectAllReports" resultType="com.crawler.entity.SpecialReportSetting">
+        SELECT * FROM special_report_setting
+        WHERE status_enabled = 1
+        ORDER BY create_time DESC
+    </select>
+
+</mapper>
