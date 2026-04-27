@@ -71,26 +71,19 @@ public class DeptUserServiceImpl implements DeptUserService {
         return deptUserMapper.selectById(userId);
     }
 
-    public UserPageDto pageList(Long currentDeptId, Integer pageNum, Integer pageSize,
+    @Override
+    public UserPageDto pageList(Integer pageNum, Integer pageSize,
                                 Long deptId, String username, Integer status) {
         pageNum = pageNum == null ? 1 : pageNum;
         pageSize = pageSize == null ? 10 : pageSize;
         int offset = (pageNum - 1) * pageSize;
 
-        // 部门ID列表：currentDeptId=0 时，传null；否则获取当前部门及所有子部门ID
-        List<Long> deptIdList = new ArrayList<>();
-        if (currentDeptId == null) {
-            throw new IllegalArgumentException("当前部门ID不能为空");
-        } else if (currentDeptId == 0) {
-            deptIdList = deptMapper.getAllDeptIds();
-        }else {
-            deptIdList.add(currentDeptId);
-            deptIdList.addAll(getChildDeptIds(currentDeptId));
+        if (deptId == null) {
+            throw new IllegalArgumentException("部门ID不能为空");
         }
 
-        // 查询列表和总数
-        List<User> list = deptUserMapper.selectUserList(deptIdList, username, status, offset, pageSize);
-        Long total = deptUserMapper.countUser(deptIdList, username, status);
+        List<User> list = deptUserMapper.selectUserList(deptId, username, status, offset, pageSize);
+        Long total = deptUserMapper.countUser(deptId, username, status);
 
         // 封装返回结果
         UserPageDto vo = new UserPageDto();
