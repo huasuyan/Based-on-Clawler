@@ -13,7 +13,7 @@ public interface DeptUserService {
 
     User getUserById(Long userId);
 
-    UserPageDto pageList(Long currentDeptId, Integer pageNum, Integer pageSize,Long deptId, String username, Integer status);
+    UserPageDto pageList(Integer pageNum, Integer pageSize,Long deptId, String username, Integer status);
 
     void addUser(UserAddDto dto);
 

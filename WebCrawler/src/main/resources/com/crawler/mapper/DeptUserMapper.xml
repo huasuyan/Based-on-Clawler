@@ -32,11 +32,8 @@
         LEFT JOIN role r ON ur.role_id = r.role_id
         WHERE 1=1
         <!-- 部门条件：deptIdList不为空时，用IN匹配 -->
-        <if test="deptIdList != null and deptIdList.size() > 0">
-            AND u.dept_id IN
-            <foreach collection="deptIdList" item="id" open="(" separator="," close=")">
-                #{id}
-            </foreach>
+        <if test="deptId != null">
+            AND u.dept_id = #{deptId}
         </if>
         <!-- 用户名模糊查询 -->
         <if test="username != null and username != ''">
@@ -58,11 +55,8 @@
         LEFT JOIN user_role ur ON u.user_id = ur.user_id
         LEFT JOIN role r ON ur.role_id = r.role_id
         WHERE 1=1
-        <if test="deptIdList != null and deptIdList.size() > 0">
-            AND u.dept_id IN
-            <foreach collection="deptIdList" item="id" open="(" separator="," close=")">
-                #{id}
-            </foreach>
+        <if test="deptId != null">
+            AND u.dept_id = #{deptId}
         </if>
         <if test="username != null and username != ''">
             AND u.username LIKE CONCAT('%', #{username}, '%')
