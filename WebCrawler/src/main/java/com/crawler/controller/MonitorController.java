@@ -38,28 +38,6 @@ public class MonitorController {
     }
 
     /**
-     * 生成统计图表
-     * 接收前端已筛选的文章数据，前端自行完成图表渲染
-     */
-    @PostMapping("/statistics")
-    public Result generateStatistics(@RequestBody Map<String, Object> body) {
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> dataList = (List<Map<String, Object>>) body.get("dataList");
-        Map<String, Object> data = monitorService.generateStatistics(dataList);
-        return Result.success(data);
-    }
-
-    /**
-     * 展示预警/专题列表
-     * 返回所有预警专题和报告专题，供前端下拉选择
-     */
-    @GetMapping("/searchAllReport")
-    public Result searchAllReport() {
-        Map<String, Object> data = monitorService.searchAllReport();
-        return Result.success(data);
-    }
-
-    /**
      * 检索舆情报告信息
      * 根据专题ID和分页参数，查询该专题关联的所有文章
      */
@@ -68,4 +46,15 @@ public class MonitorController {
         Map<String, Object> data = monitorService.queryInfoList(queryDto);
         return Result.success(data);
     }
+
+    /**
+     * 展示新闻来源下拉列表
+     * 返回所有新闻来源名称，供前端下拉选择
+     */
+    @GetMapping("/searchAllSource")
+    public Result searchAllSource() {
+        List<String> data = monitorService.searchAllSource();
+        return Result.success(data);
+    }
+
 }

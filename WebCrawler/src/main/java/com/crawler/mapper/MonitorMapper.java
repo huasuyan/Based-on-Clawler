@@ -32,17 +32,6 @@ public interface MonitorMapper {
             @Param("pageSize") int pageSize
     );
 
-    // 统计筛选条件下的文章总数（分页用）
-    int countArticleList(
-            @Param("startTime") String startTime,
-            @Param("endTime") String endTime,
-            @Param("sensitivityLevels") List<Integer> sensitivityLevels,
-            @Param("source") String source,
-            @Param("region") String region,
-            @Param("alertIds") List<Integer> alertIds,
-            @Param("reportIds") List<Long> reportIds
-    );
-
     // 根据reportId查询文章列表（支持alertId或specialReportId）
     List<ClearNewsData> queryInfoList(
             @Param("reportId") Long reportId,
@@ -58,4 +47,6 @@ public interface MonitorMapper {
 
     // 查询所有启用中的报告专题（用于searchAllReport）
     List<com.crawler.entity.SpecialReportSetting> selectAllReports();
+
+    List<String> selectAllSources();
 }
