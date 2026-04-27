@@ -9,11 +9,13 @@ import com.crawler.entity.dto.special_alert.SpecialAlertEditDto;
 import com.crawler.entity.dto.special_alert.SpecialAlertInfoDto;
 import com.crawler.entity.dto.special_alert.SpecialAlertPageQueryDto;
 import com.crawler.service.SpecialAlertService;
+import com.crawler.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -23,11 +25,15 @@ public class SpecialAlertController {
     @Resource
     private SpecialAlertService specialAlertService;
 
+    @Resource
+    private UserService userService;
+
     //  显示预警专题列表（分页）,支持筛选功能
     @PostMapping("/pageList")
     @RequirePermission(module = "alert", action = "alert_select")
     public Result pageList(HttpServletRequest request,
                            @RequestBody SpecialAlertPageQueryDto queryDto) {
+        // TODO 权限范围可见性
         // userId 从 token 中获取，不由前端传入
         User currentUser = (User) request.getAttribute("currentUser");
         queryDto.setUserId(Long.valueOf(currentUser.getUserId()));
@@ -92,6 +98,8 @@ public class SpecialAlertController {
         User currentUser = (User) request.getAttribute("currentUser");
         // TODO 这里需要根据用户权限重新设计
         Integer userId = Math.toIntExact(currentUser.getUserId());
+        // 获取用户当前权限下可以访问数据的用户列表
+        List<User> userList = userService.getUserList(currentUser);
         Map<String, Object> data = specialAlertService.searchAllAlert(userId);
         return Result.success(data);
     }

@@ -29,7 +29,6 @@ public class UserController {
     @PostMapping("info")
     public Result info(HttpServletRequest request) {
         User currentUser = (User) request.getAttribute("currentUser");
-        User user = userService.getUserInfo(currentUser.getUserId());
-        return Result.success(user);
+        return Result.success(currentUser);
     }
 }

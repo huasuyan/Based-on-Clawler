@@ -22,6 +22,7 @@ public class ReportResultController {
     @PostMapping("/pageList")
     @RequirePermission(module = "report", action = "report_select")
     public Result pageList(@RequestBody ReportResultPageQueryDto queryDto) {
+        // TODO 用户访问权限内所有报告都能访问
         Map<String, Object> data = reportResultService.pageList(queryDto);
         return Result.success(data);
     }

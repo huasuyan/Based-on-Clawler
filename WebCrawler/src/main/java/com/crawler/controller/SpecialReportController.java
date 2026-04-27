@@ -46,6 +46,7 @@ public class SpecialReportController {
     @RequirePermission(module = "report", action = "report_select")
     public Result pageList(HttpServletRequest request,
                            @RequestBody SpecialReportPageQueryDto queryDto) {
+        // TODO 权限范围可见性
         User currentUser = (User) request.getAttribute("currentUser");
         queryDto.setCreateUserId(Long.valueOf(currentUser.getUserId()));
         Map<String, Object> data = specialReportService.pageList(queryDto);

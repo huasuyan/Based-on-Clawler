@@ -28,6 +28,7 @@ public class RoleController {
     /** 角色条件分页查询 */
     @PostMapping("/pageList")
     public Result pageList(@RequestBody RolePageQueryDto queryDto) {
+        // TODO 仅展示用户权限内的角色
         Map<String, Object> data = roleService.pageList(queryDto);
         return Result.success(data);
     }

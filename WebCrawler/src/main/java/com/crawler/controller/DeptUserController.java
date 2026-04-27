@@ -28,6 +28,7 @@ public class DeptUserController {
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) Integer status) {
 
+        // TODO 新增逻辑；访问用户权限范围外的用户列表不允许访问
 
         return Result.success(deptUserService.pageList(pageNum, pageSize, deptId, username, status));
     }
