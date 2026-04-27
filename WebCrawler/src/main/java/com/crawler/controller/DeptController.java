@@ -34,7 +34,7 @@ public class DeptController {
     public Result getDeptTree(HttpServletRequest request,@RequestParam Integer showEnable) {
         User currentUser = (User) request.getAttribute("currentUser");
 
-        // TODO 权限
+
         // 根据用户权限设置top部门ID
         Long topDeptId = currentUser.getDeptId();
         Long roleId = userRoleMapper.selectRoleIdByUserId(currentUser.getUserId());
