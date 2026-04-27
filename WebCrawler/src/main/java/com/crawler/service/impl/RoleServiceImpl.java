@@ -2,6 +2,7 @@ package com.crawler.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Role;
+import com.crawler.entity.User;
 import com.crawler.entity.dto.role.*;
 import com.crawler.mapper.RoleMapper;
 import com.crawler.mapper.UserRoleMapper;

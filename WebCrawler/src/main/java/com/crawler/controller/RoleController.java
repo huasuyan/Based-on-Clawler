@@ -6,9 +6,11 @@ import com.crawler.entity.User;
 import com.crawler.entity.dto.role.*;
 import com.crawler.service.PermissionService;
 import com.crawler.service.RoleService;
+import com.crawler.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,10 +27,24 @@ public class RoleController {
     @Resource
     private PermissionService permissionService;
 
+    @Resource
+    private UserService userService;
+
     /** 角色条件分页查询 */
     @PostMapping("/pageList")
-    public Result pageList(@RequestBody RolePageQueryDto queryDto) {
+    public Result pageList(HttpServletRequest request, @RequestBody RolePageQueryDto queryDto) {
         // TODO 仅展示用户权限内的角色
+        /**
+         * 角色权限规则，按层级区分
+         * 系统可以看到所有角色
+         * 单位只能看到本单位的角色
+         * 处室只能看到处室的角色
+         */
+        User currentUser = (User) request.getAttribute("currentUser");
+        // 获取用户当前可见的部门列表
+        List<Long> deptIdList = userService.getAllDeptIds(currentUser);
+        queryDto.setDeptIdList(deptIdList);
+        // 根据deptIdList查询可见role
         Map<String, Object> data = roleService.pageList(queryDto);
         return Result.success(data);
     }

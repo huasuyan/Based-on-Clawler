@@ -16,5 +16,7 @@ public interface UserService {
 
     Boolean checkUserVisitDept(User user, Long deptId);
 
+    List<Long> getAllDeptIds(User user);
+
     User getUserInfo(Long userId);
 }

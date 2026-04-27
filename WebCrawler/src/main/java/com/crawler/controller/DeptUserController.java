@@ -32,7 +32,6 @@ public class DeptUserController {
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) Integer status) {
 
-        // TODO 需要测试
         User currentUser = (User) request.getAttribute("currentUser");
         // 校验访问deptId是否在用户权限范围内
         if (userService.checkUserVisitDept(currentUser, deptId)) {

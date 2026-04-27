@@ -34,7 +34,6 @@ public class ReportResultController {
     @PostMapping("/pageList")
     @RequirePermission(module = "report", action = "report_select")
     public Result pageList(HttpServletRequest request, @RequestBody ReportResultPageQueryDto queryDto) {
-        // TODO 用户访问权限内所有报告都能访问
         User currentUser = (User) request.getAttribute("currentUser");
         // 获取可见用户列表
         List<Long> userIdList = userService.getUserList(currentUser);

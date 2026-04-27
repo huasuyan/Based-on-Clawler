@@ -115,6 +115,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<Long> getAllDeptIds(User user) {
+        user.setRoleId(userRoleMapper.selectRoleIdByUserId(user.getUserId()));
+        // 获取当前用户的角色信息
+        Role roleInfo = roleMapper.selectById(user.getRoleId());
+
+        // 根据用户权限获取可访问的部门ID
+        Integer dataScope = roleInfo.getDataScope();
+        List<Long> allowDepts = new ArrayList<>();
+        if(dataScope==1){
+            // 获取用户下级部门
+            allowDepts = getAllSubDept(user.getDeptId());
+            allowDepts.add(user.getDeptId());
+        }else if(dataScope==2){
+            // 获取到用户的单位ID（父部门Id为0）
+            Long topDeptId = deptMapper.getTopLevelParentId(user.getDeptId());
+            allowDepts = getAllSubDept(topDeptId);
+            allowDepts.add(topDeptId);
+        }else if(dataScope==3){
+            return deptMapper.getAllDeptIds();
+        }else{
+            throw new RuntimeException("未知的数据权限，请联系管理员修改！");
+        }
+        return allowDepts;
+    }
+
+    @Override
     public User getUserInfo(Long userId) {
         User user = userMapper.selectById(userId);
         user.setPassword("*************");

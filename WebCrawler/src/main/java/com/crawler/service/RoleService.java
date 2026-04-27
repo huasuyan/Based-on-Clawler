@@ -1,5 +1,6 @@
 package com.crawler.service;
 
+import com.crawler.entity.User;
 import com.crawler.entity.dto.role.RoleCreateDto;
 import com.crawler.entity.dto.role.RoleDropdownDto;
 import com.crawler.entity.dto.role.RoleEditDto;
