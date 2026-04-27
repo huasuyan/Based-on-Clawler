@@ -64,6 +64,9 @@ public class RoleServiceImpl implements RoleService {
         if (createDto.getAuthority() == null || createDto.getAuthority().isEmpty()) {
             throw new RuntimeException("角色权限不能为空");
         }
+        if (createDto.getDeptId() == null) {
+            throw new RuntimeException("所属部门不能为空");
+        }
 
         // 重名校验
         Role existing = roleMapper.selectByRoleName(createDto.getRoleName());
@@ -77,6 +80,7 @@ public class RoleServiceImpl implements RoleService {
         role.setRemark(createDto.getRemark() != null ? createDto.getRemark() : "");
         role.setStatus(createDto.getStatus() != null ? createDto.getStatus() : 1);
         role.setAuthority(createDto.getAuthority() != null ? createDto.getAuthority() : "");
+        role.setDeptId(createDto.getDeptId());
 
         roleMapper.insert(role);
 

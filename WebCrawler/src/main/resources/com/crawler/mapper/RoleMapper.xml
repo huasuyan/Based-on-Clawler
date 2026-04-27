@@ -7,8 +7,8 @@
 
     <!-- 新增 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="roleId">
-        INSERT INTO role (role_name, data_scope, remark, status, authority, create_time, update_time)
-        VALUES (#{roleName}, #{dataScope}, #{remark}, #{status}, #{authority}, NOW(), NOW())
+        INSERT INTO role (role_name, data_scope, remark, status, authority, create_time, update_time, dept_id)
+        VALUES (#{roleName}, #{dataScope}, #{remark}, #{status}, #{authority}, NOW(), NOW(), #{deptId})
     </insert>
 
     <!-- 根据ID查询 -->
