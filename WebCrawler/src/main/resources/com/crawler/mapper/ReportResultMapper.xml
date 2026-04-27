@@ -25,6 +25,15 @@
     <select id="pageList" resultType="com.crawler.entity.ReportResult">
         select * from report_result
         <where>
+            <!-- 新增：专题ID列表批量筛选 -->
+            <if test="specialReportIdList != null and specialReportIdList.size > 0">
+                and special_report_id IN
+                <foreach collection="specialReportIdList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
+            <!-- 原有保留的查询条件 -->
             <if test="reportName != null and reportName != ''">
                 and report_name like concat('%', #{reportName}, '%')
             </if>
@@ -38,8 +47,15 @@
     </select>
 
     <select id="countPageList" resultType="int">
-        select count(1) from report_result
+        SELECT COUNT(1) FROM report_result
         <where>
+            <if test="specialReportIdList != null and specialReportIdList.size > 0">
+                and special_report_id IN
+                <foreach collection="specialReportIdList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+
             <if test="reportName != null and reportName != ''">
                 and report_name like concat('%', #{reportName}, '%')
             </if>

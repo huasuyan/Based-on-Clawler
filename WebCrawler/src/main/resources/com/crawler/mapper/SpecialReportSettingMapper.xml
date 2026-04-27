@@ -122,5 +122,16 @@
             </if>
         </where>
     </select>
+    <select id="getAllSpecialReportIds" resultType="java.lang.Long">
+        SELECT special_report_id
+        FROM special_report_setting
+        WHERE 1 = 1
+        <if test="userIdList != null and userIdList.size > 0">
+            AND create_user_id IN
+            <foreach collection="userIdList" item="uid" open="(" separator="," close=")">
+                #{uid}
+            </foreach>
+        </if>
+    </select>
 
 </mapper>

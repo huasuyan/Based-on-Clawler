@@ -4,6 +4,7 @@ import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
 import com.crawler.entity.dto.special_report.SpecialReportEditDto;
 import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SpecialReportService {
@@ -19,4 +20,7 @@ public interface SpecialReportService {
 
     // 删除报告专题（须处于停用状态）
     void delete(Long specialReportId);
+
+    // 获取用户可访问的报告专题
+    List<Long> getAllSpecialReportIds(List<Long> userIdList);
 }

@@ -12,6 +12,7 @@ import com.crawler.service.SpecialReportService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -124,6 +125,11 @@ public class SpecialReportServiceImpl implements SpecialReportService {
             throw new RuntimeException("请先停用报告专题后再删除");
         }
         specialReportSettingMapper.deleteById(specialReportId);
+    }
+
+    @Override
+    public List<Long> getAllSpecialReportIds(List<Long> userIdList) {
+        return specialReportSettingMapper.getAllSpecialReportIds(userIdList);
     }
 
 }
