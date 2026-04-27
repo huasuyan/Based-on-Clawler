@@ -30,7 +30,7 @@ public class SpecialAlertController {
                            @RequestBody SpecialAlertPageQueryDto queryDto) {
         // userId 从 token 中获取，不由前端传入
         User currentUser = (User) request.getAttribute("currentUser");
-        queryDto.setUserId(Long.valueOf(currentUser.getUserId()));
+        queryDto.setUserId(currentUser.getUserId());
 
         Map<String, Object> data = specialAlertService.pageList(queryDto);
 
@@ -41,7 +41,7 @@ public class SpecialAlertController {
     @GetMapping("/searchById")
     @RequirePermission(module = "alert", action = "alert_update")
     public Result searchById(HttpServletRequest request,
-                          @RequestParam Integer alertId){
+                          @RequestParam Long alertId){
 
         SpecialAlertSetting specialAlertInfo = specialAlertService.getSpecialAlertById(alertId);
 
@@ -55,7 +55,7 @@ public class SpecialAlertController {
     public Result create(HttpServletRequest request,
                          @RequestBody SpecialAlertCreateDto createDto) {
         User currentUser = (User) request.getAttribute("currentUser");
-        createDto.setUserId(Long.valueOf(currentUser.getUserId()));
+        createDto.setUserId(currentUser.getUserId());
 
         Map<String, Object> data = specialAlertService.create(createDto);
         return Result.success(data);
@@ -72,7 +72,7 @@ public class SpecialAlertController {
     //  启用 / 关闭预警专题（异步通知Python）
     @GetMapping("/triggerState")
     @RequirePermission(module = "alert", action = "alert_update")
-    public Result triggerState(@RequestParam Integer alertId) {
+    public Result triggerState(@RequestParam Long alertId) {
         Map<String, Object> data = specialAlertService.toggleTriggerState(alertId);
         // 返回最新状态码
         return Result.success(data);
@@ -81,7 +81,7 @@ public class SpecialAlertController {
     //  删除预警专题（专题须处于关闭状态）
     @RequirePermission(module = "alert", action = "alert_delete")
     @GetMapping("/alertDelete")
-    public Result alertDelete(@RequestParam Integer alertId) {
+    public Result alertDelete(@RequestParam Long alertId) {
         return specialAlertService.delete(alertId);
     }
 

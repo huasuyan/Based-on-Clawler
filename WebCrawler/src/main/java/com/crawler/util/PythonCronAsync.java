@@ -47,7 +47,7 @@ public class PythonCronAsync {
      */
     @Async
     public void callPythonAsync(SpecialAlertSetting specialAlertSetting) {
-        Integer alertId = specialAlertSetting.getAlertId();
+        Long alertId = specialAlertSetting.getAlertId();
         Long userId = specialAlertSetting.getUserId();
         //更新上次触发时间
 

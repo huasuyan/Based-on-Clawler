@@ -15,7 +15,8 @@ public interface SpecialAlertService {
     Map<String, Object> pageList(SpecialAlertPageQueryDto queryDto);
 
     //查询预警专题
-    SpecialAlertSetting getSpecialAlertById(Integer alertId);
+    SpecialAlertSetting getSpecialAlertById(Long alertId);
+
 
     //新增预警专题
     Map<String, Object> create(SpecialAlertCreateDto createDto);
@@ -24,10 +25,10 @@ public interface SpecialAlertService {
     Map<String, Object> edit(SpecialAlertEditDto editDto);
 
     //启用 / 关闭预警专题（异步，通知Python）
-    Map<String, Object> toggleTriggerState(Integer alertId);
+    Map<String, Object> toggleTriggerState(Long alertId);
 
     //删除预警专题（专题须处于关闭状态）
-    Result delete(Integer alertId);
+    Result delete(Long alertId);
 
     // -------------------- 预警信息（JSON文件） --------------------
 

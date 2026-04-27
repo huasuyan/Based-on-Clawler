@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Data
 public class SpecialAlertSetting {
-    private Integer alertId;      // 专题ID（主键）
+    private Long alertId;      // 专题ID（主键）
     private Long userId;            // 用户ID（外键）
     private String alertName;     // 专题名称
     private Integer triggerState;   // 启用状态，0：已停止，1：已启用

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.crawler.mapper.AlertMessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="messageId">
+        INSERT INTO alert_message (user_id, alert_id, alert_name, content, is_read, create_time)
+        VALUES (#{userId}, #{alertId}, #{alertName}, #{content}, 0, NOW())
+    </insert>
+
+    <select id="countUnread" resultType="int">
+        SELECT COUNT(1) FROM alert_message
+        WHERE user_id = #{userId} AND is_read = 0
+    </select>
+
+    <select id="pageList" resultType="com.crawler.entity.AlertMessage">
+        SELECT * FROM alert_message
+        WHERE user_id = #{userId}
+        <if test="onlyUnread">
+            AND is_read = 0
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM alert_message
+        WHERE user_id = #{userId}
+        <if test="onlyUnread">
+            AND is_read = 0
+        </if>
+    </select>
+
+    <update id="markRead">
+        UPDATE alert_message
+        SET is_read = 1
+        WHERE message_id = #{messageId} AND user_id = #{userId}
+    </update>
+
+    <update id="batchMarkRead">
+        UPDATE alert_message
+        SET is_read = 1
+        WHERE user_id = #{userId}
+        AND message_id IN
+        <foreach collection="messageIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="markAllRead">
+        UPDATE alert_message
+        SET is_read = 1
+        WHERE user_id = #{userId} AND is_read = 0
+    </update>
+
+</mapper>
