@@ -7,6 +7,7 @@ import com.crawler.entity.dto.special_alert.SpecialAlertEditDto;
 import com.crawler.entity.dto.special_alert.SpecialAlertInfoDto;
 import com.crawler.entity.dto.special_alert.SpecialAlertPageQueryDto;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SpecialAlertService {
@@ -37,5 +38,5 @@ public interface SpecialAlertService {
     //删除舆情消息
     Result infoDelete(Long newsId);
 
-    Map<String, Object> searchAllAlert(Integer userId);
+    Map<String, Object> searchAllAlert(List<Long> userIdList);
 }

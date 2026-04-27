@@ -186,8 +186,8 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     }
 
     @Override
-    public Map<String, Object> searchAllAlert(Integer userId) {
-        List<SpecialAlertListDto> res = specialAlertSettingMapper.searchAllAlert(userId);
+    public Map<String, Object> searchAllAlert(List<Long> userIdList) {
+        List<SpecialAlertListDto> res = specialAlertSettingMapper.searchAllAlert(userIdList);
         Map<String, Object> result = new HashMap<>();
         result.put("alertInfos", res);
         return result;

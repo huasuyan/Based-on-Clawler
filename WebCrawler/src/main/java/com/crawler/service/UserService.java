@@ -12,7 +12,7 @@ public interface UserService {
      * 获取当前用户权限可以访问的用户数据列表
      * @return
      */
-    List<User> getUserList(User user);
+    List<Long> getUserList(User user);
 
     User getUserInfo(Long userId);
 }

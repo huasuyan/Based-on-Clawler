@@ -94,7 +94,10 @@
     </select>
     <select id="searchAllAlert" resultType="com.crawler.entity.dto.special_alert.SpecialAlertListDto">
         select * from special_alert_setting
-        where user_id = #{userId}
+        where user_id in
+        <foreach collection="userIdList" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
     </select>
 
     <!-- 统计总条数 -->

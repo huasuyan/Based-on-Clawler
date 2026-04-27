@@ -55,5 +55,5 @@ public interface SpecialAlertSettingMapper {
     // 统计总条数（分页用）
     int countPageList(SpecialAlertPageQueryDto queryDto);
 
-    List<SpecialAlertListDto> searchAllAlert(Integer userId);
+    List<SpecialAlertListDto> searchAllAlert(@Param("userIdList") List<Long> userIdList);
 }

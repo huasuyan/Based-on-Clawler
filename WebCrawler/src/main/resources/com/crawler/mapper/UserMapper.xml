@@ -37,5 +37,9 @@
     <select id="selectUserName" resultType="java.lang.String">
         select username from user where user_id = #{userId}
     </select>
+    <select id="getAllUserId" resultType="java.lang.Long">
+        select user_id
+        from user
+    </select>
 
 </mapper>

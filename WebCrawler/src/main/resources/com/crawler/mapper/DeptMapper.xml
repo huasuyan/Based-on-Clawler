@@ -77,6 +77,32 @@
     <select id="getAllDeptIds" resultType="java.lang.Long">
         SELECT dept_id FROM dept
     </select>
+    <select id="listUserIdByDeptIdList" resultType="java.lang.Long">
+        SELECT user_id
+        FROM user
+        WHERE dept_id IN
+        <foreach collection="deptIdList" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND status = 1
+    </select>
+    <select id="getTopLevelParentId" resultType="java.lang.Long">
+        WITH RECURSIVE dept_ancestor AS (
+        SELECT dept_id, parent_dept_id
+        FROM dept
+        WHERE dept_id = #{deptId}
+
+        UNION ALL
+
+        SELECT d.dept_id, d.parent_dept_id
+        FROM dept d
+        INNER JOIN dept_ancestor a ON d.dept_id = a.parent_dept_id
+        )
+        SELECT dept_id
+        FROM dept_ancestor
+        WHERE parent_dept_id = 0
+        LIMIT 1;
+    </select>
 
     <!-- 删除部门 -->
     <delete id="deleteById">

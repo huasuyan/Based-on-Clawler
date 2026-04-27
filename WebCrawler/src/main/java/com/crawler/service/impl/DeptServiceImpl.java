@@ -258,30 +258,5 @@ public class DeptServiceImpl implements DeptService {
         }
     }
 
-    /**
-     * 获取指定部门的所有下级（含所有层级子孙）
-     * @param rootDeptId 传入的起始部门ID
-     * @param allDeptList 数据库全部部门数据
-     * @return 所有下级部门列表
-     */
-//    public List<Dept> getAllSubDept(Integer rootDeptId, List<Dept> allDeptList) {
-//        List<Dept> result = new ArrayList<>();
-//        recursionFindChildren(rootDeptId, allDeptList, result);
-//        return result;
-//    }
-//
-//    /**
-//     * 递归查找子部门
-//     */
-//    private void recursionFindChildren(Integer parentId, List<Dept> allDeptList, List<Dept> result) {
-//        for (Dept dept : allDeptList) {
-//            // 找到当前parent的直接下级
-//            if (Objects.equals(dept.getParentDeptId(), parentId)) {
-//                result.add(dept);
-//                // 继续递归找这个部门的下级
-//                recursionFindChildren(dept.getDeptId(), allDeptList, result);
-//            }
-//        }
-//    }
 
 }

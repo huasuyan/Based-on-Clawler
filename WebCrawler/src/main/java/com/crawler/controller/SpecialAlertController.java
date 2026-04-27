@@ -96,11 +96,10 @@ public class SpecialAlertController {
     @RequirePermission(module = "alert", action = "alert_select")
     public Result searchAllAlert(HttpServletRequest request){
         User currentUser = (User) request.getAttribute("currentUser");
-        // TODO 这里需要根据用户权限重新设计
-        Integer userId = Math.toIntExact(currentUser.getUserId());
         // 获取用户当前权限下可以访问数据的用户列表
-        List<User> userList = userService.getUserList(currentUser);
-        Map<String, Object> data = specialAlertService.searchAllAlert(userId);
+        List<Long> userIdList = userService.getUserList(currentUser);
+        // 根据用户列表查询预警信息
+        Map<String, Object> data = specialAlertService.searchAllAlert(userIdList);
         return Result.success(data);
     }
 
