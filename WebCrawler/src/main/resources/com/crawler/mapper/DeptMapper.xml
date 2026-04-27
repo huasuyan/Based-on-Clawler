@@ -71,6 +71,12 @@
     <select id="selectAllActive" resultMap="DeptResultMap">
         SELECT dept_id, parent_dept_id, dept_name, dept_level, status FROM dept WHERE status = 1
     </select>
+    <select id="selectChildDepts" resultType="com.crawler.entity.Dept">
+        SELECT * FROM dept WHERE parent_dept_id = #{currentDeptId}
+    </select>
+    <select id="getAllDeptIds" resultType="java.lang.Long">
+        SELECT dept_id FROM dept
+    </select>
 
     <!-- 删除部门 -->
     <delete id="deleteById">

@@ -1,10 +1,12 @@
 package com.crawler.service.impl;
 
 
+import com.crawler.entity.Dept;
 import com.crawler.entity.User;
 import com.crawler.entity.dto.UserAddDto;
 import com.crawler.entity.dto.UserPageDto;
 import com.crawler.entity.dto.UserUpdateDto;
+import com.crawler.mapper.DeptMapper;
 import com.crawler.mapper.DeptUserMapper;
 import com.crawler.mapper.UserRoleMapper;
 import com.crawler.service.DeptUserService;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,6 +24,8 @@ public class DeptUserServiceImpl implements DeptUserService {
     private DeptUserMapper deptUserMapper;
     @Autowired
     private UserRoleMapper userRoleMapper;
+    @Autowired
+    private DeptMapper deptMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -53,11 +58,12 @@ public class DeptUserServiceImpl implements DeptUserService {
         deptUserMapper.updateUser(user);
 
         // 先删旧角色 → 再插入新角色（标准多对多更新）
-        userRoleMapper.deleteByUserId(dto.getUserId());
-        if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
-            userRoleMapper.insertBatch(dto.getUserId(), dto.getRoleIds());
+        if (dto.getRoleId() != null) {
+            // 先删除旧角色
+            userRoleMapper.deleteByUserId(userId);
+            // 再插入新角色
+            userRoleMapper.insertUserRole(userId, dto.getRoleId());
         }
-
     }
 
     @Override
@@ -65,15 +71,28 @@ public class DeptUserServiceImpl implements DeptUserService {
         return deptUserMapper.selectById(userId);
     }
 
-    public UserPageDto pageList(Integer pageNum, Integer pageSize, Long deptId, String username, Integer status) {
+    public UserPageDto pageList(Long currentDeptId, Integer pageNum, Integer pageSize,
+                                Long deptId, String username, Integer status) {
         pageNum = pageNum == null ? 1 : pageNum;
         pageSize = pageSize == null ? 10 : pageSize;
         int offset = (pageNum - 1) * pageSize;
 
-        List<User> list = deptUserMapper.selectUserList(deptId, username, status, offset, pageSize);
+        // 部门ID列表：currentDeptId=0 时，传null；否则获取当前部门及所有子部门ID
+        List<Long> deptIdList = new ArrayList<>();
+        if (currentDeptId == null) {
+            throw new IllegalArgumentException("当前部门ID不能为空");
+        } else if (currentDeptId == 0) {
+            deptIdList = deptMapper.getAllDeptIds();
+        }else {
+            deptIdList.add(currentDeptId);
+            deptIdList.addAll(getChildDeptIds(currentDeptId));
+        }
 
-        Long total = deptUserMapper.countUser(deptId, username, status);
+        // 查询列表和总数
+        List<User> list = deptUserMapper.selectUserList(deptIdList, username, status, offset, pageSize);
+        Long total = deptUserMapper.countUser(deptIdList, username, status);
 
+        // 封装返回结果
         UserPageDto vo = new UserPageDto();
         vo.setList(list);
         vo.setTotal(total);
@@ -81,6 +100,18 @@ public class DeptUserServiceImpl implements DeptUserService {
         vo.setPageNum(pageNum);
         vo.setPageSize(pageSize);
         return vo;
+    }
+
+
+    private List<Long> getChildDeptIds(Long currentDeptId) {
+        List<Long> deptIdList = new ArrayList<>();
+        // 递归查询所有子部门ID
+        List<Dept> childDepts = deptMapper.selectChildDepts(currentDeptId);
+        for (Dept dept : childDepts) {
+            deptIdList.add(dept.getDeptId());
+            deptIdList.addAll(getChildDeptIds(dept.getDeptId()));
+        }
+        return deptIdList;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -108,8 +139,8 @@ public class DeptUserServiceImpl implements DeptUserService {
         Long userId = user.getUserId();
 
         // 多角色插入
-        if (dto.getRoleIds() != null && !dto.getRoleIds().isEmpty()) {
-            userRoleMapper.insertBatch(user.getUserId(), dto.getRoleIds());
+        if (dto.getRoleId() != null) {
+            userRoleMapper.insertUserRole(userId, dto.getRoleId());
         }
 
     }
@@ -147,6 +178,8 @@ public class DeptUserServiceImpl implements DeptUserService {
         }
         // 密码脱敏
         //
+        Long roleId = userRoleMapper.selectRoleIdByUserId(userId);
+        user.setRoleId(roleId);
         user.setPassword("********");
 
         return user;

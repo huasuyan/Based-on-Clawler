@@ -9,11 +9,13 @@ import java.util.List;
 @Mapper
 public interface UserRoleMapper {
 
-    void insertBatch(@Param("userId") Long userId, @Param("roleIds") List<Long> roleIds);
+    void insertUserRole(@Param("userId") Long userId, @Param("roleId") Long roleId);
 
     void deleteByUserId(Long userId);
 
     void deleteByUserIds(@Param("userIds") List<Long> userIds);
+
+    Long selectRoleIdByUserId(@Param("userId") Long userId);
 
     // 查询角色下是否有关联用户（删除前校验）
     int countByRoleId(@Param("roleId") Long roleId);

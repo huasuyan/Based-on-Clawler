@@ -12,5 +12,5 @@ public class UserUpdateDto {
     private String phone;
     private Long deptId;
     private Integer status;
-    private List<Long> roleIds;
+    private Long roleId;
 }

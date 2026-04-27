@@ -35,4 +35,8 @@ public interface DeptMapper{
     int deleteById(@Param("deptId") Long deptId);
 
     List<Dept> selectAllActive();
+
+    List<Dept> selectChildDepts(Long currentDeptId);
+
+    List<Long> getAllDeptIds();
 }
