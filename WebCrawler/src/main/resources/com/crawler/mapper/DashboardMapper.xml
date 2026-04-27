@@ -235,4 +235,8 @@
         LIMIT #{limit}
     </select>
 
+    <select id="selectAllUsernames" resultType="java.lang.String">
+        SELECT username FROM user
+    </select>
+
 </mapper>

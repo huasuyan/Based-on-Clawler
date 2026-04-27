@@ -33,6 +33,13 @@ public class AuthorityDto {
         dept_user.put("dept_user_insert", "创建部门用户");
         dept_user.put("dept_user_update", "更新部门用户");
         dept_user.put("dept_user_delete", "删除部门用户");
+        Map<String, String> case_ = new HashMap<>();
+        case_.put("case_select", "查询办件");
+        case_.put("case_insert", "创建办件");
+        case_.put("case_update", "更新办件");
+        case_.put("case_delete", "删除办件");
+
+
 
         authority = new HashMap<>();
         authority.put("role", role);
@@ -40,5 +47,6 @@ public class AuthorityDto {
         authority.put("report", report);
         authority.put("dept", dept);
         authority.put("dept_user", dept_user);
+        authority.put("case", case_);
     }
 }

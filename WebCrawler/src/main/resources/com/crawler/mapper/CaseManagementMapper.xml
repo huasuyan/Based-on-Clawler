@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.crawler.mapper.CaseManagementMapper">
+
+    <!-- 新增办件 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="caseId">
+        INSERT INTO cases
+            (case_name, case_info, case_level, money, news_id, trigger_state, state, create_time, update_time)
+        VALUES
+            (#{caseName}, #{caseInfo}, #{caseLevel}, #{money}, #{newsId}, 1, 0, NOW(), NOW())
+    </insert>
+
+    <!-- 分页条件查询 -->
+    <select id="pageList" resultType="com.crawler.entity.Cases">
+        SELECT * FROM cases
+        <where>
+            <if test="caseName != null and caseName != ''">
+                AND case_name LIKE CONCAT('%', #{caseName}, '%')
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+            <if test="caseLevel != null">
+                AND case_level = #{caseLevel}
+            </if>
+            <if test="triggerState != null">
+                AND trigger_state = #{triggerState}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != ''">
+                AND create_time &gt;= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != ''">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="updateTimeStart != null and updateTimeStart != ''">
+                AND update_time &gt;= #{updateTimeStart}
+            </if>
+            <if test="updateTimeEnd != null and updateTimeEnd != ''">
+                AND update_time &lt;= #{updateTimeEnd}
+            </if>
+        </where>
+        ORDER BY update_time DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <!-- 分页总数 -->
+    <select id="countPageList" resultType="int">
+        SELECT COUNT(1) FROM cases
+        <where>
+            <if test="caseName != null and caseName != ''">
+                AND case_name LIKE CONCAT('%', #{caseName}, '%')
+            </if>
+            <if test="state != null">
+                AND state = #{state}
+            </if>
+            <if test="caseLevel != null">
+                AND case_level = #{caseLevel}
+            </if>
+            <if test="triggerState != null">
+                AND trigger_state = #{triggerState}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != ''">
+                AND create_time &gt;= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != ''">
+                AND create_time &lt;= #{createTimeEnd}
+            </if>
+            <if test="updateTimeStart != null and updateTimeStart != ''">
+                AND update_time &gt;= #{updateTimeStart}
+            </if>
+            <if test="updateTimeEnd != null and updateTimeEnd != ''">
+                AND update_time &lt;= #{updateTimeEnd}
+            </if>
+        </where>
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultType="com.crawler.entity.Cases">
+        SELECT * FROM cases WHERE case_id = #{caseId}
+    </select>
+
+    <!-- 更新办件状态 -->
+    <update id="updateState">
+        UPDATE cases SET state = #{state}, update_time = NOW()
+        WHERE case_id = #{caseId}
+    </update>
+
+    <!-- 更新启用/关闭状态 -->
+    <update id="updateTriggerState">
+        UPDATE cases SET trigger_state = #{triggerState}, update_time = NOW()
+        WHERE case_id = #{caseId}
+    </update>
+
+    <!-- 更新办件 -->
+    <update id="update">
+        UPDATE cases
+        <set>
+            <if test="caseName != null">case_name = #{caseName},</if>
+            <if test="caseInfo != null">case_info = #{caseInfo},</if>
+            <if test="caseLevel != null">case_level = #{caseLevel},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="triggerState != null">trigger_state = #{triggerState},</if>
+            update_time = NOW()
+        </set>
+        WHERE case_id = #{caseId}
+    </update>
+
+    <!-- ========== 办件上传信息 ========== -->
+
+    <!-- 新增上传信息 -->
+    <insert id="insertText" useGeneratedKeys="true" keyProperty="textId">
+        INSERT INTO case_text (case_id, user_id, type, content, create_time)
+        VALUES (#{caseId}, #{userId}, #{type}, #{content}, NOW())
+    </insert>
+
+    <!-- 查询某办件下的上传信息列表 -->
+    <select id="selectTextList" resultType="com.crawler.entity.CaseText">
+        SELECT * FROM case_text
+        WHERE case_id = #{caseId}
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- 统计某办件某类型上传信息数量 -->
+    <select id="countTextByType" resultType="int">
+        SELECT COUNT(1) FROM case_text
+        WHERE case_id = #{caseId} AND type = #{type}
+    </select>
+
+</mapper>

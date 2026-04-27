@@ -85,4 +85,7 @@ public interface DashboardMapper {
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
             @Param("limit") int limit);
+
+    // 查询所有用户名（用于活跃用户词云）
+    List<String> selectAllUsernames();
 }

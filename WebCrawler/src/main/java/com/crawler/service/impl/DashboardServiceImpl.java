@@ -196,6 +196,18 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public List<HotWordDto> getHotWords(String statType, String wordType,
                                         LocalDate startDate, LocalDate endDate) {
+        // 活跃用户：从 user 表取用户名，随机赋权重 1~5
+        if ("user".equals(wordType)) {
+            List<String> usernames = dashboardMapper.selectAllUsernames();
+            if (usernames == null || usernames.isEmpty()) return new ArrayList<>();
+            Random random = new Random();
+            return usernames.stream().map(name -> {
+                HotWordDto dto = new HotWordDto();
+                dto.setWord(name);
+                dto.setCount(random.nextInt(5) + 1);
+                return dto;
+            }).collect(Collectors.toList());
+        }
         if (startDate == null) startDate = resolveStartDate(statType);
         if (endDate == null) endDate = LocalDate.now();
 
