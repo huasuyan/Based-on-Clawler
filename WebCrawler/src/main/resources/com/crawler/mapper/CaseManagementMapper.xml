@@ -7,41 +7,43 @@
     <!-- 新增办件 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="caseId">
         INSERT INTO cases
-            (case_name, case_info, case_level, money, news_id, trigger_state, state, create_time, update_time)
+            (user_id, dept_id, case_name, case_info, case_level, money, news_id, trigger_state, state, create_time, update_time)
         VALUES
-            (#{caseName}, #{caseInfo}, #{caseLevel}, #{money}, #{newsId}, 1, 0, NOW(), NOW())
+            (#{userId}, #{deptId}, #{caseName}, #{caseInfo}, #{caseLevel}, #{money}, #{newsId}, 1, 0, NOW(), NOW())
     </insert>
 
     <!-- 分页条件查询 -->
     <select id="pageList" resultType="com.crawler.entity.Cases">
-        SELECT * FROM cases
+        SELECT c.*, d.dept_name AS deptName
+        FROM cases c
+        LEFT JOIN dept d ON c.dept_id = d.dept_id
         <where>
             <if test="caseName != null and caseName != ''">
-                AND case_name LIKE CONCAT('%', #{caseName}, '%')
+                AND c.case_name LIKE CONCAT('%', #{caseName}, '%')
             </if>
             <if test="state != null">
-                AND state = #{state}
+                AND c.state = #{state}
             </if>
             <if test="caseLevel != null">
-                AND case_level = #{caseLevel}
+                AND c.case_level = #{caseLevel}
             </if>
             <if test="triggerState != null">
-                AND trigger_state = #{triggerState}
+                AND c.trigger_state = #{triggerState}
             </if>
             <if test="createTimeStart != null and createTimeStart != ''">
-                AND create_time &gt;= #{createTimeStart}
+                AND c.create_time &gt;= #{createTimeStart}
             </if>
             <if test="createTimeEnd != null and createTimeEnd != ''">
-                AND create_time &lt;= #{createTimeEnd}
+                AND c.create_time &lt;= #{createTimeEnd}
             </if>
             <if test="updateTimeStart != null and updateTimeStart != ''">
-                AND update_time &gt;= #{updateTimeStart}
+                AND c.update_time &gt;= #{updateTimeStart}
             </if>
             <if test="updateTimeEnd != null and updateTimeEnd != ''">
-                AND update_time &lt;= #{updateTimeEnd}
+                AND c.update_time &lt;= #{updateTimeEnd}
             </if>
         </where>
-        ORDER BY update_time DESC
+        ORDER BY c.update_time DESC
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
 
@@ -78,7 +80,10 @@
 
     <!-- 根据ID查询 -->
     <select id="selectById" resultType="com.crawler.entity.Cases">
-        SELECT * FROM cases WHERE case_id = #{caseId}
+        SELECT c.*, d.dept_name AS deptName
+        FROM cases c
+        LEFT JOIN dept d ON c.dept_id = d.dept_id
+        WHERE c.case_id = #{caseId}
     </select>
 
     <!-- 更新办件状态 -->

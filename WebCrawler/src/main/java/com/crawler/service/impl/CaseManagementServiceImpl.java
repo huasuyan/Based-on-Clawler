@@ -26,6 +26,8 @@ public class CaseManagementServiceImpl implements CaseManagementService {
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> create(CaseCreateDto createDto, Long userId) {
         Cases cm = new Cases();
+        cm.setUserId(userId);
+        cm.setDeptId(createDto.getDeptId());
         cm.setCaseName(createDto.getCaseName());
         cm.setCaseInfo(createDto.getCaseInfo());
         cm.setCaseLevel(createDto.getCaseLevel());

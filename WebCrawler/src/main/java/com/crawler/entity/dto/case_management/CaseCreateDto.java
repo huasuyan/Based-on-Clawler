@@ -13,4 +13,5 @@ public class CaseCreateDto {
     private Integer caseLevel;     // 办件等级
     private BigDecimal money;      // 涉案金额
     private Long newsId;           // 预警记录ID
+    private Long deptId;           // 部门ID
 }

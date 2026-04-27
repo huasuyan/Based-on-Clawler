@@ -11,6 +11,9 @@ import java.util.Date;
 @Data
 public class Cases {
     private Long caseId;           // 办件唯一ID
+    private Long userId;           // 用户ID
+    private Long deptId;           // 部门ID
+    private String deptName;       // 部门名称（联表查询）
     private String caseName;       // 办件名称
     private String caseInfo;       // 办件描述
     private Integer caseLevel;     // 办件等级：0紧急 1高 2中 3一般
