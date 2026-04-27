@@ -28,7 +28,7 @@ public interface RoleMapper {
     // 批量删除角色
     void batchDelete(@Param("roleIds") List<Long> roleIds);
     // 查询启用状态角色（下拉列表用）
-    List<Role> selectAllEnabled();
+    List<Role> selectAllEnabled(@Param("deptIdList") List<Long> deptIdList);
     // 查询某角色下的用户列表（关联user、dept表）
     List<RoleUserListDto> selectUsersByRoleId(@Param("roleId")   Long roleId,
                                               @Param("offset")   int  offset,

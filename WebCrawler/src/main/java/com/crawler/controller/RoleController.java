@@ -33,7 +33,6 @@ public class RoleController {
     /** 角色条件分页查询 */
     @PostMapping("/pageList")
     public Result pageList(HttpServletRequest request, @RequestBody RolePageQueryDto queryDto) {
-        // TODO 仅展示用户权限内的角色
         /**
          * 角色权限规则，按层级区分
          * 系统可以看到所有角色
@@ -99,8 +98,11 @@ public class RoleController {
 
     /** 角色名称下拉列表 */
     @GetMapping("/dropdownList")
-    public Result dropdownList() {
-        List<RoleDropdownDto> data = roleService.dropdownList();
+    public Result dropdownList(HttpServletRequest request) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        // 获取用户当前可见的部门列表
+        List<Long> deptIdList = userService.getAllDeptIds(currentUser);
+        List<RoleDropdownDto> data = roleService.dropdownList(deptIdList);
         return Result.success(data);
     }
 

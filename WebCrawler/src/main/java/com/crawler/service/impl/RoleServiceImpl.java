@@ -210,8 +210,8 @@ public class RoleServiceImpl implements RoleService {
     /*  角色下拉列表                                                          */
     /* ------------------------------------------------------------------ */
     @Override
-    public List<RoleDropdownDto> dropdownList() {
-        return roleMapper.selectAllEnabled()
+    public List<RoleDropdownDto> dropdownList(List<Long> deptIdList) {
+        return roleMapper.selectAllEnabled(deptIdList)
                 .stream()
                 .map(RoleDropdownDto::new)
                 .collect(Collectors.toList());
