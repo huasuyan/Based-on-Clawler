@@ -263,11 +263,14 @@ public class DashboardServiceImpl implements DashboardService {
         BigDecimal todayNewsYoy = calcYoy(todayNews, yesterdayNews);
         BigDecimal todayAlertYoy = calcYoy(todayAlert, yesterdayAlert);
 
-        // 办件数据（若无专属表，此处先写固定值，后续对接实际数据）
-        long totalCase = 832L;
-        int caseInProgress = 334;
-        int caseFinished = 231;
-        BigDecimal conversionRate = new BigDecimal("12.2");
+        // 办件数据
+        long totalCase = safe(dashboardMapper.countTotalCase());
+        long caseInProgress = safe(dashboardMapper.countCaseByState(1));
+        long caseFinished = safe(dashboardMapper.countCaseByState(2));
+        BigDecimal conversionRate = totalCase > 0
+                ? BigDecimal.valueOf(caseFinished).multiply(BigDecimal.valueOf(100))
+                        .divide(BigDecimal.valueOf(totalCase), 1, RoundingMode.HALF_UP)
+                : BigDecimal.ZERO;
 
         DashboardStats stats = new DashboardStats();
         stats.setStatDate(today);
@@ -279,8 +282,8 @@ public class DashboardServiceImpl implements DashboardService {
         stats.setTotalAlertArticle(totalAlertArticle);
         stats.setTotalAlertVideo(totalAlertVideo);
         stats.setTotalCase(totalCase);
-        stats.setCaseInProgress(caseInProgress);
-        stats.setCaseFinished(caseFinished);
+        stats.setCaseInProgress((int) caseInProgress);
+        stats.setCaseFinished((int) caseFinished);
         stats.setCaseConversionRate(conversionRate);
         stats.setTodayNews(todayNews);
         stats.setTodayNewsArticle(todayNewsArticle);

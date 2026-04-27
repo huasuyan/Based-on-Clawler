@@ -88,4 +88,11 @@ public interface DashboardMapper {
 
     // 查询所有用户名（用于活跃用户词云）
     List<String> selectAllUsernames();
+
+    // ---- 办件统计 ----
+    Long countTotalCase();
+
+    Long countCaseByState(@Param("state") Integer state);
+
+    Long countCaseByTriggerState(@Param("triggerState") Integer triggerState);
 }
