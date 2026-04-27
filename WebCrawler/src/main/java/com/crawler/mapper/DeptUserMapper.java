@@ -10,15 +10,15 @@ import java.util.List;
 public interface DeptUserMapper {
 
     List<User> selectUserList(
-            @Param("deptId") Long deptId,
+            @Param("deptIdList") List<Long> deptIdList,
             @Param("username") String username,
             @Param("status") Integer status,
             @Param("offset") int offset,
             @Param("pageSize") int pageSize
     );
 
-    long countUser(
-            @Param("deptId") Long deptId,
+    Long countUser(
+            @Param("deptIdList") List<Long> deptIdList,
             @Param("username") String username,
             @Param("status") Integer status
     );

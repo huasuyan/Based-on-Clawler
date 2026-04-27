@@ -32,12 +32,9 @@
         </foreach>
     </delete>
 
-    <insert id="insertBatch">
+    <insert id="insertUserRole">
         INSERT INTO user_role (user_id, role_id)
-        VALUES
-        <foreach collection="roleIds" item="roleId" separator=",">
-            (#{userId}, #{roleId})
-        </foreach>
+        VALUES (#{userId}, #{roleId})
     </insert>
 
     <delete id="deleteByUserId" parameterType="java.lang.Long">
@@ -59,6 +56,10 @@
     <!-- 查询角色下所有用户ID（用于权限查询） -->
     <select id="selectUserIdsByRoleId" resultType="java.lang.Long">
         SELECT user_id FROM user_role WHERE role_id = #{roleId}
+    </select>
+
+    <select id="selectRoleIdByUserId" resultType="java.lang.Long">
+        SELECT role_id FROM user_role WHERE user_id = #{userId}
     </select>
 
 </mapper>

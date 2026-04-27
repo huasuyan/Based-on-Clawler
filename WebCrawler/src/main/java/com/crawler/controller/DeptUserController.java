@@ -22,14 +22,17 @@ public class DeptUserController {
 
     @GetMapping("/list")
     @RequirePermission(module = "dept_user", action = "dept_user_select")
-    public Result pageList(@RequestParam(defaultValue = "1") Integer pageNum,
+    public Result pageList(HttpServletRequest request,
+                           @RequestParam(defaultValue = "1") Integer pageNum,
                            @RequestParam(defaultValue = "10") Integer pageSize,
                            @RequestParam(required = false) Long deptId,
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) Integer status) {
 
-
-        return Result.success(deptUserService.pageList(pageNum, pageSize, deptId, username, status));
+        // 从request获取当前登录用户ID（简化，实际从token中获取）
+        User currentUser = (User) request.getAttribute("currentUser");
+        Long currentDeptId = currentUser.getDeptId();
+        return Result.success(deptUserService.pageList(currentDeptId, pageNum, pageSize, deptId, username, status));
     }
 
     @PostMapping("/add")
