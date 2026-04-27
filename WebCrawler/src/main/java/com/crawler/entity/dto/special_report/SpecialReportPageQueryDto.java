@@ -2,12 +2,14 @@ package com.crawler.entity.dto.special_report;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 舆情报告专题分页查询DTO
  */
 @Data
 public class SpecialReportPageQueryDto {
-    private Long createUserId;          // 从token获取，不由前端传入
+    private List<Long> createUserIdList;          // 从token获取，不由前端传入
     private Integer pageNum = 1;
     private Integer pageSize = 10;
     // 可选筛选条件

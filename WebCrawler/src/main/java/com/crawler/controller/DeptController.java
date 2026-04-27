@@ -26,6 +26,7 @@ public class DeptController {
     public Result getDeptTree(HttpServletRequest request,@RequestParam Integer showEnable) {
         User currentUser = (User) request.getAttribute("currentUser");
 
+        // TODO 权限
         if(deptService.getDeptTree(currentUser.getDeptId(), showEnable) == null) {
             return Result.error("部门树不存在");
         }

@@ -26,9 +26,14 @@
     <select id="pageList" resultType="com.crawler.entity.SpecialReportSetting">
         select * from special_report_setting
         <where>
-            <if test="createUserId != null">
-                and create_user_id = #{createUserId}
+            <!-- 新增：用户ID列表查询（你要的功能） -->
+            <if test="createUserIdList != null and createUserIdList.size > 0">
+                and create_user_id in
+                <foreach collection="createUserIdList" item="uid" open="(" separator="," close=")">
+                    #{uid}
+                </foreach>
             </if>
+
             <if test="reportName != null and reportName != ''">
                 and report_name like concat('%', #{reportName}, '%')
             </if>
@@ -94,13 +99,18 @@
         select * from special_report_setting where status_enabled = 1
     </select>
 
-    <!-- 统计总条数 -->
+    <!-- 统计总条数（支持 createUserIdList） -->
     <select id="countPageList" resultType="int">
         SELECT COUNT(1) FROM special_report_setting
         <where>
-            <if test="createUserId != null">
-                and create_user_id = #{createUserId}
+            <!-- 新增：用户ID列表查询 -->
+            <if test="createUserIdList != null and !createUserIdList.isEmpty()">
+                and create_user_id in
+                <foreach collection="createUserIdList" item="uid" open="(" separator="," close=")">
+                    #{uid}
+                </foreach>
             </if>
+
             <if test="reportName != null and reportName != ''">
                 and report_name like concat('%', #{reportName}, '%')
             </if>
