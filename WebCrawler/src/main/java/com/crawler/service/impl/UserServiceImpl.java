@@ -1,5 +1,6 @@
 package com.crawler.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.crawler.entity.Dept;
 import com.crawler.entity.Role;
 import com.crawler.entity.User;
@@ -68,10 +69,48 @@ public class UserServiceImpl implements UserService {
             return deptMapper.listUserIdByDeptIdList(allowDepts);
         }else if(dataScope==3){
             return userMapper.getAllUserId();
+        }else{
+            throw new RuntimeException("未知的数据权限，请联系管理员修改！");
         }
 
-        return List.of();
 
+    }
+
+    @Override
+    public Boolean checkUserVisitDept(User user, Long deptId) {
+        user.setRoleId(userRoleMapper.selectRoleIdByUserId(user.getUserId()));
+        // 获取当前用户的角色信息
+        Role roleInfo = roleMapper.selectById(user.getRoleId());
+
+        // 获取可访问部门列表
+        Integer dataScope = roleInfo.getDataScope();
+        List<Long> allowDepts = new ArrayList<>();
+        if(dataScope==1){
+            // 获取用户下级部门
+            allowDepts = getAllSubDept(user.getDeptId());
+            allowDepts.add(user.getDeptId());
+        }else if(dataScope==2){
+            // 获取到用户的单位ID（父部门Id为0）
+            Long topDeptId = deptMapper.getTopLevelParentId(user.getDeptId());
+            allowDepts = getAllSubDept(topDeptId);
+            allowDepts.add(topDeptId);
+        }else if(dataScope==3){
+            return Boolean.TRUE;
+        }else{
+            throw new RuntimeException("未知的数据权限，请联系管理员修改！");
+        }
+
+        // 校验用户访问deptId是否在allowDepts列表中
+        // 1. 允许列表为空 → 直接无权限
+        if (CollUtil.isEmpty(allowDepts)) {
+            return Boolean.TRUE;
+        }
+        // 2. 要访问的部门ID为空 → 无权限
+        if (deptId == null) {
+            return Boolean.TRUE;
+        }
+        // 3. 判断是否包含
+        return allowDepts.contains(deptId);
 
     }
 
