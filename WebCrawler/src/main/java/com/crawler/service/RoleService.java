@@ -1,5 +1,6 @@
 package com.crawler.service;
 
+import com.crawler.entity.User;
 import com.crawler.entity.dto.role.RoleCreateDto;
 import com.crawler.entity.dto.role.RoleDropdownDto;
 import com.crawler.entity.dto.role.RoleEditDto;
@@ -24,7 +25,7 @@ public interface RoleService {
     // 查询角色下用户列表
     Map<String, Object> userList(Long roleId, Integer pageNum, Integer pageSize);
     // 角色名称下拉列表
-    List<RoleDropdownDto> dropdownList();
+    List<RoleDropdownDto> dropdownList(List<Long> deptIdList);
     // 查询当前用户所有权限（聚合该用户所有角色的authority）
     Map<String, Object> getAuthority(Long userId);
 }

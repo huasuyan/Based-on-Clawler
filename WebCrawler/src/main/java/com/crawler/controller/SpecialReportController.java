@@ -7,11 +7,14 @@ import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
 import com.crawler.entity.dto.special_report.SpecialReportEditDto;
 import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
 import com.crawler.service.SpecialReportService;
+import com.crawler.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -21,6 +24,8 @@ public class SpecialReportController {
 
     @Resource
     private SpecialReportService specialReportService;
+    @Autowired
+    private UserService userService;
 
     // 新增报告专题
     @PostMapping("/create")
@@ -47,7 +52,10 @@ public class SpecialReportController {
     public Result pageList(HttpServletRequest request,
                            @RequestBody SpecialReportPageQueryDto queryDto) {
         User currentUser = (User) request.getAttribute("currentUser");
-        queryDto.setCreateUserId(Long.valueOf(currentUser.getUserId()));
+        // 获取可见用户列表
+        List<Long> userIdList = userService.getUserList(currentUser);
+
+        queryDto.setCreateUserIdList(userIdList);
         Map<String, Object> data = specialReportService.pageList(queryDto);
         return Result.success(data);
     }

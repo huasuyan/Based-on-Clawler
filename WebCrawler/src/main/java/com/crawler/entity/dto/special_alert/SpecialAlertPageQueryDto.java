@@ -2,6 +2,8 @@ package com.crawler.entity.dto.special_alert;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 预警专题分页查询DTO
  * 对应接口：POST /api/v1/crawlerCron/pageList
@@ -13,7 +15,7 @@ public class SpecialAlertPageQueryDto {
     private Integer pageNum = 1;
     private Integer pageSize = 10;
     // 以下为可选筛选条件（searchByalertInfo接口使用）
-    private Long userId;
+    private List<Long> userIdList;
     private String alertName;     // 专题名称（模糊查询）
     private String keyWord;         // 预警词（模糊查询）
     private Integer triggerState;   // 启用状态：0停止 1启用

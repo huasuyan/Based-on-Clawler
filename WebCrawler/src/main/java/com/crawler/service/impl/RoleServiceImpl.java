@@ -2,6 +2,7 @@ package com.crawler.service.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.Role;
+import com.crawler.entity.User;
 import com.crawler.entity.dto.role.*;
 import com.crawler.mapper.RoleMapper;
 import com.crawler.mapper.UserRoleMapper;
@@ -63,6 +64,9 @@ public class RoleServiceImpl implements RoleService {
         if (createDto.getAuthority() == null || createDto.getAuthority().isEmpty()) {
             throw new RuntimeException("角色权限不能为空");
         }
+        if (createDto.getDeptId() == null) {
+            throw new RuntimeException("所属部门不能为空");
+        }
 
         // 重名校验
         Role existing = roleMapper.selectByRoleName(createDto.getRoleName());
@@ -76,6 +80,7 @@ public class RoleServiceImpl implements RoleService {
         role.setRemark(createDto.getRemark() != null ? createDto.getRemark() : "");
         role.setStatus(createDto.getStatus() != null ? createDto.getStatus() : 1);
         role.setAuthority(createDto.getAuthority() != null ? createDto.getAuthority() : "");
+        role.setDeptId(createDto.getDeptId());
 
         roleMapper.insert(role);
 
@@ -209,8 +214,8 @@ public class RoleServiceImpl implements RoleService {
     /*  角色下拉列表                                                          */
     /* ------------------------------------------------------------------ */
     @Override
-    public List<RoleDropdownDto> dropdownList() {
-        return roleMapper.selectAllEnabled()
+    public List<RoleDropdownDto> dropdownList(List<Long> deptIdList) {
+        return roleMapper.selectAllEnabled(deptIdList)
                 .stream()
                 .map(RoleDropdownDto::new)
                 .collect(Collectors.toList());

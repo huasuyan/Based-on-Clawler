@@ -23,13 +23,18 @@
         select * from special_alert_setting where alert_id = #{alertId}
     </select>
 
-    <!-- 分页 + 多条件筛选 -->
+    <!-- 分页 + 多条件筛选 + 支持 userIdList 批量查询 -->
     <select id="pageList" resultType="com.crawler.entity.SpecialAlertSetting">
         select * from special_alert_setting
         <where>
-            <if test="userId != null">
-                and user_id = #{userId}
+            <!-- 批量用户ID列表（你要新增的功能） -->
+            <if test="userIdList != null and userIdList.size > 0">
+                and user_id in
+                <foreach collection="userIdList" item="uid" open="(" separator="," close=")">
+                    #{uid}
+                </foreach>
             </if>
+
             <if test="alertName != null and alertName != ''">
                 and alert_name like concat('%', #{alertName}, '%')
             </if>
@@ -95,16 +100,24 @@
     </select>
     <select id="searchAllAlert" resultType="com.crawler.entity.dto.special_alert.SpecialAlertListDto">
         select * from special_alert_setting
-        where user_id = #{userId}
+        where user_id in
+        <foreach collection="userIdList" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
     </select>
 
-    <!-- 统计总条数 -->
+    <!-- 统计总条数（支持 userIdList） -->
     <select id="countPageList" resultType="int">
         SELECT COUNT(1) FROM special_alert_setting
         <where>
-            <if test="userId != null">
-                and user_id = #{userId}
+            <!-- 新增：用户ID列表批量查询 -->
+            <if test="userIdList != null and userIdList.size > 0">
+                and user_id in
+                <foreach collection="userIdList" item="uid" open="(" separator="," close=")">
+                    #{uid}
+                </foreach>
             </if>
+
             <if test="alertName != null and alertName != ''">
                 and alert_name like concat('%', #{alertName}, '%')
             </if>

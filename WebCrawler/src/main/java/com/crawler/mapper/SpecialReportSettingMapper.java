@@ -47,4 +47,6 @@ public interface SpecialReportSettingMapper {
 
     // 统计总条数（分页用）
     int countPageList(SpecialReportPageQueryDto queryDto);
+
+    List<Long> getAllSpecialReportIds(@Param("userIdList") List<Long> userIdList);
 }

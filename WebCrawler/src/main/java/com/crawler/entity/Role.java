@@ -13,4 +13,5 @@ public class Role {
     private String authority;   // 数据库存JSON字符串
     private Date createTime;
     private Date updateTime;
+    private Long deptId;
 }

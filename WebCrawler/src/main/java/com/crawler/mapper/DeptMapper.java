@@ -39,4 +39,13 @@ public interface DeptMapper{
     List<Dept> selectChildDepts(Long currentDeptId);
 
     List<Long> getAllDeptIds();
+
+    /**
+     * 根据部门ID集合，直接查询所有绑定该部门的用户ID
+     * @param deptIdList 传入的部门ID列表
+     * @return 对应用户ID列表
+     */
+    List<Long> listUserIdByDeptIdList(@Param("deptIdList") List<Long> deptIdList);
+
+    Long getTopLevelParentId(@Param("deptId") Long deptId);
 }

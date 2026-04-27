@@ -21,6 +21,7 @@ public class RoleListDto {
     private Date    createTime;
     private Date    updateTime;
     private String  operateTime;     // 格式化后的updateTime字符串（列表用）
+    private Long    deptId;
 
     public RoleListDto(Role role) {
         this.roleId        = role.getRoleId();
@@ -33,6 +34,7 @@ public class RoleListDto {
         this.authority     = CommonUtil.parseJson(role.getAuthority());
         this.createTime    = role.getCreateTime();
         this.updateTime    = role.getUpdateTime();
+        this.deptId        = role.getDeptId();
         // 列表字段 operateTime 取 updateTime 格式化
         if (role.getUpdateTime() != null) {
             this.operateTime = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")

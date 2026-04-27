@@ -7,6 +7,7 @@ import com.crawler.entity.User;
 import com.crawler.entity.dto.UserAddDto;
 import com.crawler.entity.dto.UserUpdateDto;
 import com.crawler.service.DeptUserService;
+import com.crawler.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +20,27 @@ public class DeptUserController {
 
     @Autowired
     private DeptUserService deptUserService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/list")
     @RequirePermission(module = "dept_user", action = "dept_user_select")
-    public Result pageList(
+    public Result pageList(HttpServletRequest request,
                            @RequestParam(defaultValue = "1") Integer pageNum,
                            @RequestParam(defaultValue = "10") Integer pageSize,
                            @RequestParam(required = false) Long deptId,
                            @RequestParam(required = false) String username,
                            @RequestParam(required = false) Integer status) {
 
-        // 从request获取当前登录用户ID（简化，实际从token中获取）
-        return Result.success(deptUserService.pageList(pageNum, pageSize, deptId, username, status));
+        User currentUser = (User) request.getAttribute("currentUser");
+        // 校验访问deptId是否在用户权限范围内
+        if (userService.checkUserVisitDept(currentUser, deptId)) {
+            return Result.success(deptUserService.pageList(pageNum, pageSize, deptId, username, status));
+        }else{
+            return Result.permissionError("您没有权限查询该部门人员！");
+        }
+
+
     }
 
     @PostMapping("/add")

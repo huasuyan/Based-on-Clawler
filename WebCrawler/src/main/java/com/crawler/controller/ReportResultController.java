@@ -2,13 +2,19 @@ package com.crawler.controller;
 
 import com.crawler.annotation.RequirePermission;
 import com.crawler.entity.Result;
+import com.crawler.entity.User;
 import com.crawler.entity.dto.report.ReportResultEditDto;
 import com.crawler.entity.dto.report.ReportResultPageQueryDto;
 import com.crawler.service.ReportResultService;
+import com.crawler.service.SpecialReportService;
+import com.crawler.service.UserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -19,9 +25,21 @@ public class ReportResultController {
     @Resource
     private ReportResultService reportResultService;
 
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private SpecialReportService specialReportService;
+
     @PostMapping("/pageList")
     @RequirePermission(module = "report", action = "report_select")
-    public Result pageList(@RequestBody ReportResultPageQueryDto queryDto) {
+    public Result pageList(HttpServletRequest request, @RequestBody ReportResultPageQueryDto queryDto) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        // 获取可见用户列表
+        List<Long> userIdList = userService.getUserList(currentUser);
+        // 根据用户列表获取specialReportIdList
+        List<Long> specialReportIdList = specialReportService.getAllSpecialReportIds(userIdList);
+        queryDto.setSpecialReportIdList(specialReportIdList);
         Map<String, Object> data = reportResultService.pageList(queryDto);
         return Result.success(data);
     }

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.crawler.mapper.AlertMapCoordinateMapper">
+
+    <!-- 新增：DTO 联表映射（字段完全匹配你的表） -->
+    <resultMap id="AlertMapDtoResultMap" type="com.crawler.entity.dto.alertMap.AlertMapDto">
+        <id column="id" property="id"/>
+        <result column="alert_id" property="alertId"/>
+        <result column="alert_name" property="alertName"/>
+        <result column="alert_level" property="alertLevel"/>
+        <result column="news_id" property="newsId"/>
+        <result column="title" property="newsTitle"/>
+        <result column="content" property="newsContent"/>
+        <result column="source_url" property="newsUrl"/>
+        <result column="longitude" property="longitude"/>
+        <result column="latitude" property="latitude"/>
+        <result column="alert_date" property="alertDate"/>
+    </resultMap>
+
+    <!-- ====================== 新增：联表查询 DTO ====================== -->
+    <!-- 查询所有地图数据（联表：预警表 + 新闻表） -->
+    <select id="selectAll" resultMap="AlertMapDtoResultMap">
+        SELECT
+            am.id,
+            am.alert_id,
+            a.alert_name,
+            a.alert_level,
+            am.news_id,
+            n.title,
+            n.content,
+            n.source_url,
+            am.longitude,
+            am.latitude,
+            am.alert_date
+        FROM alert_map am
+                 LEFT JOIN special_alert_setting a ON am.alert_id = a.alert_id
+                 LEFT JOIN news_data n ON am.news_id = n.news_id
+        ORDER BY am.alert_date DESC
+    </select>
+
+    <!-- 根据 alertId 查询联表 DTO 数据 -->
+    <select id="selectByAlertId" resultMap="AlertMapDtoResultMap">
+        SELECT
+            am.id,
+            am.alert_id,
+            a.alert_name,
+            a.alert_level,
+            am.news_id,
+            n.title,
+            n.content,
+            n.source_url,
+            am.longitude,
+            am.latitude,
+            am.alert_date
+        FROM alert_map am
+                 LEFT JOIN special_alert_setting a ON am.alert_id = a.alert_id
+                 LEFT JOIN news_data n ON am.news_id = n.news_id
+        WHERE am.alert_id = #{alertId}
+        ORDER BY am.alert_date DESC
+    </select>
+
+    <!-- ===================== 统一接口：支持 今日/近7日/近30日 ===================== -->
+    <select id="selectAlertMapByDay" resultMap="AlertMapDtoResultMap">
+        SELECT
+        am.id,
+        am.alert_id,
+        a.alert_name,
+        a.alert_level,
+        am.news_id,
+        n.title,
+        n.content,
+        n.source_url,
+        am.longitude,
+        am.latitude,
+        am.alert_date
+        FROM alert_map am
+        LEFT JOIN special_alert_setting a ON am.alert_id = a.alert_id
+        LEFT JOIN news_data n ON am.news_id = n.news_id
+        WHERE 1=1
+        <if test="dayType == 'today'">
+            AND DATE(am.alert_date) = CURDATE()
+        </if>
+        <if test="dayType == '7day'">
+            AND am.alert_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
+        </if>
+        <if test="dayType == '30day'">
+            AND am.alert_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        </if>
+        ORDER BY am.alert_date DESC
+    </select>
+
+</mapper>
