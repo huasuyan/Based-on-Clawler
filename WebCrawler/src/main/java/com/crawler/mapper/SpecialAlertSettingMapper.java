@@ -19,7 +19,7 @@ public interface SpecialAlertSettingMapper {
     void insert(SpecialAlertSetting specialAlertSetting);
 
     // 根据alertId查询预警专题
-    SpecialAlertSetting selectByAlertId(Integer alertId);
+    SpecialAlertSetting selectByAlertId(Long alertId);
 
     // 分页列表查询（支持多条件筛选）
     List<SpecialAlertSetting> pageList(SpecialAlertPageQueryDto queryDto);
@@ -28,28 +28,28 @@ public interface SpecialAlertSettingMapper {
     void update(SpecialAlertSetting specialAlertSetting);
 
     // 更新启用状态
-    void updateTriggerState(@Param("alertId") Integer alertId,
+    void updateTriggerState(@Param("alertId") Long alertId,
                             @Param("triggerState") Integer triggerState);
 
     // 更新运行状态（Python回调使用）
-    void updateState(@Param("alertId") Integer alertId,
+    void updateState(@Param("alertId") Long alertId,
                      @Param("state") Integer state);
 
     // 删除专题
-    void deleteByAlertId(Integer alertId);
+    void deleteByAlertId(Long alertId);
 
     List<SpecialAlertSetting> selectByTriggerState(@Param("triggerState") Integer triggerState);
 
     // 重置 pending_count
-    void resetPendingCount(@Param("alertId") Integer alertId);
+    void resetPendingCount(@Param("alertId") Long alertId);
 
     // 累加 pending_count（每次爬取后调用）
-    void addPendingCount(@Param("alertId") Integer alertId,
+    void addPendingCount(@Param("alertId") Long alertId,
                          @Param("delta") int delta);
 
-    void updateLastTriggerTime(@Param("alertId") Integer alertId);
+    void updateLastTriggerTime(@Param("alertId") Long alertId);
 
-    void updateLatestNewsTime(@Param("alertId") Integer alertId,
+    void updateLatestNewsTime(@Param("alertId") Long alertId,
                               @Param("latestNewsTime") Date latestNewsTime);
 
     // 统计总条数（分页用）

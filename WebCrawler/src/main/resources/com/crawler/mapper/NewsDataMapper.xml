@@ -23,6 +23,16 @@
         WHERE news_id = #{newsId}
     </delete>
 
+    <delete id="deleteByAlertId">
+        DELETE FROM news_data
+        WHERE alert_id = #{alertId}
+    </delete>
+
+    <delete id="deleteByReportId">
+        DELETE FROM news_data
+        WHERE report_id = #{reportId}
+    </delete>
+
     <select id="select" resultType="com.crawler.entity.NewsData">
         SELECT * FROM news_data
         WHERE news_id = #{newsId}

@@ -60,7 +60,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     }
 
     @Override
-    public SpecialAlertSetting getSpecialAlertById(Integer alertId) {
+    public SpecialAlertSetting getSpecialAlertById(Long alertId) {
         SpecialAlertSetting alertInfo = specialAlertSettingMapper.selectByAlertId(alertId);
         return alertInfo;
     }
@@ -110,6 +110,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
         update.setTimeRange(editDto.getTimeRange());
         update.setAlertMethod(editDto.getAlertMethod());
         update.setDedupEnable(editDto.getDedupEnable());
+        update.setAlertLevel(editDto.getAlertLevel());
 
         specialAlertSettingMapper.update(update);
 
@@ -123,7 +124,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
     // ----------------------------------------------------------------
 
     @Override
-    public Map<String, Object> toggleTriggerState(Integer alertId) {
+    public Map<String, Object> toggleTriggerState(Long alertId) {
         SpecialAlertSetting existing = specialAlertSettingMapper.selectByAlertId(alertId);
         if (existing == null) {
             throw new RuntimeException("预警专题不存在");
@@ -149,7 +150,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
 
     // 删除专题（须处于关闭状态）
     @Override
-    public Result delete(Integer alertId) {
+    public Result delete(Long alertId) {
         SpecialAlertSetting existing = specialAlertSettingMapper.selectByAlertId(alertId);
         if (existing == null) {
             throw new RuntimeException("预警专题不存在");
@@ -158,6 +159,7 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
             throw new RuntimeException("请先关闭预警专题后再删除");
         }
         specialAlertSettingMapper.deleteByAlertId(alertId);
+        newsDataMapper.deleteByAlertId(alertId);
         return Result.success();
     }
 

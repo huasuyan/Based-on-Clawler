@@ -19,12 +19,18 @@ public interface NewsDataMapper {
     NewsData select (@Param("newsId") Long newsId);
 
     // 查询某 alertId 下晚于指定时间的新增数量
-    int countNewsByAlertIdAfterTime(@Param("alertId") Integer alertId,
+    int countNewsByAlertIdAfterTime(@Param("alertId") Long alertId,
                                     @Param("afterTime") Date afterTime);
 
     // 查询某 alertId 下的全部数据数量（首次执行时使用）
-    int countNewsByAlertId(@Param("alertId") Integer alertId);
+    int countNewsByAlertId(@Param("alertId") Long alertId);
 
     // 统计总条数（分页用）
     int countPageList(SpecialAlertInfoDto queryDto);
+
+    // 删除某个 alertId 下的所有数据
+    int deleteByAlertId(Long alertId);
+
+    // 删除某个 reportId 下的所有数据
+    int deleteByReportId(Long reportId);
 }

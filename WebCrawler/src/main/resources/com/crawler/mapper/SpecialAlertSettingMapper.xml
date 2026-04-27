@@ -68,6 +68,7 @@
             <if test="timeRange != null">time_range = #{timeRange},</if>
             <if test="alertMethod != null">alert_method = #{alertMethod},</if>
             <if test="dedupEnable != null">dedup_enable = #{dedupEnable},</if>
+            <if test="alertLevel != null">alert_level = #{alertLevel},</if>
         </set>
         where alert_id = #{alertId}
     </update>

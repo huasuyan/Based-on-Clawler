@@ -3,6 +3,8 @@ package com.crawler.util;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.crawler.entity.SpecialAlertSetting;
+import com.crawler.service.AlertMessageService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,9 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 public class AlertUtil {
+
+    @Resource
+    private AlertMessageService alertMessageService;
 
     private final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(4);
@@ -59,20 +64,17 @@ public class AlertUtil {
     }
 
     /**
-     * 站内信：通过 WebSocket 推送给前端
+     * 站内信：持久化 + WebSocket 推送
      */
     private void sendInternalMessage(SpecialAlertSetting specialAlertSetting, String content) {
         try {
-            cn.hutool.json.JSONObject msg = JSONUtil.createObj()
-                    .set("type", "alert_message")
-                    .set("user_id", specialAlertSetting.getUserId())
-                    .set("alert_id", specialAlertSetting.getAlertId())
-                    .set("alert_name", specialAlertSetting.getAlertName())
-                    .set("content", content);
-            com.crawler.websockets.VueSocketServer
-                    .sendToVue(specialAlertSetting.getUserId().toString(),
-                            JSONUtil.toJsonStr(msg));
-            log.info("[预警-站内信] 已推送 alertId={}", specialAlertSetting.getAlertId());
+            alertMessageService.saveAndPush(
+                    specialAlertSetting.getUserId(),
+                    specialAlertSetting.getAlertId(),
+                    specialAlertSetting.getAlertName(),
+                    content
+            );
+            log.info("[预警-站内信] 已持久化并推送 alertId={}", specialAlertSetting.getAlertId());
         } catch (Exception e) {
             log.error("[预警-站内信] 推送失败", e);
         }

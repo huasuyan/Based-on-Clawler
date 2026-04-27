@@ -7,6 +7,7 @@ import com.crawler.entity.dto.special_report.SpecialReportCreateDto;
 import com.crawler.entity.dto.special_report.SpecialReportDto;
 import com.crawler.entity.dto.special_report.SpecialReportEditDto;
 import com.crawler.entity.dto.special_report.SpecialReportPageQueryDto;
+import com.crawler.mapper.NewsDataMapper;
 import com.crawler.mapper.SpecialReportSettingMapper;
 import com.crawler.service.SpecialReportService;
 import jakarta.annotation.Resource;
@@ -30,6 +31,9 @@ public class SpecialReportServiceImpl implements SpecialReportService {
 
     @Resource
     private SpecialReportSettingMapper specialReportSettingMapper;
+
+    @Resource
+    private NewsDataMapper newsDataMapper;
 
     @Override
     public Map<String, Object> create(SpecialReportCreateDto createDto) {
@@ -125,6 +129,7 @@ public class SpecialReportServiceImpl implements SpecialReportService {
             throw new RuntimeException("请先停用报告专题后再删除");
         }
         specialReportSettingMapper.deleteById(specialReportId);
+        newsDataMapper.deleteByReportId(specialReportId);
     }
 
     @Override
