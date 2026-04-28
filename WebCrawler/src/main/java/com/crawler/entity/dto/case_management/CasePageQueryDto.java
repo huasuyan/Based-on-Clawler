@@ -2,6 +2,8 @@ package com.crawler.entity.dto.case_management;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 条件查询办件列表 请求DTO
  */
@@ -17,6 +19,7 @@ public class CasePageQueryDto {
     private String createTimeEnd;      // 创建时间-结束
     private String updateTimeStart;    // 更新时间-开始
     private String updateTimeEnd;      // 更新时间-结束
+    private List<Long> deptIdList;
 
     public int getOffset() {
         return (pageNum - 1) * pageSize;

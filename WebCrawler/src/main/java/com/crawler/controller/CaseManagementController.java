@@ -7,11 +7,13 @@ import com.crawler.entity.dto.case_management.CaseCreateDto;
 import com.crawler.entity.dto.case_management.CasePageQueryDto;
 import com.crawler.entity.dto.case_management.CaseSubmitTextDto;
 import com.crawler.service.CaseManagementService;
+import com.crawler.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -21,6 +23,9 @@ public class CaseManagementController {
 
     @Resource
     private CaseManagementService caseManagementService;
+
+    @Resource
+    private UserService userService;
 
     // 预警记录转为办件
     @PostMapping("/create")
@@ -35,7 +40,11 @@ public class CaseManagementController {
     // 条件查询办件列表
     @PostMapping("/pageList")
     @RequirePermission(module = "case", action = "case_select")
-    public Result pageList(@RequestBody CasePageQueryDto queryDto) {
+    public Result pageList(HttpServletRequest request,@RequestBody CasePageQueryDto queryDto) {
+        User currentUser = (User) request.getAttribute("currentUser");
+        // 获取用户当前可见的部门列表
+        List<Long> deptIdList = userService.getAllDeptIds(currentUser);
+        queryDto.setDeptIdList(deptIdList);
         Map<String, Object> data = caseManagementService.pageList(queryDto);
         return Result.success(data);
     }

@@ -42,6 +42,15 @@
             <if test="updateTimeEnd != null and updateTimeEnd != ''">
                 AND c.update_time &lt;= #{updateTimeEnd}
             </if>
+
+            <!-- ===================== 新增：批量部门ID查询 ===================== -->
+            <if test="deptIdList != null and deptIdList.size > 0">
+                AND c.dept_id IN
+                <foreach collection="deptIdList" item="deptId" open="(" separator="," close=")">
+                    #{deptId}
+                </foreach>
+            </if>
+
         </where>
         ORDER BY c.update_time DESC
         LIMIT #{pageSize} OFFSET #{offset}
@@ -75,6 +84,15 @@
             <if test="updateTimeEnd != null and updateTimeEnd != ''">
                 AND update_time &lt;= #{updateTimeEnd}
             </if>
+
+            <!-- 新增：批量部门ID筛选 -->
+            <if test="deptIdList != null and deptIdList.size > 0">
+                AND dept_id IN
+                <foreach collection="deptIdList" item="deptId" open="(" separator="," close=")">
+                    #{deptId}
+                </foreach>
+            </if>
+
         </where>
     </select>
 
