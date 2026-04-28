@@ -159,7 +159,6 @@ public class SpecialAlertServiceImpl implements SpecialAlertService {
             throw new RuntimeException("请先关闭预警专题后再删除");
         }
         specialAlertSettingMapper.deleteByAlertId(alertId);
-        newsDataMapper.deleteByAlertId(alertId);
         return Result.success();
     }
 

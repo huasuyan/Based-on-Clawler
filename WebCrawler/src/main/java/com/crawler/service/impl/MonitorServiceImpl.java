@@ -40,11 +40,16 @@ public class MonitorServiceImpl implements MonitorService {
         List<Integer> alertIds = new ArrayList<>();
         List<Long> reportIds = new ArrayList<>();
         String keyWord = queryDto.getKeyWord();
-        if (keyWord != null && !keyWord.trim().isEmpty()) {
-            // 模糊匹配预警专题的名称或关键词，获取alert_id列表
+        boolean hasKeyword = keyWord != null && !keyWord.trim().isEmpty();
+        if (hasKeyword) {
             alertIds = monitorMapper.searchAlertIdsByKeyword(keyWord.trim());
-            // 模糊匹配报告专题的名称或监测关键词，获取special_report_id列表
             reportIds = monitorMapper.searchReportIdsByKeyword(keyWord.trim());
+            // 关键词已输入但未匹配到任何专题，直接返回空
+            if (alertIds.isEmpty() && reportIds.isEmpty()) {
+                Map<String, Object> emptyResult = new HashMap<>();
+                emptyResult.put("dataList", new ArrayList<>());
+                return emptyResult;
+            }
         }
 
         // ---- Step 2: 处理敏感等级 ----

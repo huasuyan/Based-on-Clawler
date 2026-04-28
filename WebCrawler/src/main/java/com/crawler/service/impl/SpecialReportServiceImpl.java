@@ -13,7 +13,6 @@ import com.crawler.service.SpecialReportService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,9 +30,6 @@ public class SpecialReportServiceImpl implements SpecialReportService {
 
     @Resource
     private SpecialReportSettingMapper specialReportSettingMapper;
-
-    @Resource
-    private NewsDataMapper newsDataMapper;
 
     @Override
     public Map<String, Object> create(SpecialReportCreateDto createDto) {
@@ -129,7 +125,6 @@ public class SpecialReportServiceImpl implements SpecialReportService {
             throw new RuntimeException("请先停用报告专题后再删除");
         }
         specialReportSettingMapper.deleteById(specialReportId);
-        newsDataMapper.deleteByReportId(specialReportId);
     }
 
     @Override
