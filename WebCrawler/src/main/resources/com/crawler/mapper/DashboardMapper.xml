@@ -239,4 +239,16 @@
         SELECT username FROM user
     </select>
 
+    <select id="countTotalCase" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM cases
+    </select>
+
+    <select id="countCaseByState" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM cases WHERE state = #{state}
+    </select>
+
+    <select id="countCaseByTriggerState" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM cases WHERE trigger_state = #{triggerState}
+    </select>
+
 </mapper>
